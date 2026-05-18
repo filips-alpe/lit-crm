@@ -18,6 +18,22 @@ To recreate this project with the same configuration:
 bun x sv@0.15.3 create --template minimal --types ts --add prettier eslint vitest="usages:unit,component" playwright tailwindcss="plugins:typography,forms" sveltekit-adapter="adapter:vercel" mdsvex paraglide="languageTags:en, lv+demo:no" storybook mcp="ide:opencode,claude-code,vscode+setup:local" --install bun lit-crm
 ```
 
+## Database
+
+This project uses Prisma with PostgreSQL.
+
+```sh
+cp .env.example .env       # then edit DATABASE_URL if needed
+docker compose up -d       # starts postgres on host port 5433
+bunx prisma migrate dev    # applies migrations + generates client
+```
+
+Import the typed client from `$lib/prisma`:
+
+```ts
+import { prisma } from '$lib/prisma';
+```
+
 ## Developing
 
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
