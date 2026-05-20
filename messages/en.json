@@ -1,4 +1,14 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
-  "hello_world": "Hello, {name} from en!"
+  "tiny_due_hornet_trim": "Settings",
+  "jolly_livid_clownfish_commend": "Avatar",
+  "cool_home_fox_dance": "Shuffle avatars",
+  "bad_true_coyote_bless": "Color",
+  "spry_least_boar_view": "Custom color",
+  "big_mealy_gadfly_approve": "{username} avatar",
+  "white_zesty_tortoise_bloom": "Log out",
+  "hour_true_thrush_loop": "Sign in",
+  "tough_flaky_crab_kiss": "Language",
+  "just_soft_rabbit_dream": "User not found",
+  "misty_bad_pelican_loop": "Account menu"
 }

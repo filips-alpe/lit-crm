@@ -12,11 +12,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  status   UserStatus @default(ACTIVE)
-  username String     @unique
-  name     String
-  bio      String?
-  color    String?
+  status     UserStatus @default(ACTIVE)
+  username   String     @unique
+  name       String
+  bio        String?
+  color      String     @default("#000000")
+  avatarSeed String?
 
   createdOrders  Order[]  @relation(name: "OrderCreator")
   assignedOrders Order[]  @relation(name: "OrderAssignee")
@@ -35,7 +36,7 @@ model Type {
   code        String     @unique
   description String?
   layout      Json?
-  color       String?
+  color       String     @default("#000000")
 
   records Record[]
 
@@ -85,7 +86,7 @@ model Order {
   status      OrderStatus @default(ACTIVE)
   code        String      @unique
   description String?
-  color       String?
+  color       String      @default("#000000")
 
   creator    User?    @relation(name: "OrderCreator", fields: [creatorId], references: [id])
   creatorId  String?
