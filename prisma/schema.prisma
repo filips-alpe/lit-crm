@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status   UserStatus @default(ACTIVE)
+  username String     @unique
+  name     String
+  bio      String?
+  color    String?
+
+  createdOrders  Order[]  @relation(name: "OrderCreator")
+  assignedOrders Order[]  @relation(name: "OrderAssignee")
+  records        Record[]
+  reminders      Record[] @relation(name: "RecordRemindTo")
+
+  @@map("lit_user")
+}
+
+model Type {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status      TypeStatus @default(ACTIVE)
+  code        String     @unique
+  description String?
+  layout      Json?
+  color       String?
+
+  records Record[]
+
+  @@map("lit_type")
+}
+
+model Record {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status     RecordStatus @default(ACTIVE)
+  date       DateTime     @default(now())
+  sum        Float        @default(0)
+  hours      Float        @default(0)
+  totalPrice Float        @default(0)
+  startDate  DateTime?
+  endDate    DateTime?
+  allDay     Boolean      @default(false)
+  note       String?
+  footNote   String?
+  idNote     String?
+  orderNote  String?
+  typeNote   String?
+  priceNote  String?
+  bookNote   String?
+  placeFrom  String?
+  placeTo    String?
+
+  user       User?   @relation(fields: [userId], references: [id])
+  order      Order?  @relation(fields: [orderId], references: [id])
+  type       Type    @relation(fields: [typeId], references: [id])
+  remindTo   User?   @relation(name: "RecordRemindTo", fields: [remindToId], references: [id])
+  userId     String?
+  orderId    String?
+  typeId     String
+  remindToId String?
+
+  @@map("lit_record")
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status      OrderStatus @default(ACTIVE)
+  code        String      @unique
+  description String?
+  color       String?
+
+  creator    User?    @relation(name: "OrderCreator", fields: [creatorId], references: [id])
+  creatorId  String?
+  assignee   User?    @relation(name: "OrderAssignee", fields: [assigneeId], references: [id])
+  assigneeId String?
+  records    Record[]
+
+  @@map("lit_order")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum TypeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum RecordStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum OrderStatus {
+  ACTIVE
+  INACTIVE
+}
