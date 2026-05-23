@@ -48,23 +48,23 @@ model Record {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  status      RecordStatus @default(ACTIVE)
-  date        DateTime     @default(now())
-  sum         Float        @default(0)
-  hours       Float        @default(0)
-  totalPrice  Float        @default(0)
-  startDate   DateTime?
-  endDate     DateTime?
-  allDay      Boolean      @default(false)
-  note        String?
-  footNote    String?
-  idNote      String?
-  projectNote String?
-  typeNote    String?
-  priceNote   String?
-  bookNote    String?
-  placeFrom   String?
-  placeTo     String?
+  status       RecordStatus @default(ACTIVE)
+  date         DateTime     @default(now())
+  sum          Float        @default(0)
+  hours        Float        @default(0)
+  totalPrice   Float        @default(0)
+  startDate    DateTime?
+  endDate      DateTime?
+  allDay       Boolean      @default(false)
+  note         String?
+  footNote     String?
+  alternateIds String[]     @default([])
+  projectNote  String?
+  typeNote     String?
+  priceNote    String?
+  bookNote     String?
+  placeFrom    String?
+  placeTo      String?
 
   user       User?    @relation(fields: [userId], references: [id])
   project    Project? @relation(fields: [projectId], references: [id])
