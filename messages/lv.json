@@ -1,4 +1,14 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
-  "hello_world": "Hello, {name} from lv!"
+  "tiny_due_hornet_trim": "Iestatījumi",
+  "jolly_livid_clownfish_commend": "Avatārs",
+  "cool_home_fox_dance": "Rādīt citus avatārus",
+  "bad_true_coyote_bless": "Krāsa",
+  "spry_least_boar_view": "Pielāgota krāsa",
+  "big_mealy_gadfly_approve": "{username} avatārs",
+  "white_zesty_tortoise_bloom": "Iziet",
+  "hour_true_thrush_loop": "Ienākt",
+  "tough_flaky_crab_kiss": "Valoda",
+  "just_soft_rabbit_dream": "Lietotājs nav atrasts",
+  "misty_bad_pelican_loop": "Profila izvēlne"
 }

@@ -4,6 +4,10 @@
 - **Package Manager**: bun
 - **Add-ons**: prettier, eslint, vitest, playwright, tailwindcss, sveltekit-adapter, mdsvex, paraglide, storybook, mcp
 
+## i18n Message Keys
+
+Use humanId keys from `@inlang/sdk`'s `humanId()`. Generate via `node -e "import('@inlang/sdk').then(m => console.log(m.humanId()))"`. Add to all `messages/*.json`, reference as `m.<id>()`.
+
 ---
 
 You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
