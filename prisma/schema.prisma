@@ -19,10 +19,10 @@ model User {
   color      String     @default("#000000")
   avatarSeed String?
 
-  createdOrders  Order[]  @relation(name: "OrderCreator")
-  assignedOrders Order[]  @relation(name: "OrderAssignee")
-  records        Record[]
-  reminders      Record[] @relation(name: "RecordRemindTo")
+  createdProjects  Project[] @relation(name: "ProjectCreator")
+  assignedProjects Project[] @relation(name: "ProjectAssignee")
+  records          Record[]
+  reminders        Record[]  @relation(name: "RecordRemindTo")
 
   @@map("lit_user")
 }
@@ -48,53 +48,53 @@ model Record {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  status     RecordStatus @default(ACTIVE)
-  date       DateTime     @default(now())
-  sum        Float        @default(0)
-  hours      Float        @default(0)
-  totalPrice Float        @default(0)
-  startDate  DateTime?
-  endDate    DateTime?
-  allDay     Boolean      @default(false)
-  note       String?
-  footNote   String?
-  idNote     String?
-  orderNote  String?
-  typeNote   String?
-  priceNote  String?
-  bookNote   String?
-  placeFrom  String?
-  placeTo    String?
+  status      RecordStatus @default(ACTIVE)
+  date        DateTime     @default(now())
+  sum         Float        @default(0)
+  hours       Float        @default(0)
+  totalPrice  Float        @default(0)
+  startDate   DateTime?
+  endDate     DateTime?
+  allDay      Boolean      @default(false)
+  note        String?
+  footNote    String?
+  idNote      String?
+  projectNote String?
+  typeNote    String?
+  priceNote   String?
+  bookNote    String?
+  placeFrom   String?
+  placeTo     String?
 
-  user       User?   @relation(fields: [userId], references: [id])
-  order      Order?  @relation(fields: [orderId], references: [id])
-  type       Type    @relation(fields: [typeId], references: [id])
-  remindTo   User?   @relation(name: "RecordRemindTo", fields: [remindToId], references: [id])
+  user       User?    @relation(fields: [userId], references: [id])
+  project    Project? @relation(fields: [projectId], references: [id])
+  type       Type     @relation(fields: [typeId], references: [id])
+  remindTo   User?    @relation(name: "RecordRemindTo", fields: [remindToId], references: [id])
   userId     String?
-  orderId    String?
+  projectId  String?
   typeId     String
   remindToId String?
 
   @@map("lit_record")
 }
 
-model Order {
+model Project {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  status      OrderStatus @default(ACTIVE)
-  code        String      @unique
+  status      ProjectStatus @default(ACTIVE)
+  code        String        @unique
   description String?
-  color       String      @default("#000000")
+  color       String        @default("#000000")
 
-  creator    User?    @relation(name: "OrderCreator", fields: [creatorId], references: [id])
+  creator    User?    @relation(name: "ProjectCreator", fields: [creatorId], references: [id])
   creatorId  String?
-  assignee   User?    @relation(name: "OrderAssignee", fields: [assigneeId], references: [id])
+  assignee   User?    @relation(name: "ProjectAssignee", fields: [assigneeId], references: [id])
   assigneeId String?
   records    Record[]
 
-  @@map("lit_order")
+  @@map("lit_project")
 }
 
 enum UserStatus {
@@ -112,7 +112,7 @@ enum RecordStatus {
   INACTIVE
 }
 
-enum OrderStatus {
+enum ProjectStatus {
   ACTIVE
   INACTIVE
 }
