@@ -19,7 +19,7 @@
       dataType: 'json',
     },
   );
-  const { form: formData, enhance, submit, errors } = form;
+  const { form: formData, enhance, errors } = form;
 </script>
 
 <PageTitle name={m.hour_true_thrush_loop()} />
@@ -38,38 +38,37 @@
   </h1>
 
   <div class="flex flex-1 items-center justify-center px-5 py-12">
+    <!-- Each user is a native submit button, so a click works before hydration
+         (plain POST of username=…) as well as through the enhanced form. -->
     <form method="POST" use:enhance>
       <div
-        role="radiogroup"
+        role="group"
         aria-label={m.hour_true_thrush_loop()}
         class="flex max-w-6xl flex-wrap items-start justify-center gap-x-10 gap-y-12"
       >
         {#each data.users as user, i (user.id)}
-          <label
+          <button
+            type="submit"
+            name="username"
+            value={user.username}
+            aria-label={m.super_still_panther_dare({ name: user.name })}
+            onclick={() => ($formData.username = user.username)}
             in:fade={{ duration: 300, delay: i * 60 }}
-            class="flex w-36 cursor-pointer flex-col items-center sm:w-44"
+            class="group flex w-36 cursor-pointer flex-col items-center outline-none sm:w-44"
           >
-            <input
-              type="radio"
-              name="username"
-              value={user.username}
-              bind:group={$formData.username}
-              onchange={() => submit()}
-              class="peer sr-only"
-            />
             <span
-              class="flex size-32 items-center justify-center rounded-full shadow-sm ring-0 transition duration-200 peer-focus-visible:ring-4 hover:scale-105 hover:shadow-xl hover:ring-4 sm:size-40"
+              class="flex size-32 items-center justify-center rounded-full shadow-sm ring-0 transition duration-200 group-focus-visible:ring-4 hover:scale-105 hover:shadow-xl hover:ring-4 sm:size-40"
               style="background: color-mix(in oklab, {user.color} 22%, var(--color-base-100)); --tw-ring-color: {user.color};"
             >
               <span class="rounded-full bg-base-100 p-1">
-                <AvatarImage {user} class="size-24 sm:size-32" />
+                <AvatarImage {user} decorative class="size-24 sm:size-32" />
               </span>
             </span>
             <span class="mt-4 text-center">
               <span class="block text-base font-semibold text-base-content">{user.name}</span>
               <span class="mt-0.5 block text-xs text-base-content/60">@{user.username}</span>
             </span>
-          </label>
+          </button>
         {/each}
       </div>
     </form>

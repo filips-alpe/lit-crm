@@ -14,20 +14,33 @@
 </script>
 
 <header class="sticky top-0 z-30 border-b border-base-300 bg-base-100/90 backdrop-blur">
-  <nav class="mx-auto flex w-full max-w-6xl items-center gap-4 px-5 py-3">
-    <a href={resolve('/')} class="text-lg font-semibold tracking-tight">LIT CRM</a>
+  <nav class="mx-auto flex w-full max-w-6xl items-center gap-2 px-3 py-3 sm:gap-4 sm:px-5">
+    <a href={resolve('/')} class="text-lg font-semibold tracking-tight whitespace-nowrap">LIT CRM</a
+    >
 
-    <div class="ml-auto flex items-center gap-3">
+    <a href={resolve('/(app)/data')} class="rounded px-1.5 py-1 hover:bg-base-200 sm:px-2"
+      >{m.tame_short_weasel_compose()}</a
+    >
+    <a href={resolve('/(app)/types')} class="rounded px-1.5 py-1 hover:bg-base-200 sm:px-2"
+      >{m.quiet_pink_parrot_clasp()}</a
+    >
+    <div class="ml-1 flex items-center gap-2 text-sm sm:ml-6">
+      <a href={resolve('/(app)/record')} class="btn btn-sm btn-neutral">
+        {m.dark_gross_pigeon_foster()}
+      </a>
+    </div>
+
+    <div class="ml-auto flex items-center gap-1 sm:gap-3">
       <div class="dropdown dropdown-end">
         <button
           type="button"
           tabindex="0"
           aria-label={m.tough_flaky_crab_kiss()}
           aria-haspopup="menu"
-          class="btn gap-2 btn-ghost btn-sm"
+          class="btn gap-1 btn-ghost btn-sm sm:gap-2"
         >
           <span aria-hidden="true">{localeDisplay[getLocale()].flag}</span>
-          <span>{localeDisplay[getLocale()].code}</span>
+          <span class="hidden sm:inline">{localeDisplay[getLocale()].code}</span>
         </button>
         <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
         <ul
@@ -56,10 +69,10 @@
           tabindex="0"
           aria-label={m.misty_bad_pelican_loop()}
           aria-haspopup="menu"
-          class="flex items-center gap-2 rounded-full p-1 ring-2 ring-transparent transition hover:ring-primary"
+          class="flex items-center gap-1 rounded-full p-1 ring-2 ring-transparent transition hover:ring-primary sm:gap-2"
         >
           <AvatarImage {user} class="size-9" />
-          <span class="pr-2 text-sm font-medium">{user.username}</span>
+          <span class="hidden pr-2 text-sm font-medium sm:inline">{user.username}</span>
         </button>
         <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
         <ul
