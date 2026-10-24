@@ -39,6 +39,10 @@ model Type {
   color       String     @default("#000000")
   iconSeed    String?
 
+  // Selected record renderer — an id from the build-time renderer registry
+  // (src/lib/renderers/registry.ts). Null = the default field rendering.
+  rendererId String?
+
   records Record[]
 
   @@map("lit_type")
@@ -65,6 +69,8 @@ model Record {
   unit        String?
   from        String?
   to          String?
+  fromGeo     String?
+  toGeo       String?
 
   type       Type            @relation(fields: [typeId], references: [id])
   typeId     String

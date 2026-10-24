@@ -9,3 +9,5 @@ bun.lockb
 /static/
 /backlog/
 .context
+
+src/lib/maps/land-110m.json
