@@ -1,6 +1,20 @@
+@import '@fontsource-variable/caveat';
+@import '@fontsource-variable/playfair-display';
+@import '@fontsource-variable/playfair-display/wght-italic.css';
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 @plugin 'daisyui' {
   themes: light --default;
+}
+
+@theme {
+  --font-hand: 'Caveat Variable', cursive;
+  --font-display: 'Playfair Display Variable', serif;
+}
+
+@property --c {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
 }
