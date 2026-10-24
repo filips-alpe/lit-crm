@@ -37,6 +37,21 @@ export default defineConfig(
     },
   },
   {
+    // *.testutil.ts are test fixtures: only tests may import them, so they can never reach a bundle.
+    files: ['**/*.ts', '**/*.svelte', '**/*.js'],
+    ignores: ['**/*.test.ts', '**/*.spec.ts', '**/*.testutil.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['**/*.testutil', '**/*.testutil.ts'], message: 'Test-only module.' },
+          ],
+        },
+      ],
+    },
+  },
+  {
     // Override or add rule settings here, such as:
     // 'svelte/button-has-type': 'error'
     rules: {},
