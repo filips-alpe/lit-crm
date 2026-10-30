@@ -11,7 +11,10 @@ declare global {
       user?: User;
     }
     // interface PageData {}
-    // interface PageState {}
+    interface PageState {
+      /** Preloaded /data/[id] data for the history-driven record detail modal. */
+      detail?: import('./routes/(app)/data/[id]/$types.js').PageData;
+    }
     // interface Platform {}
   }
 }
