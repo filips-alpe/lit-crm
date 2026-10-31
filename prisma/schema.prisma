@@ -83,7 +83,30 @@ model Record {
   recordId   String?
   records    Record[]        @relation("LinkedRecord")
 
+  // Text spans of this record that name another record (an entity).
+  mentions    Mention[] @relation("MentionSource")
+  // Spans in other records that name this record.
+  mentionedBy Mention[] @relation("MentionTarget")
+
   @@map("lit_record")
+}
+
+// A span [start, end) of `source.text` (UTF-16 offsets) whose wording is `surface`, naming the
+// `entity` record. Offsets are into the stored text; a reader checks slice === surface before linking.
+model Mention {
+  id       String @id @default(cuid(2))
+  recordId String
+  entityId String
+  start    Int
+  end      Int
+  surface  String
+
+  source Record @relation("MentionSource", fields: [recordId], references: [id], onDelete: Cascade)
+  entity Record @relation("MentionTarget", fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@index([entityId])
+  @@index([recordId])
+  @@map("lit_mention")
 }
 
 model Project {
