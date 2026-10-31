@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { prisma } from '$lib/prisma';
 import { seedJefferson } from '../../../../prisma/seed/jefferson/seed';
+import recordsJson from '../../../../prisma/seed/generated/jefferson/records.json';
+import entitiesJson from '../../../../prisma/seed/generated/jefferson/entities.json';
+import mentionsJson from '../../../../prisma/seed/generated/jefferson/mentions.json';
 
 describe('seedJefferson (DB)', () => {
   it('loads types, projects, records, entities and mentions; mentions slice to their surface', async () => {
@@ -14,8 +17,8 @@ describe('seedJefferson (DB)', () => {
     ]);
     expect(types).toBe(16);
     expect(projects).toBe(6);
-    expect(records).toBe(295 + 567);
-    expect(mentions).toBe(5825);
+    expect(records).toBe(recordsJson.length + entitiesJson.length);
+    expect(mentions).toBe(mentionsJson.length);
     expect(await prisma.record.count({ where: { creatorId: { not: null } } })).toBe(0);
 
     // The stored offsets read back exactly as the surface, as SQL sees them.

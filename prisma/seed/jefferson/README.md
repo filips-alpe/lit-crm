@@ -76,10 +76,10 @@ and say so in `note`; the record text is never touched.
 
 `gazetteer.yaml` was curated by hand: capitalised name candidates were mined from the cleaned text (`candidates.ts`), read in
 context, and kept only where the reading was clear. It holds `{key, name, type, aliases[], scopedAliases?}` and a top-level
-`ambiguous: [{surface, candidates[], reason}]`. It records names, types and variants only, no biographical facts.
+`ambiguous: [{surface, candidates[], otherReferents?, reason}]`. It records names, types and variants only, no biographical facts.
 
 - `link.ts` is pure: case-sensitive, whole words, longest match first, non-overlapping, and `text.slice(start, end) === surface` always. A possessive links the name, not the `'s`. A hyphen inside a word is not a boundary.
-- A bare surface that could name more than one entity (Adams, Randolph, Washington, Lee, Morris, Livingston, Henry, Clinton, Franklin, Madison, Jefferson, Lincoln, Hamilton, Smith; Ohio, Mississippi, Delaware) is listed under `ambiguous` and is never linked. It is still consumed, so that no shorter alias can leak a link out of it.
+- A bare surface that could name more than one entity (Adams, Randolph, Washington, Lee, Morris, Livingston, Henry, Clinton, Franklin, Madison, Jefferson, Lincoln, Hamilton, Smith; Ohio, Mississippi, Delaware) is listed under `ambiguous` and is never linked. It is still consumed, so that no shorter alias can leak a link out of it. `otherReferents: true` marks a surface that also names someone with no record of their own (Coxe, Humphreys, Claiborne), so one listed candidate is enough to leave it unlinked.
 - `scopedAliases` resolve a surface only inside one part of the text, where reading the text justified it: `Randolph` is Edmund in the Anas and Peyton in the Autobiography; `Hamilton` is Alexander in the Anas; `Logan` is the chief only in the Notes on Virginia. A scoped alias may override an ambiguous surface; it may not shadow another entity's global alias.
 - No alias may map to two entities (`entities.test.ts`). When in doubt a surface is left out and shows up under "top unlinked surfaces" in the report.
 - Front-matter records are never linked.
