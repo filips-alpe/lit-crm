@@ -41,3 +41,17 @@ Build CRUD (list, create, edit, delete) for a 'Type' entity — a lookup/categor
 4. Add a shared zod (or hand-rolled) validator for the Type payload and surface errors via fail(400, {...}).
 5. Add an e2e spec under e2e/ covering create → edit → delete happy path.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+Prepared by autoplay: the work was already delivered by commit 72a5965 ("typed records platform"); the plan above predates it. No new code needed. Mapping:
+
+- #1 `Type` model in `prisma/schema.prisma` (id, createdAt, updatedAt + `code @unique`, status, color, layout, ...). Note: the field is `code`, not `name`.
+- #2 `/types` list: `src/routes/(app)/types/+page.svelte` + `listTypes()` in `src/lib/server/repos/types.ts`.
+- #3 Create at `/types/new` (separate page, not inline); code required, unique (`DuplicateCodeError` on unique violation).
+- #4 Edit at `/types/[id]` (`save` action); delete = soft delete (`delete`/`restore` actions).
+- #5 `permanentlyDelete` is blocked with 409 when records reference the type (`has-records`).
+- #6 Superforms + zod (`src/lib/schemas/types.ts`) return field-level errors.
+- E2E: `e2e/types.e2e.ts` (create with color/icon, list-kind constraint).
+
+Verified: `vitest --project client` for schema + types route tests pass (8/8). Server tests/e2e need TEST_DATABASE_URL / DB, not run.
