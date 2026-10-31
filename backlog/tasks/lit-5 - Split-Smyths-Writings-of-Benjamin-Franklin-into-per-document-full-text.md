@@ -4,6 +4,7 @@ title: Split Smyth's Writings of Benjamin Franklin into per-document full text
 status: To Do
 assignee: []
 created_date: '2026-10-15 15:35'
+updated_date: '2026-10-31 18:13'
 labels:
   - seed-data
   - franklin
@@ -27,12 +28,22 @@ This was scoped out of the initial Franklin-dataset rebuild (see prisma/seed/ pi
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Internet Archive OCR text (_djvu.txt) for all 10 Smyth volumes is fetched and cached on disk, with an honest User-Agent and polite rate limiting
-- [ ] #2 OCR text for each volume is split into individual per-document entries (letters, essays, etc.) with enough reliability to spot-check correctness
-- [ ] #3 Each split document is matched to its Founders Online record by date + title/correspondent, conservatively: an ambiguous or low-confidence match is left unmatched rather than guessed
-- [ ] #4 Matched text is merged into the corresponding record's `text` field via the existing prisma/seed/pipeline/text-merge.ts mechanism, with the Internet Archive source URL added to that record's references
-- [ ] #5 A report documents match rate, OCR quality issues found, and the count of documents left unmatched
-- [ ] #6 Re-running the matching/merge step against the same cached OCR input is deterministic (no network, no randomness)
-- [ ] #7 Unit tests cover the document-splitting and matching logic
-- [ ] #8 The regenerated seed still passes the existing invariants: every record keeps its Founders Online reference, no duplicate permalinks introduced
+- [x] #1 Internet Archive OCR text (_djvu.txt) for all 10 Smyth volumes is fetched and cached on disk, with an honest User-Agent and polite rate limiting
+- [x] #2 OCR text for each volume is split into individual per-document entries (letters, essays, etc.) with enough reliability to spot-check correctness
+- [x] #3 Each split document is matched to its Founders Online record by date + title/correspondent, conservatively: an ambiguous or low-confidence match is left unmatched rather than guessed
+- [x] #4 Matched text is merged into the corresponding record's `text` field via the existing prisma/seed/pipeline/text-merge.ts mechanism, with the Internet Archive source URL added to that record's references
+- [x] #5 A report documents match rate, OCR quality issues found, and the count of documents left unmatched
+- [x] #6 Re-running the matching/merge step against the same cached OCR input is deterministic (no network, no randomness)
+- [x] #7 Unit tests cover the document-splitting and matching logic
+- [x] #8 The regenerated seed still passes the existing invariants: every record keeps its Founders Online reference, no duplicate permalinks introduced
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Pipeline in prisma/seed/sources/smyth/ (fetch, split, match, build). 1,743 documents split, 1,005 matched and merged; records with full text went from 17 to 1,022 of 24,550 (0.1% to 4.2%). Results: prisma/seed/sources/smyth/REPORT.md.
+
+Not measured: precision against Founders Online transcriptions. founders.archives.gov answers scripted requests with an AWS WAF challenge (HTTP 202, x-amzn-waf-action: challenge), and it was not bypassed. SPOT-CHECK.md has a fixed sample of 40 matches with record links for checking in a browser. A separate review pass read about 60 matches and all title-rule matches and found no wrong match after fixes.
+
+To rebuild: tsx prisma/seed/sources/smyth/fetch.ts, then build.ts, then prisma/seed/generate.ts. The OCR cache is uncommitted, in .workflow/scratch/smyth/. Status left for the owner to change.
+<!-- SECTION:NOTES:END -->
