@@ -161,6 +161,16 @@
       - { id: note, label: Note, kind: text, writeTo: note }
       - { id: refs, label: Sources, kind: list, writeTo: references }
 
+- code: people
+  description: A nation, tribe or other collective of persons that the text names (not an adjective of nationality).
+  color: '#b5651d'
+  iconSeed: people
+  layout:
+    fields:
+      - { id: title, label: Name, kind: text, writeTo: title }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
 - code: place
   description: A country, state, county, city, river, mountain or other named place.
   color: '#2a9d8f'

@@ -1,0 +1,2209 @@
+# Gazetteer for the Jefferson corpus. Curated by hand from the capitalised names in the cleaned text.
+# Only names, types and variants are recorded here; no biographical facts.
+# `scopedAliases` apply only inside the named part of the text and may resolve a surface that is
+# listed under `ambiguous` elsewhere. Matching is case-sensitive and by whole words (link.ts).
+
+entities:
+  - key: thomas-jefferson
+    name: 'Thomas Jefferson'
+    type: person
+    aliases: ['Mr. Jefferson', 'THOMAS JEFFERSON', 'Honorable Thomas Jefferson', 'Th. Jefferson']
+    scopedAliases:
+      autobiography: ['Jefferson']
+      anas: ['Jefferson']
+      editorial: ['Jefferson']
+  - key: mrs-jefferson
+    name: 'Mrs. Jefferson'
+    type: person
+  - key: thomas-jefferson-randolph
+    name: 'Thomas Jefferson Randolph'
+    type: person
+  - key: george-washington
+    name: 'George Washington'
+    type: person
+    aliases:
+      [
+        'General Washington',
+        'President Washington',
+        'Mr. Washington',
+        'Gen. Washington',
+        'GEORGE WASHINGTON',
+        'His Excellency General Washington',
+      ]
+  - key: mrs-washington
+    name: 'Mrs. Washington'
+    type: person
+  - key: major-washington
+    name: 'Major Washington'
+    type: person
+  - key: alexander-hamilton
+    name: 'Alexander Hamilton'
+    type: person
+    aliases:
+      [
+        'Colonel Hamilton',
+        'Mr. Hamilton',
+        'A. Hamilton',
+        'Monsieur Hamilton',
+        'Colonel A. Hamilton',
+        'Secretary Hamilton',
+        'ALEXANDER HAMILTON',
+      ]
+    scopedAliases:
+      anas: ['Hamilton']
+  - key: duke-hamilton
+    name: 'Duke Hamilton'
+    type: person
+  - key: henry-knox
+    name: 'Henry Knox'
+    type: person
+    aliases: ['General Knox', 'Knox', 'Mr. Knox', 'Secretary Knox']
+  - key: edmund-randolph
+    name: 'Edmund Randolph'
+    type: person
+    aliases:
+      [
+        'E. Randolph',
+        'Edmond Randolph',
+        'Mr. E. Randolph',
+        'EDMUND RANDOLPH',
+        'Attorney General Randolph',
+      ]
+    scopedAliases:
+      anas: ['Randolph', 'Mr. Randolph']
+  - key: peyton-randolph
+    name: 'Peyton Randolph'
+    type: person
+    aliases: ['Honorable Peyton Randolph', 'Mr. Peyton Randolph', 'Peyton R.']
+    scopedAliases:
+      autobiography: ['Randolph', 'Mr. Randolph']
+  - key: isham-randolph
+    name: 'Isham Randolph'
+    type: person
+  - key: jane-randolph
+    name: 'Jane Randolph'
+    type: person
+  - key: thomas-mann-randolph
+    name: 'Thomas Mann Randolph'
+    type: person
+    aliases: ['Mr. T. M. Randolph', 'T. M. Randolph']
+  - key: edmond-charles-genet
+    name: 'Edmond Charles Genet'
+    type: person
+    aliases: ['Genet', 'Mr. Genet', 'Citoyen Genet']
+  - key: george-hammond
+    name: 'George Hammond'
+    type: person
+    aliases: ['Hammond', 'Mr. Hammond']
+  - key: aaron-burr
+    name: 'Aaron Burr'
+    type: person
+    aliases: ['Burr', 'Colonel Burr', 'Mr. Burr']
+  - key: james-madison
+    name: 'James Madison'
+    type: person
+    aliases: ['Mr. Madison', 'J. Madison']
+    scopedAliases:
+      autobiography: ['Madison']
+      anas: ['Madison']
+  - key: james-monroe
+    name: 'James Monroe'
+    type: person
+    aliases: ['Monroe', 'Colonel Monroe', 'Col. Monroe', 'Mr. Monroe', 'james Monroe']
+  - key: john-adams
+    name: 'John Adams'
+    type: person
+    aliases:
+      [
+        'Mr. Adams',
+        'Mr. John Adams',
+        'J. Adams',
+        'President Adams',
+        'Vice-President Adams',
+        'Vice President Adams',
+      ]
+  - key: samuel-adams
+    name: 'Samuel Adams'
+    type: person
+    aliases: ['Mr. Samuel Adams']
+  - key: benjamin-franklin
+    name: 'Benjamin Franklin'
+    type: person
+    aliases: ['Dr. Franklin', 'Doctor Franklin', 'Mr. Franklin', 'Dr. Benjamin Franklin']
+    scopedAliases:
+      autobiography: ['Franklin']
+      anas: ['Franklin']
+  - key: william-temple-franklin
+    name: 'William Temple Franklin'
+    type: person
+    aliases: ['Temple Franklin']
+  - key: john-jay
+    name: 'John Jay'
+    type: person
+    aliases: ['Jay', 'Mr. Jay', 'Governor Jay', 'Chief Justice Jay']
+  - key: richard-henry-lee
+    name: 'Richard Henry Lee'
+    type: person
+    aliases: ['R. H. Lee', 'Richard H. Lee', 'Mr. R. H. Lee']
+  - key: francis-lightfoot-lee
+    name: 'Francis Lightfoot Lee'
+    type: person
+    aliases: ['Francis L. Lee', 'Fr. L. Lee']
+  - key: thomas-ludwell-lee
+    name: 'Thomas Ludwell Lee'
+    type: person
+    aliases: ['Thomas L. Lee']
+  - key: arthur-lee
+    name: 'Arthur Lee'
+    type: person
+    aliases: ['Dr. Arthur Lee']
+  - key: henry-lee
+    name: 'Henry Lee'
+    type: person
+    aliases: ['Governor Lee']
+  - key: robert-morris
+    name: 'Robert Morris'
+    type: person
+    aliases: ['the Financier']
+  - key: gouverneur-morris
+    name: 'Gouverneur Morris'
+    type: person
+    aliases: ['G. Morris', 'Gov. Morris']
+  - key: lewis-morris
+    name: 'Lewis Morris'
+    type: person
+  - key: robert-r-livingston
+    name: 'Robert R. Livingston'
+    type: person
+    aliases: ['Chancellor Livingston']
+  - key: william-livingston
+    name: 'William Livingston'
+    type: person
+    aliases: ['Governor Livingston', 'Governor W. Livingston']
+  - key: edward-livingston
+    name: 'Edward Livingston'
+    type: person
+  - key: brockhurst-livingston
+    name: 'Brockhurst Livingston'
+    type: person
+  - key: patrick-henry
+    name: 'Patrick Henry'
+    type: person
+    aliases: ['Mr. Patrick Henry']
+    scopedAliases:
+      autobiography: ['Henry', 'Mr. Henry']
+  - key: prince-william-henry
+    name: 'Prince William Henry'
+    type: person
+  - key: george-clinton
+    name: 'George Clinton'
+    type: person
+    aliases: ['Governor Clinton']
+  - key: dewitt-clinton
+    name: 'DeWitt Clinton'
+    type: person
+  - key: timothy-pickering
+    name: 'Timothy Pickering'
+    type: person
+    aliases: ['Mr. Pickering']
+    scopedAliases:
+      anas: ['Pickering']
+  - key: john-pickering
+    name: 'John Pickering'
+    type: person
+    aliases: ['Judge Pickering']
+  - key: oliver-wolcott
+    name: 'Oliver Wolcott'
+    type: person
+    aliases: ['Wolcott']
+  - key: james-mchenry
+    name: 'James McHenry'
+    type: person
+    aliases: ['McHenry']
+  - key: albert-gallatin
+    name: 'Albert Gallatin'
+    type: person
+    aliases: ['Mr. Gallatin', 'Gallatin']
+  - key: henry-dearborne
+    name: 'Henry Dearborne'
+    type: person
+    aliases: ['General Dearborne', 'Dearborne']
+  - key: robert-smith
+    name: 'Robert Smith'
+    type: person
+  - key: samuel-smith
+    name: 'Samuel Smith'
+    type: person
+    aliases: ['General Samuel Smith', 'General Smith', 'General S. Smith']
+  - key: william-stephens-smith
+    name: 'William Stephens Smith'
+    type: person
+    aliases: ['Colonel W. S. Smith']
+  - key: melancthon-smith
+    name: 'Melancthon Smith'
+    type: person
+  - key: john-smith
+    name: 'John Smith'
+    type: person
+    aliases: ['Captain Smith', 'Captain John Smith']
+  - key: james-wilkinson
+    name: 'James Wilkinson'
+    type: person
+    aliases: ['General Wilkinson', 'Wilkinson']
+  - key: jean-baptiste-ternant
+    name: 'Jean Baptiste Ternant'
+    type: person
+    aliases: ['Ternant', 'Mr. Ternant']
+  - key: tobias-lear
+    name: 'Tobias Lear'
+    type: person
+    aliases: ['Lear', 'Mr. Lear']
+  - key: john-beckley
+    name: 'John Beckley'
+    type: person
+    aliases: ['Beckley', 'Mr. Beckley']
+  - key: john-fenno
+    name: 'John Fenno'
+    type: person
+    aliases: ['Fenno']
+  - key: philip-freneau
+    name: 'Philip Freneau'
+    type: person
+    aliases: ['Freneau', 'Mr. Freneau']
+  - key: benjamin-rush
+    name: 'Benjamin Rush'
+    type: person
+    aliases: ['Dr. Rush', 'Doctor Rush']
+    scopedAliases:
+      autobiography: ['Rush']
+      anas: ['Rush']
+  - key: robert-carter-nicholas
+    name: 'Robert Carter Nicholas'
+    type: person
+    aliases: ['Mr. Robert Carter Nicholas']
+    scopedAliases:
+      autobiography: ['Nicholas', 'Mr. Nicholas']
+  - key: wilson-cary-nicholas
+    name: 'Wilson Cary Nicholas'
+    type: person
+    aliases: ['W. C. Nicholas']
+  - key: john-nicholas
+    name: 'John Nicholas'
+    type: person
+    aliases: ['J. Nicholas']
+  - key: edmund-pendleton
+    name: 'Edmund Pendleton'
+    type: person
+    scopedAliases:
+      autobiography: ['Mr. Pendleton', 'Pendleton']
+  - key: george-wythe
+    name: 'George Wythe'
+    type: person
+    aliases: ['Mr. Wythe', 'Wythe']
+  - key: george-mason
+    name: 'George Mason'
+    type: person
+    scopedAliases:
+      autobiography: ['Mr. Mason']
+  - key: stevens-thompson-mason
+    name: 'Stevens Thompson Mason'
+    type: person
+    aliases: ['Honorable Stevens Thompson Mason']
+  - key: benjamin-harrison
+    name: 'Benjamin Harrison'
+    type: person
+    aliases: ['Ben Harrison']
+    scopedAliases:
+      autobiography: ['Colonel Harrison', 'Mr. Harrison']
+  - key: john-dickinson
+    name: 'John Dickinson'
+    type: person
+    scopedAliases:
+      autobiography: ['Mr. Dickinson', 'Dickinson']
+  - key: edward-rutledge
+    name: 'Edward Rutledge'
+    type: person
+    aliases: ['E. Rutledge']
+  - key: john-rutledge
+    name: 'John Rutledge'
+    type: person
+  - key: roger-sherman
+    name: 'Roger Sherman'
+    type: person
+    scopedAliases:
+      autobiography: ['Mr. Sherman']
+  - key: elbridge-gerry
+    name: 'Elbridge Gerry'
+    type: person
+    scopedAliases:
+      autobiography: ['Mr. Gerry', 'Gerry']
+      anas: ['Gerry']
+  - key: thomas-pinckney
+    name: 'Thomas Pinckney'
+    type: person
+  - key: charles-cotesworth-pinckney
+    name: 'Charles Cotesworth Pinckney'
+    type: person
+    aliases: ['General Pinckney']
+  - key: james-wilson
+    name: 'James Wilson'
+    type: person
+    aliases: ['Judge Wilson']
+    scopedAliases:
+      autobiography: ['Mr. Wilson']
+  - key: richard-bland
+    name: 'Richard Bland'
+    type: person
+  - key: henry-laurens
+    name: 'Henry Laurens'
+    type: person
+    aliases: ['Mr. Laurens']
+  - key: thomas-nelson
+    name: 'Thomas Nelson'
+    type: person
+    aliases: ['General Nelson']
+  - key: louis-xvi
+    name: 'Louis XVI'
+    type: person
+    aliases: ['Louis the Sixteenth']
+  - key: louis-xiv
+    name: 'Louis XIV'
+    type: person
+  - key: comte-de-vergennes
+    name: 'Comte de Vergennes'
+    type: person
+    aliases: ['Count de Vergennes', 'Monsieur le Comte de Vergennes', 'Vergennes']
+  - key: comte-de-montmorin
+    name: 'Comte de Montmorin'
+    type: person
+    aliases: ['Count de Montmorin', 'Count Montmorin', 'Montmorin']
+  - key: marquis-de-lafayette
+    name: 'Marquis de Lafayette'
+    type: person
+    aliases: ['Marquis de La Fayette', 'La Fayette', 'M. de La Fayette', 'Marquis Fayette']
+  - key: jacques-necker
+    name: 'Jacques Necker'
+    type: person
+    aliases: ['Necker', 'Monsieur Necker']
+  - key: comte-de-buffon
+    name: 'Comte de Buffon'
+    type: person
+    aliases: ['Buffon', 'Count de Buffon', 'Monsieur de Buffon', 'M. de Buffon']
+  - key: monsieur-daubenton
+    name: "Monsieur D'Aubenton"
+    type: person
+    aliases: ['Monsieur D’Aubenton', "D'Aubenton", 'D’Aubenton']
+  - key: abb-raynal
+    name: 'Abbé Raynal'
+    type: person
+    aliases: ['Raynal']
+  - key: voltaire
+    name: 'Voltaire'
+    type: person
+  - key: marquis-de-barb-marbois
+    name: 'Marquis de Barbé-Marbois'
+    type: person
+    aliases: ['Monsieur de Marbois', 'Marbois']
+  - key: comte-de-la-luzerne
+    name: 'Comte de La Luzerne'
+    type: person
+    aliases: ['Count de La Luzerne', 'Marquis de La Luzerne', 'Luzerne']
+  - key: lord-dunmore
+    name: 'Lord Dunmore'
+    type: person
+    aliases: ['Dunmore']
+  - key: logan
+    name: 'Logan'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      notes-on-virginia: ['Logan', 'Captain Logan']
+  - key: michael-cresap
+    name: 'Michael Cresap'
+    type: person
+    aliases:
+      [
+        'Cresap',
+        'Captain Michael Cresap',
+        'Captain Cresap',
+        'Capt. Cresap',
+        'Capt. Michael Cresap',
+        'Colonel Cresap',
+        'Col. Cresap',
+        'Mr. Cresap',
+      ]
+  - key: opechancanough
+    name: 'Opechancanough'
+    type: person
+  - key: colonel-byrd
+    name: 'Colonel Byrd'
+    type: person
+    aliases: ['Byrd', 'William Byrd']
+  - key: sir-walter-raleigh
+    name: 'Sir Walter Raleigh'
+    type: person
+    aliases: ['Sir Walter']
+  - key: william-penn
+    name: 'William Penn'
+    type: person
+    aliases: ['Penn']
+  - key: lord-baltimore
+    name: 'Lord Baltimore'
+    type: person
+  - key: duke-of-york
+    name: 'Duke of York'
+    type: person
+  - key: charles-ii
+    name: 'Charles II'
+    type: person
+  - key: queen-anne
+    name: 'Queen Anne'
+    type: person
+  - key: lord-cornbury
+    name: 'Lord Cornbury'
+    type: person
+  - key: lord-fairfax
+    name: 'Lord Fairfax'
+    type: person
+  - key: lord-culpepper
+    name: 'Lord Culpepper'
+    type: person
+  - key: lord-berkeley
+    name: 'Lord Berkeley'
+    type: person
+  - key: sir-william-berkeley
+    name: 'Sir William Berkeley'
+    type: person
+  - key: sir-george-carteret
+    name: 'Sir George Carteret'
+    type: person
+    aliases: ['Sir George Cateret']
+  - key: sir-robert-carre
+    name: 'Sir Robert Carre'
+    type: person
+  - key: colonel-nichols
+    name: 'Colonel Nichols'
+    type: person
+  - key: isaac-newton
+    name: 'Isaac Newton'
+    type: person
+    aliases: ['Sir Isaac Newton']
+  - key: john-milton
+    name: 'John Milton'
+    type: person
+    scopedAliases:
+      editorial: ['Milton']
+      notes-on-virginia: ['Milton']
+  - key: homer
+    name: 'Homer'
+    type: person
+  - key: virgil
+    name: 'Virgil'
+    type: person
+  - key: cicero
+    name: 'Cicero'
+    type: person
+  - key: blackstone
+    name: 'Blackstone'
+    type: person
+  - key: lord-coke
+    name: 'Lord Coke'
+    type: person
+  - key: bracton
+    name: 'Bracton'
+    type: person
+  - key: beccaria
+    name: 'Beccaria'
+    type: person
+  - key: rittenhouse
+    name: 'Rittenhouse'
+    type: person
+  - key: galileo
+    name: 'Galileo'
+    type: person
+  - key: peter-kalm
+    name: 'Peter Kalm'
+    type: person
+    aliases: ['Kalm']
+  - key: don-ulloa
+    name: 'Don Ulloa'
+    type: person
+    aliases: ['Ulloa']
+  - key: mark-catesby
+    name: 'Mark Catesby'
+    type: person
+    aliases: ['Catesby']
+  - key: stith
+    name: 'Stith'
+    type: person
+  - key: beverley
+    name: 'Beverley'
+    type: person
+  - key: andrew-lewis
+    name: 'Andrew Lewis'
+    type: person
+    aliases: ['Colonel Andrew Lewis', 'General Lewis', 'Colonel Lewis']
+  - key: john-gibson
+    name: 'John Gibson'
+    type: person
+    aliases: ['General Gibson']
+  - key: ebenezer-zane
+    name: 'Ebenezer Zane'
+    type: person
+    aliases: ['Col. Ebenezer Zane', 'Zane']
+  - key: harry-innes
+    name: 'Harry Innes'
+    type: person
+    aliases: ['Judge Innes', 'HARRY INNES', 'Honorable Judge Innes']
+  - key: john-heckewelder
+    name: 'John Heckewelder'
+    type: person
+    aliases: ['Heckewelder', 'Mr. John Heckewelder']
+  - key: william-mkee
+    name: "William M'Kee"
+    type: person
+    aliases: ["Colonel William M'Kee", 'Colonel William M’Kee', "Col. William M'Kee"]
+  - key: general-mercer
+    name: 'General Mercer'
+    type: person
+  - key: andrew-rodgers
+    name: 'Andrew Rodgers'
+    type: person
+    aliases: ['Captain Andrew Rodgers']
+  - key: james-chambers
+    name: 'James Chambers'
+    type: person
+  - key: john-sappington
+    name: 'John Sappington'
+    type: person
+    aliases: ['JOHN SAPPINGTON']
+  - key: charles-polke
+    name: 'Charles Polke'
+    type: person
+    aliases: ['Polke']
+  - key: william-robinson
+    name: 'William Robinson'
+    type: person
+  - key: john-anderson
+    name: 'John Anderson'
+    type: person
+  - key: william-huston
+    name: 'William Huston'
+    type: person
+  - key: count-zinzendorf
+    name: 'Count Zinzendorf'
+    type: person
+    aliases: ['Zinzendorf']
+  - key: edward-king
+    name: 'Edward King'
+    type: person
+  - key: daniel-great-house
+    name: 'Daniel Great-house'
+    type: person
+  - key: joshua-baker
+    name: 'Joshua Baker'
+    type: person
+  - key: daniel-webster
+    name: 'Daniel Webster'
+    type: person
+    aliases: ['Webster']
+  - key: abraham-lincoln
+    name: 'Abraham Lincoln'
+    type: person
+    scopedAliases:
+      editorial: ['Lincoln']
+  - key: james-c-carter
+    name: 'James C. Carter'
+    type: person
+  - key: matthew-lyon
+    name: 'Matthew Lyon'
+    type: person
+    aliases: ['Colonel Lyon']
+  - key: jean-pierre-collot
+    name: 'Jean Pierre Collot'
+    type: person
+    aliases: ['General Collot']
+  - key: governor-galbaud
+    name: 'Governor Galbaud'
+    type: person
+    aliases: ['Galbaud']
+  - key: governor-mifflin
+    name: 'Governor Mifflin'
+    type: person
+  - key: governor-simcoe
+    name: 'Governor Simcoe'
+    type: person
+    aliases: ['Simcoe']
+  - key: sir-john-temple
+    name: 'Sir John Temple'
+    type: person
+  - key: general-greene
+    name: 'General Greene'
+    type: person
+  - key: tench-coxe
+    name: 'Tench Coxe'
+    type: person
+    aliases: ['Tenche Coxe', 'Coxe']
+  - key: colonel-hitchburn
+    name: 'Colonel Hitchburn'
+    type: person
+    aliases: ['Hitchburn']
+  - key: colonel-humphreys
+    name: 'Colonel Humphreys'
+    type: person
+    aliases: ['Humphreys']
+  - key: baldwin
+    name: 'Baldwin'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Baldwin']
+  - key: izard
+    name: 'Izard'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Izard', 'Mr. Izard']
+  - key: michaud
+    name: 'Michaud'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Michaud']
+  - key: goodhue
+    name: 'Goodhue'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Goodhue', 'Mr. Goodhue']
+  - key: decatur
+    name: 'Decatur'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Decatur', 'Captain Decatur']
+  - key: erskine
+    name: 'Erskine'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Erskine', 'Mr. Erskine']
+  - key: canning
+    name: 'Canning'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Canning', 'Mr. Canning']
+  - key: hodgen
+    name: 'Hodgen'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Hodgen']
+  - key: sweezy
+    name: 'Sweezy'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Sweezy']
+  - key: talleyrand
+    name: 'Talleyrand'
+    type: person
+  - key: fitzsimmons
+    name: 'Fitzsimmons'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Fitzsimmons']
+  - key: bayard
+    name: 'Bayard'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Bayard', 'Mr. Bayard']
+  - key: dexter
+    name: 'Dexter'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Dexter']
+  - key: cabot
+    name: 'Cabot'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Cabot']
+  - key: harper
+    name: 'Harper'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Harper']
+  - key: bonaparte
+    name: 'Bonaparte'
+    type: person
+  - key: ross
+    name: 'Ross'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Ross', 'Mr. Ross']
+  - key: liston
+    name: 'Liston'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Liston', 'Mr. Liston']
+  - key: wirt
+    name: 'Wirt'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      autobiography: ['Wirt', 'Mr. Wirt']
+  - key: samuel-a-wells
+    name: 'Samuel A. Wells'
+    type: person
+    aliases: ['Samuel Adams Wells']
+    scopedAliases:
+      autobiography: ['Wells']
+  - key: cabell
+    name: 'Cabell'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      editorial: ['Cabell']
+  - key: hale
+    name: 'Hale'
+    type: person
+  - key: prince-of-orange
+    name: 'Prince of Orange'
+    type: person
+  - key: duke-of-brunswick
+    name: 'Duke of Brunswick'
+    type: person
+  - key: duke-of-orleans
+    name: 'Duke of Orleans'
+    type: person
+  - key: captain-cook
+    name: 'Captain Cook'
+    type: person
+  - key: governor-claiborne
+    name: 'Governor Claiborne'
+    type: person
+    aliases: ['Claiborne']
+  - key: general-gage
+    name: 'General Gage'
+    type: person
+  - key: marshal-de-broglio
+    name: 'Marshal de Broglio'
+    type: person
+  - key: marquis-de-verac
+    name: 'Marquis de Verac'
+    type: person
+    aliases: ['Monsieur le Marquis de Verac']
+  - key: bailly
+    name: 'Bailly'
+    type: person
+    aliases: ['Monsieur Bailly']
+  - key: foulon
+    name: 'Foulon'
+    type: person
+  - key: launay
+    name: 'Launay'
+    type: person
+  - key: monsieur-de-corny
+    name: 'Monsieur de Corny'
+    type: person
+    aliases: ['Corny']
+  - key: vauguyon
+    name: 'Vauguyon'
+    type: person
+  - key: carmichael
+    name: 'Carmichael'
+    type: person
+  - key: calonne
+    name: 'Calonne'
+    type: person
+  - key: euclid
+    name: 'Euclid'
+    type: person
+  - key: fry
+    name: 'Fry'
+    type: person
+  - key: colonel-franks
+    name: 'Colonel Franks'
+    type: person
+  - key: colonel-gunn
+    name: 'Colonel Gunn'
+    type: person
+    aliases: ['Gunn']
+  - key: cribs
+    name: 'Cribs'
+    type: person
+  - key: lawsing
+    name: 'Lawsing'
+    type: person
+  - key: john-saunderson
+    name: 'John Saunderson'
+    type: person
+  - key: thomas-mckean
+    name: 'Thomas McKean'
+    type: person
+    aliases: ["Thomas M'Kean"]
+    scopedAliases:
+      anas: ['McKean']
+  - key: william-mcorkle
+    name: "William M'Corkle"
+    type: person
+    aliases: ['William M’Corkle']
+  - key: martha-skelton
+    name: 'Martha Skelton'
+    type: person
+  - key: bathurst-skelton
+    name: 'Bathurst Skelton'
+    type: person
+  - key: john-wayles
+    name: 'John Wayles'
+    type: person
+    aliases: ['Wayles']
+  - key: james-mercer
+    name: 'James Mercer'
+    type: person
+  - key: parson-hurt
+    name: 'Parson Hurt'
+    type: person
+  - key: reverend-mr-maury
+    name: 'Reverend Mr. Maury'
+    type: person
+  - key: governor-fauquier
+    name: 'Governor Fauquier'
+    type: person
+  - key: lord-botetourt
+    name: 'Lord Botetourt'
+    type: person
+  - key: sir-william-temple
+    name: 'Sir William Temple'
+    type: person
+  - key: witherspoon
+    name: 'Witherspoon'
+    type: person
+  - key: rushworth
+    name: 'Rushworth'
+    type: person
+  - key: scamozzi
+    name: 'Scamozzi'
+    type: person
+  - key: justinian
+    name: 'Justinian'
+    type: person
+  - key: choiseul-gouffier
+    name: 'Choiseul Gouffier'
+    type: person
+  - key: steuben
+    name: 'Steuben'
+    type: person
+  - key: swartwout
+    name: 'Swartwout'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Swartwout']
+  - key: hillhouse
+    name: 'Hillhouse'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Hillhouse']
+  - key: tazewell
+    name: 'Tazewell'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Tazewell']
+  - key: otis
+    name: 'Otis'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Otis']
+  - key: breckenridge
+    name: 'Breckenridge'
+    type: person
+    nameIsAlias: false
+    aliases: ['Judge Breckenridge']
+    scopedAliases:
+      anas: ['Breckenridge']
+  - key: stephen-higginson
+    name: 'Stephen Higginson'
+    type: person
+    aliases: ['Higginson']
+  - key: cheetham
+    name: 'Cheetham'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Cheetham']
+  - key: erving
+    name: 'Erving'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Erving']
+  - key: ogden
+    name: 'Ogden'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Ogden']
+  - key: granger
+    name: 'Granger'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Granger']
+  - key: preble
+    name: 'Preble'
+    type: person
+    nameIsAlias: false
+    aliases: ['Commodore Preble', 'Captains Preble']
+    scopedAliases:
+      anas: ['Preble']
+  - key: lowell
+    name: 'Lowell'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Lowell']
+  - key: shippen
+    name: 'Shippen'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Shippen']
+  - key: gardoqui
+    name: 'Gardoqui'
+    type: person
+  - key: rufus-king
+    name: 'Rufus King'
+    type: person
+  - key: ellsworth
+    name: 'Ellsworth'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Ellsworth']
+  - key: dayton
+    name: 'Dayton'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Dayton']
+  - key: moultrie
+    name: 'Moultrie'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Moultrie']
+  - key: sedgwick
+    name: 'Sedgwick'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Sedgwick']
+  - key: giles
+    name: 'Giles'
+    type: person
+    nameIsAlias: false
+    scopedAliases:
+      anas: ['Giles']
+  - key: volney
+    name: 'Volney'
+    type: person
+  - key: vattel
+    name: 'Vattel'
+    type: person
+  - key: white-eyes
+    name: 'White Eyes'
+    type: person
+  - key: shikellemus
+    name: 'Shikellemus'
+    type: person
+  - key: samuel-shannon
+    name: 'Samuel Shannon'
+    type: person
+  - key: mann-page
+    name: 'Mann Page'
+    type: person
+  - key: richard-hartshorne
+    name: 'Richard Hartshorne'
+    type: person
+  - key: david-riddick
+    name: 'David Riddick'
+    type: person
+    aliases: ['David Reddick']
+  - key: captain-hutchins
+    name: 'Captain Hutchins'
+    type: person
+  - key: sir-thomas-gates
+    name: 'Sir Thomas Gates'
+    type: person
+  - key: cromwell
+    name: 'Cromwell'
+    type: person
+  - key: sir-william-alexander
+    name: 'Sir William Alexander'
+    type: person
+  - key: sir-william-moreton
+    name: 'Sir William Moreton'
+    type: person
+  - key: nalson
+    name: 'Nalson'
+    type: person
+  - key: prynne
+    name: 'Prynne'
+    type: person
+  - key: fauquier
+    name: 'Fauquier'
+    type: person
+  - key: gilmer
+    name: 'Gilmer'
+    type: person
+  - key: calhoun
+    name: 'Calhoun'
+    type: person
+  - key: ralph-waldo-emerson
+    name: 'Ralph Waldo Emerson'
+    type: person
+  - key: virginia
+    name: 'Virginia'
+    type: place
+  - key: commonwealth-of-virginia
+    name: 'Commonwealth of Virginia'
+    type: place
+  - key: state-of-virginia
+    name: 'State of Virginia'
+    type: place
+  - key: university-of-virginia
+    name: 'University of Virginia'
+    type: place
+  - key: notes-on-virginia
+    name: 'Notes on Virginia'
+    type: place
+  - key: great-britain
+    name: 'Great Britain'
+    type: place
+    aliases: ['Britain']
+  - key: england
+    name: 'England'
+    type: place
+  - key: scotland
+    name: 'Scotland'
+    type: place
+  - key: ireland
+    name: 'Ireland'
+    type: place
+  - key: wales
+    name: 'Wales'
+    type: place
+  - key: france
+    name: 'France'
+    type: place
+  - key: spain
+    name: 'Spain'
+    type: place
+  - key: portugal
+    name: 'Portugal'
+    type: place
+  - key: holland
+    name: 'Holland'
+    type: place
+  - key: united-netherlands
+    name: 'United Netherlands'
+    type: place
+  - key: denmark
+    name: 'Denmark'
+    type: place
+  - key: sweden
+    name: 'Sweden'
+    type: place
+  - key: prussia
+    name: 'Prussia'
+    type: place
+  - key: russia
+    name: 'Russia'
+    type: place
+  - key: germany
+    name: 'Germany'
+    type: place
+  - key: austria
+    name: 'Austria'
+    type: place
+  - key: poland
+    name: 'Poland'
+    type: place
+  - key: venice
+    name: 'Venice'
+    type: place
+  - key: tuscany
+    name: 'Tuscany'
+    type: place
+  - key: naples
+    name: 'Naples'
+    type: place
+  - key: genoa
+    name: 'Genoa'
+    type: place
+  - key: milan
+    name: 'Milan'
+    type: place
+  - key: piedmont
+    name: 'Piedmont'
+    type: place
+  - key: egypt
+    name: 'Egypt'
+    type: place
+  - key: mexico
+    name: 'Mexico'
+    type: place
+  - key: peru
+    name: 'Peru'
+    type: place
+  - key: louisiana
+    name: 'Louisiana'
+    type: place
+  - key: florida
+    name: 'Florida'
+    type: place
+  - key: cuba
+    name: 'Cuba'
+    type: place
+  - key: jamaica
+    name: 'Jamaica'
+    type: place
+  - key: barbadoes
+    name: 'Barbadoes'
+    type: place
+  - key: newfoundland
+    name: 'Newfoundland'
+    type: place
+  - key: nova-scotia
+    name: 'Nova Scotia'
+    type: place
+  - key: africa
+    name: 'Africa'
+    type: place
+  - key: asia
+    name: 'Asia'
+    type: place
+  - key: europe
+    name: 'Europe'
+    type: place
+  - key: america
+    name: 'America'
+    type: place
+  - key: north-america
+    name: 'North America'
+    type: place
+  - key: south-america
+    name: 'South America'
+    type: place
+  - key: west-indies
+    name: 'West Indies'
+    type: place
+  - key: united-states
+    name: 'United States'
+    type: place
+    aliases: ['United States of America', 'American States', 'States of America']
+  - key: massachusetts
+    name: 'Massachusetts'
+    type: place
+  - key: connecticut
+    name: 'Connecticut'
+    type: place
+  - key: rhode-island
+    name: 'Rhode Island'
+    type: place
+  - key: new-hampshire
+    name: 'New Hampshire'
+    type: place
+  - key: new-york
+    name: 'New York'
+    type: place
+  - key: new-jersey
+    name: 'New Jersey'
+    type: place
+    aliases: ['State of New Jersey']
+  - key: east-jersey
+    name: 'East Jersey'
+    type: place
+    aliases: ['East New Jersey']
+  - key: west-jersey
+    name: 'West Jersey'
+    type: place
+    aliases: ['West New Jersey']
+  - key: pennsylvania
+    name: 'Pennsylvania'
+    type: place
+    aliases: ['State of Pennsylvania']
+  - key: maryland
+    name: 'Maryland'
+    type: place
+  - key: north-carolina
+    name: 'North Carolina'
+    type: place
+  - key: south-carolina
+    name: 'South Carolina'
+    type: place
+  - key: georgia
+    name: 'Georgia'
+    type: place
+  - key: kentucky
+    name: 'Kentucky'
+    type: place
+  - key: new-england
+    name: 'New England'
+    type: place
+    aliases: ['New-England']
+  - key: carolina
+    name: 'Carolina'
+    type: place
+  - key: paris
+    name: 'Paris'
+    type: place
+  - key: london
+    name: 'London'
+    type: place
+  - key: versailles
+    name: 'Versailles'
+    type: place
+  - key: madrid
+    name: 'Madrid'
+    type: place
+  - key: lisbon
+    name: 'Lisbon'
+    type: place
+  - key: rome
+    name: 'Rome'
+    type: place
+  - key: amsterdam
+    name: 'Amsterdam'
+    type: place
+  - key: the-hague
+    name: 'The Hague'
+    type: place
+    aliases: ['Hague']
+  - key: berlin
+    name: 'Berlin'
+    type: place
+  - key: algiers
+    name: 'Algiers'
+    type: place
+  - key: marseilles
+    name: 'Marseilles'
+    type: place
+  - key: lyons
+    name: 'Lyons'
+    type: place
+  - key: nismes
+    name: 'Nismes'
+    type: place
+  - key: nantes
+    name: 'Nantes'
+    type: place
+  - key: strasburg
+    name: 'Strasburg'
+    type: place
+  - key: havre
+    name: 'Havre'
+    type: place
+  - key: leyden
+    name: 'Leyden'
+    type: place
+  - key: utrecht
+    name: 'Utrecht'
+    type: place
+  - key: philadelphia
+    name: 'Philadelphia'
+    type: place
+  - key: boston
+    name: 'Boston'
+    type: place
+  - key: baltimore
+    name: 'Baltimore'
+    type: place
+  - key: charleston
+    name: 'Charleston'
+    type: place
+  - key: albany
+    name: 'Albany'
+    type: place
+  - key: trenton
+    name: 'Trenton'
+    type: place
+  - key: annapolis
+    name: 'Annapolis'
+    type: place
+  - key: richmond
+    name: 'Richmond'
+    type: place
+  - key: norfolk
+    name: 'Norfolk'
+    type: place
+  - key: petersburg
+    name: 'Petersburg'
+    type: place
+  - key: alexandria
+    name: 'Alexandria'
+    type: place
+  - key: williamsburg
+    name: 'Williamsburg'
+    type: place
+  - key: jamestown
+    name: 'Jamestown'
+    type: place
+  - key: fredericksburg
+    name: 'Fredericksburg'
+    type: place
+  - key: georgetown
+    name: 'Georgetown'
+    type: place
+  - key: monticello
+    name: 'Monticello'
+    type: place
+    aliases: ['MONTICELLO']
+  - key: mount-vernon
+    name: 'Mount Vernon'
+    type: place
+  - key: new-orleans
+    name: 'New Orleans'
+    type: place
+  - key: natchez
+    name: 'Natchez'
+    type: place
+  - key: natchitoches
+    name: 'Natchitoches'
+    type: place
+  - key: baton-rouge
+    name: 'Baton Rouge'
+    type: place
+  - key: detroit
+    name: 'Detroit'
+    type: place
+  - key: pittsburg
+    name: 'Pittsburg'
+    type: place
+    aliases: ['Pittsburgh']
+  - key: fort-pitt
+    name: 'Fort Pitt'
+    type: place
+  - key: louisville
+    name: 'Louisville'
+    type: place
+  - key: wheeling
+    name: 'Wheeling'
+    type: place
+  - key: vincennes
+    name: 'Vincennes'
+    type: place
+  - key: kaskaskia
+    name: 'Kaskaskia'
+    type: place
+  - key: santa-f
+    name: 'Santa Fé'
+    type: place
+    aliases: ['Sante Fé']
+  - key: pensacola
+    name: 'Pensacola'
+    type: place
+  - key: mobile
+    name: 'Mobile'
+    type: place
+  - key: yorktown
+    name: 'Yorktown'
+    type: place
+  - key: plymouth
+    name: 'Plymouth'
+    type: place
+  - key: hartford
+    name: 'Hartford'
+    type: place
+  - key: lexington
+    name: 'Lexington'
+    type: place
+  - key: princeton
+    name: 'Princeton'
+    type: place
+  - key: marietta
+    name: 'Marietta'
+    type: place
+  - key: charlottesville
+    name: 'Charlottesville'
+    type: place
+  - key: tuckahoe
+    name: 'Tuckahoe'
+    type: place
+  - key: braintree
+    name: 'Braintree'
+    type: place
+  - key: staunton
+    name: 'Staunton'
+    type: place
+  - key: quebec
+    name: 'Quebec'
+    type: place
+  - key: montreal
+    name: 'Montreal'
+    type: place
+  - key: halifax
+    name: 'Halifax'
+    type: place
+  - key: niagara
+    name: 'Niagara'
+    type: place
+  - key: fort-cumberland
+    name: 'Fort Cumberland'
+    type: place
+  - key: fort-adams
+    name: 'Fort Adams'
+    type: place
+  - key: boonsborough
+    name: 'Boonsborough'
+    type: place
+  - key: great-kanhaway
+    name: 'Great Kanhaway'
+    type: place
+  - key: potomac
+    name: 'Potomac'
+    type: place
+    aliases: ['Potowmac']
+  - key: shenandoah
+    name: 'Shenandoah'
+    type: place
+  - key: rivanna
+    name: 'Rivanna'
+    type: place
+  - key: rappahannock
+    name: 'Rappahannock'
+    type: place
+    aliases: ['Rappahanoc']
+  - key: james-river
+    name: 'James River'
+    type: place
+  - key: york-river
+    name: 'York River'
+    type: place
+  - key: pamunkey
+    name: 'Pamunkey'
+    type: place
+  - key: mattapony
+    name: 'Mattapony'
+    type: place
+  - key: roanoke
+    name: 'Roanoke'
+    type: place
+  - key: appomattox
+    name: 'Appomattox'
+    type: place
+  - key: susquehanna
+    name: 'Susquehanna'
+    type: place
+    aliases: ['Susquehannah']
+  - key: monongahela
+    name: 'Monongahela'
+    type: place
+  - key: muskingum
+    name: 'Muskingum'
+    type: place
+    aliases: ['Muskinghum']
+  - key: cuyahoga
+    name: 'Cuyahoga'
+    type: place
+  - key: wabash
+    name: 'Wabash'
+    type: place
+  - key: tombigbee
+    name: 'Tombigbee'
+    type: place
+  - key: lake-erie
+    name: 'Lake Erie'
+    type: place
+  - key: lake-ontario
+    name: 'Lake Ontario'
+    type: place
+  - key: lake-champlain
+    name: 'Lake Champlain'
+    type: place
+  - key: lake-pontchartrain
+    name: 'Lake Pontchartrain'
+    type: place
+  - key: gulf-of-mexico
+    name: 'Gulf of Mexico'
+    type: place
+  - key: mediterranean
+    name: 'Mediterranean'
+    type: place
+  - key: atlantic
+    name: 'Atlantic'
+    type: place
+  - key: pacific
+    name: 'Pacific'
+    type: place
+  - key: alps
+    name: 'Alps'
+    type: place
+  - key: andes
+    name: 'Andes'
+    type: place
+  - key: blue-ridge
+    name: 'Blue Ridge'
+    type: place
+  - key: alleghany
+    name: 'Alleghany'
+    type: place
+  - key: kittatinney
+    name: 'Kittatinney'
+    type: place
+    aliases: ['Kittatinney Ridge']
+  - key: yellow-creek
+    name: 'Yellow Creek'
+    type: place
+  - key: grave-creek
+    name: 'Grave Creek'
+    type: place
+  - key: fincastle
+    name: 'Fincastle'
+    type: place
+  - key: albemarle
+    name: 'Albemarle'
+    type: place
+  - key: augusta
+    name: 'Augusta'
+    type: place
+  - key: botetourt
+    name: 'Botetourt'
+    type: place
+  - key: amherst
+    name: 'Amherst'
+    type: place
+  - key: rockbridge
+    name: 'Rockbridge'
+    type: place
+  - key: rockingham
+    name: 'Rockingham'
+    type: place
+  - key: goochland
+    name: 'Goochland'
+    type: place
+  - key: chesterfield
+    name: 'Chesterfield'
+    type: place
+  - key: washington-county
+    name: 'Washington County'
+    type: place
+    aliases:
+      [
+        'Washington county',
+        'WASHINGTON COUNTY',
+        'County of Washington',
+        'the County of Washington',
+        'Prothonotary of Washington',
+        'William Huston of Washington',
+      ]
+  - key: lincoln-county
+    name: 'Lincoln County'
+    type: place
+    aliases: ['Lincoln county']
+  - key: jefferson-county
+    name: 'Jefferson County'
+    type: place
+    aliases: ['Jefferson county']
+  - key: shelby-county
+    name: 'Shelby County'
+    type: place
+  - key: madisons-cave
+    name: "Madison's Cave"
+    type: place
+    aliases: ['Madison’s Cave', "Madison's cave", 'Madison’s cave']
+  - key: city-of-washington
+    name: 'City of Washington'
+    type: place
+    aliases: ['city of Washington']
+  - key: kentucky-river
+    name: 'Kentucky River'
+    type: place
+  - key: aix-la-chapelle
+    name: 'Aix-la-Chapelle'
+    type: place
+  - key: breda
+    name: 'Breda'
+    type: place
+  - key: little-kanhaway
+    name: 'Little Kanhaway'
+    type: place
+  - key: ohio-river
+    name: 'Ohio River'
+    type: place
+    aliases: ['Ohio river', 'the Ohio']
+  - key: state-of-ohio
+    name: 'State of Ohio'
+    type: place
+  - key: mississippi-river
+    name: 'Mississippi River'
+    type: place
+    aliases: ['Mississippi river', 'the Mississippi']
+  - key: state-of-mississippi
+    name: 'State of Mississippi'
+    type: place
+    aliases: ['Mississippi Territory']
+  - key: delaware-river
+    name: 'Delaware River'
+    type: place
+    aliases: ['Delaware river']
+  - key: state-of-delaware
+    name: 'State of Delaware'
+    type: place
+  - key: mud-island
+    name: 'Mud Island'
+    type: place
+  - key: holston
+    name: 'Holston'
+    type: place
+  - key: yohogany
+    name: 'Yohogany'
+    type: place
+  - key: frankfort
+    name: 'Frankfort'
+    type: place
+  - key: kamschatka
+    name: 'Kamschatka'
+    type: place
+  - key: barbary
+    name: 'Barbary'
+    type: place
+    aliases: ['States of Barbary']
+  - key: cowes
+    name: 'Cowes'
+    type: place
+  - key: new-haven
+    name: 'New Haven'
+    type: place
+  - key: havana
+    name: 'Havana'
+    type: place
+  - key: hamburg
+    name: 'Hamburg'
+    type: place
+  - key: passamaquoddy
+    name: 'Passamaquoddy'
+    type: place
+  - key: rio-norte
+    name: 'Rio Norte'
+    type: place
+  - key: greenbriar
+    name: 'Greenbriar'
+    type: place
+  - key: cheat
+    name: 'Cheat'
+    type: place
+  - key: big-beaver
+    name: 'Big Beaver'
+    type: place
+  - key: rockfish
+    name: 'Rockfish'
+    type: place
+  - key: seville
+    name: 'Seville'
+    type: place
+  - key: middlesex
+    name: 'Middlesex'
+    type: place
+  - key: snowdon
+    name: 'Snowdon'
+    type: place
+  - key: brafferton
+    name: 'Brafferton'
+    type: place
+  - key: bastile
+    name: 'Bastile'
+    type: place
+  - key: lake-superior
+    name: 'Lake Superior'
+    type: place
+  - key: great-miami
+    name: 'Great Miami'
+    type: place
+  - key: little-miami
+    name: 'Little Miami'
+    type: place
+  - key: fayette
+    name: 'Fayette'
+    type: place
+  - key: monongalia
+    name: 'Monongalia'
+    type: place
+  - key: shamokin
+    name: 'Shamokin'
+    type: place
+  - key: suffolk
+    name: 'Suffolk'
+    type: place
+  - key: smithfield
+    name: 'Smithfield'
+    type: place
+  - key: natural-bridge
+    name: 'Natural Bridge'
+    type: place
+  - key: constantinople
+    name: 'Constantinople'
+    type: place
+  - key: shadwell
+    name: 'Shadwell'
+    type: place
+  - key: penobscot
+    name: 'Penobscot'
+    type: place
+  - key: nacogdoches
+    name: 'Nacogdoches'
+    type: place
+  - key: vera-cruz
+    name: 'Vera Cruz'
+    type: place
+  - key: nashville
+    name: 'Nashville'
+    type: place
+  - key: bunker-hill
+    name: 'Bunker Hill'
+    type: place
+  - key: oxford
+    name: 'Oxford'
+    type: place
+  - key: yale
+    name: 'Yale'
+    type: place
+  - key: dublin
+    name: 'Dublin'
+    type: place
+  - key: germantown
+    name: 'Germantown'
+    type: place
+  - key: wilmington
+    name: 'Wilmington'
+    type: place
+  - key: pontchartrain
+    name: 'Pontchartrain'
+    type: place
+  - key: bayou-pierre
+    name: 'Bayou Pierre'
+    type: place
+  - key: chesapeake
+    name: 'Chesapeake'
+    type: place
+    nameIsAlias: false
+    aliases: ['Chesapeake Bay']
+    scopedAliases:
+      autobiography: ['Chesapeake']
+      notes-on-virginia: ['Chesapeake']
+      editorial: ['Chesapeake']
+  - key: canada
+    name: 'Canada'
+    type: place
+  - key: upper-canada
+    name: 'Upper Canada'
+    type: place
+  - key: lower-canada
+    name: 'Lower Canada'
+    type: place
+  - key: mohawk-river
+    name: 'Mohawk River'
+    type: place
+    aliases: ['Mohawks river']
+  - key: delawares
+    name: 'Delawares'
+    type: people
+    aliases: ['Delaware Indians']
+  - key: mingoes
+    name: 'Mingoes'
+    type: people
+    aliases: ['Mingo']
+  - key: shawanese
+    name: 'Shawanese'
+    type: people
+    aliases: ['Shawnees']
+  - key: cherokees
+    name: 'Cherokees'
+    type: people
+    aliases: ['Cherokee']
+  - key: powhatans
+    name: 'Powhatans'
+    type: people
+    aliases: ['Powhatan confederacy']
+  - key: monacans
+    name: 'Monacans'
+    type: people
+  - key: mannahoacs
+    name: 'Mannahoacs'
+    type: people
+  - key: six-nations
+    name: 'Six Nations'
+    type: people
+    aliases: ['Five Nations']
+  - key: iroquois
+    name: 'Iroquois'
+    type: people
+  - key: tuscaroras
+    name: 'Tuscaroras'
+    type: people
+  - key: mohawks
+    name: 'Mohawks'
+    type: people
+  - key: senecas
+    name: 'Senecas'
+    type: people
+  - key: tuteloes
+    name: 'Tuteloes'
+    type: people
+  - key: nottoways
+    name: 'Nottoways'
+    type: people
+  - key: meherrins
+    name: 'Meherrins'
+    type: people
+  - key: pamunkies
+    name: 'Pamunkies'
+    type: people
+  - key: mattaponies
+    name: 'Mattaponies'
+    type: people
+  - key: chickasaws
+    name: 'Chickasaws'
+    type: people
+  - key: creeks
+    name: 'Creeks'
+    type: people
+  - key: lenopi
+    name: 'Lenopi'
+    type: people
+  - key: chihohocki
+    name: 'Chihohocki'
+    type: people
+  - key: cayugas
+    name: 'Cayugas'
+    type: people
+  - key: onondagas
+    name: 'Onondagas'
+    type: people
+  - key: oneidas
+    name: 'Oneidas'
+    type: people
+  - key: congress
+    name: 'Congress'
+    type: organization
+  - key: general-congress
+    name: 'General Congress'
+    type: organization
+  - key: parliament
+    name: 'Parliament'
+    type: organization
+    aliases: ['British Parliament']
+  - key: house-of-commons
+    name: 'House of Commons'
+    type: organization
+  - key: house-of-lords
+    name: 'House of Lords'
+    type: organization
+  - key: house-of-burgesses
+    name: 'House of Burgesses'
+    type: organization
+    aliases: ['Burgesses']
+  - key: house-of-delegates
+    name: 'House of Delegates'
+    type: organization
+  - key: house-of-representatives
+    name: 'House of Representatives'
+    type: organization
+  - key: senate-of-the-united-states
+    name: 'Senate of the United States'
+    type: organization
+  - key: council-of-state
+    name: 'Council of State'
+    type: organization
+  - key: council-of-revision
+    name: 'Council of Revision'
+    type: organization
+  - key: general-assembly
+    name: 'General Assembly'
+    type: organization
+  - key: national-assembly
+    name: 'National Assembly'
+    type: organization
+  - key: national-convention
+    name: 'National Convention'
+    type: organization
+  - key: states-general
+    name: 'States General'
+    type: organization
+  - key: assembly-of-notables
+    name: 'Assembly of Notables'
+    type: organization
+    aliases: ['Notables']
+  - key: department-of-state
+    name: 'Department of State'
+    type: organization
+  - key: church-of-england
+    name: 'Church of England'
+    type: organization
+  - key: jacobins
+    name: 'Jacobins'
+    type: organization
+  - key: tiers-etat
+    name: 'Tiers Etat'
+    type: organization
+    aliases: ['Tiers État']
+  - key: declaration-of-independence
+    name: 'Declaration of Independence'
+    type: work
+  - key: magna-charta
+    name: 'Magna Charta'
+    type: work
+  - key: articles-of-confederation
+    name: 'Articles of Confederation'
+    type: work
+  - key: constitution-of-the-united-states
+    name: 'Constitution of the United States'
+    type: work
+  - key: stamp-act
+    name: 'Stamp Act'
+    type: work
+  - key: habeas-corpus
+    name: 'Habeas Corpus'
+    type: work
+  - key: statute-of-virginia
+    name: 'Statute of Virginia'
+    type: work
+  - key: rights-of-man
+    name: 'Rights of Man'
+    type: work
+  - key: common-sense
+    name: 'Common Sense'
+    type: work
+  - key: autobiography
+    name: 'Autobiography'
+    type: work
+  - key: greys-debates
+    name: "Grey's Debates"
+    type: work
+    aliases: ["Grey's Deb."]
+    scopedAliases:
+      parliamentary-manual: ['Grey']
+  - key: hatsells-precedents
+    name: "Hatsell's Precedents"
+    type: work
+    aliases: ['Hats.', 'Hatsell']
+  - key: scobell
+    name: 'Scobell'
+    type: work
+    aliases: ['Scob.']
+  - key: hakewill
+    name: 'Hakewill'
+    type: work
+    aliases: ['Hakew.']
+  - key: elsynge
+    name: 'Elsynge'
+    type: work
+  - key: selden
+    name: 'Selden'
+    type: work
+    aliases: ['Seld.']
+  - key: lex-parl
+    name: 'Lex. Parl.'
+    type: work
+    aliases: ['Lex. Parliamentaria']
+  - key: cokes-institutes
+    name: "Coke's Institutes"
+    type: work
+    aliases: ['Inst.']
+  - key: french-revolution
+    name: 'French Revolution'
+    type: event
+  - key: american-revolution
+    name: 'American Revolution'
+    type: event
+  - key: dollar
+    name: 'Dollar'
+    type: thing
+    aliases: ['Dollars']
+  - key: little-sarah
+    name: 'Little Sarah'
+    type: thing
+  - key: algerines
+    name: 'Algerines'
+    type: people
+  - key: chickahominies
+    name: 'Chickahominies'
+    type: people
+  - key: massawomacs
+    name: 'Massawomacs'
+    type: people
+  - key: nanticocks
+    name: 'Nanticocks'
+    type: people
+  - key: mohiccons
+    name: 'Mohiccons'
+    type: people
+  - key: big-knives
+    name: 'Big Knives'
+    type: people
+  - key: chandlers-debates
+    name: "Chandler's Debates"
+    type: work
+    aliases: ['Chand.']
+    scopedAliases:
+      parliamentary-manual: ['Chandler']
+  - key: wooddeson
+    name: 'Wooddeson'
+    type: work
+    aliases: ['Woodd.']
+  - key: summary-view
+    name: 'Summary View'
+    type: work
+  - key: port-folio
+    name: 'Port Folio'
+    type: work
+  - key: encyclop-die-m-thodique
+    name: 'Encyclopédie Méthodique'
+    type: work
+  - key: east-india-company
+    name: 'East India Company'
+    type: organization
+  - key: dunmores-war
+    name: "Dunmore's War"
+    type: event
+    aliases: ['Dunmore’s War']
+  - key: hartford-convention
+    name: 'Hartford Convention'
+    type: event
+    aliases: ['Hartford convention']
+  - key: wilmington-mirror
+    name: 'Wilmington Mirror'
+    type: work
+  - key: albemarle-academy
+    name: 'Albemarle Academy'
+    type: organization
+  - key: society-of-the-cincinnati
+    name: 'Society of the Cincinnati'
+    type: organization
+  - key: chesapeake-ship
+    name: 'Chesapeake (ship)'
+    type: thing
+
+ambiguous:
+  - surface: 'Washington'
+    candidates: ['george-washington', 'washington-county', 'city-of-washington']
+    reason: 'The bare name is the general, a county named for him, and the federal city.'
+  - surface: 'Adams'
+    candidates: ['john-adams', 'samuel-adams']
+    reason: 'Two different men named Adams are mentioned; the bare surname does not say which.'
+  - surface: 'Jefferson'
+    candidates: ['thomas-jefferson', 'jefferson-county']
+    reason: 'Thomas Jefferson in most parts, but Jefferson county (Kentucky) in the Notes on Virginia tables.'
+  - surface: 'Lincoln'
+    candidates: ['abraham-lincoln', 'lincoln-county']
+    reason: 'Abraham Lincoln in the editorial matter, Lincoln county in the Notes on Virginia and the Logan appendix.'
+  - surface: 'Randolph'
+    candidates:
+      [
+        'edmund-randolph',
+        'peyton-randolph',
+        'thomas-mann-randolph',
+        'thomas-jefferson-randolph',
+        'isham-randolph',
+        'jane-randolph',
+      ]
+    reason: 'Several Randolphs; only the Autobiography (Peyton) and the Anas (Edmund) are resolved by part.'
+  - surface: 'Mr. Randolph'
+    candidates: ['edmund-randolph', 'peyton-randolph']
+    reason: 'Edmund Randolph in the Anas, Peyton Randolph in the Autobiography; elsewhere unresolved.'
+  - surface: 'Lee'
+    candidates:
+      [
+        'richard-henry-lee',
+        'francis-lightfoot-lee',
+        'thomas-ludwell-lee',
+        'arthur-lee',
+        'henry-lee',
+      ]
+    reason: 'At least five Lees are named, often by bare surname.'
+  - surface: 'Mr. Lee'
+    candidates: ['richard-henry-lee', 'francis-lightfoot-lee', 'arthur-lee']
+    reason: 'Three Lees sit in the same Congress; the title does not say which.'
+  - surface: 'Morris'
+    candidates: ['robert-morris', 'gouverneur-morris', 'lewis-morris']
+    reason: 'Robert, Gouverneur and Lewis Morris all occur.'
+  - surface: 'Mr. Morris'
+    candidates: ['robert-morris', 'gouverneur-morris']
+    reason: 'Robert and Gouverneur Morris both occur as Mr. Morris.'
+  - surface: 'Livingston'
+    candidates:
+      ['robert-r-livingston', 'william-livingston', 'edward-livingston', 'brockhurst-livingston']
+    reason: 'Four Livingstons are named.'
+  - surface: 'Henry'
+    candidates: ['patrick-henry', 'henry-knox', 'prince-william-henry', 'richard-henry-lee']
+    reason: "Patrick Henry, but also a forename of Knox and Lee and part of a prince's name."
+  - surface: 'Mr. Henry'
+    candidates: ['patrick-henry', 'henry-knox']
+    reason: 'Patrick Henry in the Autobiography; unresolved elsewhere.'
+  - surface: 'Hamilton'
+    candidates: ['alexander-hamilton', 'duke-hamilton']
+    reason: 'Alexander Hamilton in the Anas; a Duke Hamilton in the Notes on Virginia.'
+  - surface: 'Franklin'
+    candidates: ['benjamin-franklin', 'william-temple-franklin']
+    reason: 'Benjamin Franklin in the Autobiography and Anas; bare in the Notes it is a figure of speech.'
+  - surface: 'Madison'
+    candidates: ['james-madison', 'madisons-cave']
+    reason: "James Madison, but also Madison's Cave in the Notes on Virginia."
+  - surface: 'Smith'
+    candidates:
+      ['samuel-smith', 'robert-smith', 'william-stephens-smith', 'melancthon-smith', 'john-smith']
+    reason: 'At least five Smiths are named, in different parts.'
+  - surface: 'Mr. Smith'
+    candidates: ['samuel-smith', 'robert-smith', 'william-stephens-smith']
+    reason: 'Several Smiths in the Anas.'
+  - surface: 'Nicholas'
+    candidates: ['robert-carter-nicholas', 'wilson-cary-nicholas', 'john-nicholas']
+    reason: 'Three Nicholases are named.'
+  - surface: 'Mr. Nicholas'
+    candidates: ['robert-carter-nicholas', 'wilson-cary-nicholas', 'john-nicholas']
+    reason: 'Three Nicholases are named.'
+  - surface: 'Rutledge'
+    candidates: ['edward-rutledge', 'john-rutledge']
+    reason: 'Two Rutledges are named.'
+  - surface: 'Pinckney'
+    candidates: ['thomas-pinckney', 'charles-cotesworth-pinckney']
+    reason: 'Two Pinckneys are named.'
+  - surface: 'Mason'
+    candidates: ['george-mason', 'stevens-thompson-mason']
+    reason: 'Two Masons are named.'
+  - surface: 'Mr. Mason'
+    candidates: ['george-mason', 'stevens-thompson-mason']
+    reason: 'Two Masons are named.'
+  - surface: 'Delaware'
+    candidates: ['delaware-river', 'state-of-delaware', 'delawares']
+    reason: 'The river, the state and the nation share the name.'
+  - surface: 'Ohio'
+    candidates: ['ohio-river', 'state-of-ohio']
+    reason: 'The river and the state share the name.'
+  - surface: 'Mississippi'
+    candidates: ['mississippi-river', 'state-of-mississippi']
+    reason: 'The river and the state share the name.'
+  - surface: 'Kanhaway'
+    candidates: ['great-kanhaway', 'little-kanhaway']
+    reason: 'Two rivers named Kanhaway.'
+  - surface: 'Jersey'
+    candidates: ['east-jersey', 'west-jersey', 'new-jersey']
+    reason: 'East, West and New Jersey.'
+  - surface: 'Clinton'
+    candidates: ['george-clinton', 'dewitt-clinton']
+    reason: 'Governor George Clinton in most of the Anas, but a duel with a Clinton (1806) is a different man.'
+  - surface: 'Chesapeake'
+    candidates: ['chesapeake', 'chesapeake-ship']
+    reason: 'The bay in the Autobiography and Notes, but the frigate attacked in 1807 in the Anas.'

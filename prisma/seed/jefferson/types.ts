@@ -13,6 +13,7 @@ export const jeffersonTypes: SeedType[] = YAML.parse(
 
 export const ENTITY_TYPE_CODES = [
   'person',
+  'people',
   'place',
   'organization',
   'work',

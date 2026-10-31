@@ -25,7 +25,7 @@ const SOURCE_CODES = [
 ];
 
 describe('jefferson types.yaml', () => {
-  it('defines the nine source types and six entity types', () => {
+  it('defines the nine source types and seven entity types', () => {
     expect(jeffersonTypes.map((t) => t.code)).toEqual([...SOURCE_CODES, ...ENTITY_TYPE_CODES]);
   });
 
