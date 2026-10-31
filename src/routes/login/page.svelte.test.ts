@@ -22,4 +22,9 @@ describe('login page', () => {
     await expect.element(button).toHaveAttribute('value', 'ada');
     expect(document.querySelector('button[name=username] img')?.getAttribute('alt')).toBe('');
   });
+
+  it('shows an empty state when there are no users', async () => {
+    render(LoginPage, { data: { users: [], form: defaults(zod4(loginSchema)) } } as never);
+    await expect.element(page.getByText('No users yet.')).toBeInTheDocument();
+  });
 });
