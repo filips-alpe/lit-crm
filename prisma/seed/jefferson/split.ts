@@ -389,7 +389,7 @@ const APPENDIX_II: Anchor[] = [
     {
       line: 33861,
       startsWith: 'APPENDIX',
-      title: 'Appendix to the Notes on Virginia, No. I: observations by Charles Thomson',
+      title: 'Appendix to the Notes on Virginia, No. I: observations by Charles Thompson',
       note: CONTENTS_TITLE,
     },
   ]),
