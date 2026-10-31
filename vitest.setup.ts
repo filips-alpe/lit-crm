@@ -20,7 +20,14 @@ if (testUrl === devUrl) {
   );
 }
 
-const TABLES = ['lit_record', 'lit_project', 'lit_type', 'lit_user'];
+const TABLES = [
+  'lit_mention',
+  'lit_project_record',
+  'lit_record',
+  'lit_project',
+  'lit_type',
+  'lit_user',
+];
 
 afterEach(async () => {
   const list = TABLES.map((t) => `"${t}"`).join(',');

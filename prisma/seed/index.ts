@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { PrismaClient } from '../../generated/prisma/client';
 import { users, types, projects, records } from './load';
+import { seedJefferson } from './jefferson/seed';
 
 // Postgres parameter limit is 65535; createMany batches are kept well under
 // that per call (comfortably so even with the widest Record row).
@@ -16,6 +17,7 @@ async function createManyChunked<T>(
 }
 
 export async function seed(prisma: PrismaClient) {
+  await prisma.mention.deleteMany({});
   await prisma.projectRecord.deleteMany({});
   await prisma.record.deleteMany({});
   await prisma.project.deleteMany({});
@@ -125,4 +127,7 @@ export async function seed(prisma: PrismaClient) {
   await createManyChunked(projectJoinRows, (chunk) =>
     prisma.projectRecord.createMany({ data: chunk }),
   );
+
+  // The Jefferson corpus (prisma/seed/jefferson) is added after, and independently of, the Franklin set.
+  await seedJefferson(prisma);
 }
