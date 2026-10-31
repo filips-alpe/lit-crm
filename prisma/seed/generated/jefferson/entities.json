@@ -2541,7 +2541,7 @@
   },
   {
     "key": "jefferson-ent-university-of-virginia",
-    "type": "place",
+    "type": "organization",
     "title": "University of Virginia",
     "references": [
       "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
@@ -2551,13 +2551,23 @@
   },
   {
     "key": "jefferson-ent-notes-on-virginia",
-    "type": "place",
+    "type": "work",
     "title": "Notes on Virginia",
     "references": [
       "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
       "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. I, p. 91 (leaf 145; djvu_txt line 4733); first mention in \"Autobiography: M. de Marbois's queries, and negotiations in Europe\""
     ],
     "mentionCount": 20
+  },
+  {
+    "key": "jefferson-ent-british-america",
+    "type": "place",
+    "title": "British America",
+    "references": [
+      "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
+      "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. I, p. 12 (leaf 50; djvu_txt line 1430); first mention in \"Autobiography: the Boston port bill of 1774 and the call for a general Congress\""
+    ],
+    "mentionCount": 7
   },
   {
     "key": "jefferson-ent-great-britain",
@@ -2925,9 +2935,9 @@
     "title": "America",
     "references": [
       "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
-      "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. I, p. 12 (leaf 50; djvu_txt line 1430); first mention in \"Autobiography: the Boston port bill of 1774 and the call for a general Congress\""
+      "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. I, p. 15 (leaf 53; djvu_txt line 1529); first mention in \"Autobiography: Congress in 1775 and Lord North's conciliatory propositions\""
     ],
-    "mentionCount": 155
+    "mentionCount": 148
   },
   {
     "key": "jefferson-ent-north-america",
@@ -5390,9 +5400,9 @@
     "mentionCount": 148
   },
   {
-    "key": "jefferson-ent-hatsells-precedents",
+    "key": "jefferson-ent-hatsell",
     "type": "work",
-    "title": "Hatsell's Precedents",
+    "title": "Hatsell",
     "references": [
       "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
       "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. II, p. 337 (leaf 957; djvu_txt line 36867); first mention in \"Section 1: The Importance of Adhering to Rules\""

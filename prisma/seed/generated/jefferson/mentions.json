@@ -1149,10 +1149,10 @@
   },
   {
     "recordKey": "jefferson-rec-0010",
-    "entityKey": "jefferson-ent-america",
-    "start": 5678,
+    "entityKey": "jefferson-ent-british-america",
+    "start": 5670,
     "end": 5685,
-    "surface": "America"
+    "surface": "British America"
   },
   {
     "recordKey": "jefferson-rec-0010",
@@ -8072,10 +8072,10 @@
   },
   {
     "recordKey": "jefferson-rec-0031",
-    "entityKey": "jefferson-ent-america",
-    "start": 3524,
+    "entityKey": "jefferson-ent-british-america",
+    "start": 3516,
     "end": 3531,
-    "surface": "America"
+    "surface": "British America"
   },
   {
     "recordKey": "jefferson-rec-0031",
@@ -8135,10 +8135,10 @@
   },
   {
     "recordKey": "jefferson-rec-0031",
-    "entityKey": "jefferson-ent-america",
-    "start": 4958,
+    "entityKey": "jefferson-ent-british-america",
+    "start": 4950,
     "end": 4965,
-    "surface": "America"
+    "surface": "British America"
   },
   {
     "recordKey": "jefferson-rec-0031",
@@ -8611,10 +8611,10 @@
   },
   {
     "recordKey": "jefferson-rec-0031",
-    "entityKey": "jefferson-ent-america",
-    "start": 27067,
+    "entityKey": "jefferson-ent-british-america",
+    "start": 27059,
     "end": 27074,
-    "surface": "America"
+    "surface": "British America"
   },
   {
     "recordKey": "jefferson-rec-0031",
@@ -8814,17 +8814,17 @@
   },
   {
     "recordKey": "jefferson-rec-0031",
-    "entityKey": "jefferson-ent-america",
-    "start": 44403,
+    "entityKey": "jefferson-ent-british-america",
+    "start": 44395,
     "end": 44410,
-    "surface": "America"
+    "surface": "British America"
   },
   {
     "recordKey": "jefferson-rec-0031",
-    "entityKey": "jefferson-ent-america",
-    "start": 44619,
+    "entityKey": "jefferson-ent-british-america",
+    "start": 44611,
     "end": 44626,
-    "surface": "America"
+    "surface": "British America"
   },
   {
     "recordKey": "jefferson-rec-0032",
@@ -30290,10 +30290,10 @@
   },
   {
     "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-america",
-    "start": 2687,
+    "entityKey": "jefferson-ent-british-america",
+    "start": 2679,
     "end": 2694,
-    "surface": "America"
+    "surface": "British America"
   },
   {
     "recordKey": "jefferson-rec-0215",
@@ -36772,14 +36772,14 @@
   },
   {
     "recordKey": "jefferson-rec-0242",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 5574,
     "end": 5579,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0242",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 6150,
     "end": 6155,
     "surface": "Hats."
@@ -36863,7 +36863,7 @@
   },
   {
     "recordKey": "jefferson-rec-0244",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1870,
     "end": 1875,
     "surface": "Hats."
@@ -36912,7 +36912,7 @@
   },
   {
     "recordKey": "jefferson-rec-0244",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 4128,
     "end": 4133,
     "surface": "Hats."
@@ -36996,7 +36996,7 @@
   },
   {
     "recordKey": "jefferson-rec-0244",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 10944,
     "end": 10949,
     "surface": "Hats."
@@ -37045,7 +37045,7 @@
   },
   {
     "recordKey": "jefferson-rec-0244",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 12595,
     "end": 12600,
     "surface": "Hats."
@@ -37066,28 +37066,28 @@
   },
   {
     "recordKey": "jefferson-rec-0244",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 13951,
     "end": 13956,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0244",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 13993,
     "end": 13998,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0244",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 14112,
     "end": 14119,
     "surface": "Hatsell"
   },
   {
     "recordKey": "jefferson-rec-0244",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 14704,
     "end": 14709,
     "surface": "Hats."
@@ -37234,7 +37234,7 @@
   },
   {
     "recordKey": "jefferson-rec-0247",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 671,
     "end": 676,
     "surface": "Hats."
@@ -37248,7 +37248,7 @@
   },
   {
     "recordKey": "jefferson-rec-0248",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 615,
     "end": 620,
     "surface": "Hats."
@@ -37283,7 +37283,7 @@
   },
   {
     "recordKey": "jefferson-rec-0250",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 787,
     "end": 792,
     "surface": "Hats."
@@ -37318,7 +37318,7 @@
   },
   {
     "recordKey": "jefferson-rec-0250",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1893,
     "end": 1898,
     "surface": "Hats."
@@ -37416,7 +37416,7 @@
   },
   {
     "recordKey": "jefferson-rec-0252",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 622,
     "end": 627,
     "surface": "Hats."
@@ -37493,7 +37493,7 @@
   },
   {
     "recordKey": "jefferson-rec-0253",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 619,
     "end": 624,
     "surface": "Hats."
@@ -37584,7 +37584,7 @@
   },
   {
     "recordKey": "jefferson-rec-0254",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 340,
     "end": 345,
     "surface": "Hats."
@@ -37598,21 +37598,21 @@
   },
   {
     "recordKey": "jefferson-rec-0254",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 461,
     "end": 466,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0254",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 934,
     "end": 939,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0254",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1032,
     "end": 1037,
     "surface": "Hats."
@@ -37640,14 +37640,14 @@
   },
   {
     "recordKey": "jefferson-rec-0254",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1480,
     "end": 1485,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0254",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2282,
     "end": 2287,
     "surface": "Hats."
@@ -37689,7 +37689,7 @@
   },
   {
     "recordKey": "jefferson-rec-0256",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 252,
     "end": 257,
     "surface": "Hats."
@@ -37724,7 +37724,7 @@
   },
   {
     "recordKey": "jefferson-rec-0257",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 153,
     "end": 158,
     "surface": "Hats."
@@ -37787,7 +37787,7 @@
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 506,
     "end": 511,
     "surface": "Hats."
@@ -37815,7 +37815,7 @@
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1148,
     "end": 1153,
     "surface": "Hats."
@@ -37850,7 +37850,7 @@
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1733,
     "end": 1738,
     "surface": "Hats."
@@ -37864,7 +37864,7 @@
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2145,
     "end": 2150,
     "surface": "Hats."
@@ -37941,7 +37941,7 @@
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3785,
     "end": 3790,
     "surface": "Hats."
@@ -37976,14 +37976,14 @@
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 4891,
     "end": 4896,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 5324,
     "end": 5329,
     "surface": "Hats."
@@ -38074,7 +38074,7 @@
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 7294,
     "end": 7299,
     "surface": "Hats."
@@ -38095,7 +38095,7 @@
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 7654,
     "end": 7659,
     "surface": "Hats."
@@ -38144,28 +38144,28 @@
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 9356,
     "end": 9361,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 9522,
     "end": 9527,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 10092,
     "end": 10097,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 10576,
     "end": 10581,
     "surface": "Hats."
@@ -38207,7 +38207,7 @@
   },
   {
     "recordKey": "jefferson-rec-0259",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1214,
     "end": 1219,
     "surface": "Hats."
@@ -38298,7 +38298,7 @@
   },
   {
     "recordKey": "jefferson-rec-0261",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 449,
     "end": 454,
     "surface": "Hats."
@@ -38445,7 +38445,7 @@
   },
   {
     "recordKey": "jefferson-rec-0267",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2630,
     "end": 2635,
     "surface": "Hats."
@@ -38466,7 +38466,7 @@
   },
   {
     "recordKey": "jefferson-rec-0267",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3347,
     "end": 3352,
     "surface": "Hats."
@@ -38480,7 +38480,7 @@
   },
   {
     "recordKey": "jefferson-rec-0267",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 4540,
     "end": 4545,
     "surface": "Hats."
@@ -38501,7 +38501,7 @@
   },
   {
     "recordKey": "jefferson-rec-0267",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 6815,
     "end": 6820,
     "surface": "Hats."
@@ -38515,7 +38515,7 @@
   },
   {
     "recordKey": "jefferson-rec-0267",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 6843,
     "end": 6848,
     "surface": "Hats."
@@ -38578,14 +38578,14 @@
   },
   {
     "recordKey": "jefferson-rec-0269",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 496,
     "end": 501,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0269",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 682,
     "end": 687,
     "surface": "Hats."
@@ -38613,7 +38613,7 @@
   },
   {
     "recordKey": "jefferson-rec-0270",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 329,
     "end": 334,
     "surface": "Hats."
@@ -38669,14 +38669,14 @@
   },
   {
     "recordKey": "jefferson-rec-0273",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 898,
     "end": 903,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0273",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1141,
     "end": 1146,
     "surface": "Hats."
@@ -38704,7 +38704,7 @@
   },
   {
     "recordKey": "jefferson-rec-0273",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2066,
     "end": 2071,
     "surface": "Hats."
@@ -38732,42 +38732,42 @@
   },
   {
     "recordKey": "jefferson-rec-0274",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 507,
     "end": 512,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0274",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1678,
     "end": 1683,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0274",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2493,
     "end": 2498,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0274",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2717,
     "end": 2722,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0274",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3137,
     "end": 3142,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0274",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3241,
     "end": 3246,
     "surface": "Hats."
@@ -38816,7 +38816,7 @@
   },
   {
     "recordKey": "jefferson-rec-0274",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 11014,
     "end": 11019,
     "surface": "Hats."
@@ -38837,21 +38837,21 @@
   },
   {
     "recordKey": "jefferson-rec-0274",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 12779,
     "end": 12784,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0274",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 12989,
     "end": 12994,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0274",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 13112,
     "end": 13117,
     "surface": "Hats."
@@ -38879,14 +38879,14 @@
   },
   {
     "recordKey": "jefferson-rec-0275",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 617,
     "end": 624,
     "surface": "Hatsell"
   },
   {
     "recordKey": "jefferson-rec-0275",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 660,
     "end": 665,
     "surface": "Hats."
@@ -38928,21 +38928,21 @@
   },
   {
     "recordKey": "jefferson-rec-0275",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2084,
     "end": 2091,
     "surface": "Hatsell"
   },
   {
     "recordKey": "jefferson-rec-0275",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2911,
     "end": 2918,
     "surface": "Hatsell"
   },
   {
     "recordKey": "jefferson-rec-0275",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3992,
     "end": 3999,
     "surface": "Hatsell"
@@ -38956,7 +38956,7 @@
   },
   {
     "recordKey": "jefferson-rec-0276",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 793,
     "end": 798,
     "surface": "Hats."
@@ -38970,14 +38970,14 @@
   },
   {
     "recordKey": "jefferson-rec-0276",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1130,
     "end": 1135,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0276",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2434,
     "end": 2439,
     "surface": "Hats."
@@ -38991,7 +38991,7 @@
   },
   {
     "recordKey": "jefferson-rec-0276",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 6965,
     "end": 6970,
     "surface": "Hats."
@@ -39005,7 +39005,7 @@
   },
   {
     "recordKey": "jefferson-rec-0277",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 736,
     "end": 741,
     "surface": "Hats."
@@ -39019,7 +39019,7 @@
   },
   {
     "recordKey": "jefferson-rec-0277",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 960,
     "end": 965,
     "surface": "Hats."
@@ -39082,7 +39082,7 @@
   },
   {
     "recordKey": "jefferson-rec-0280",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 663,
     "end": 668,
     "surface": "Hats."
@@ -39145,7 +39145,7 @@
   },
   {
     "recordKey": "jefferson-rec-0281",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2352,
     "end": 2357,
     "surface": "Hats."
@@ -39194,7 +39194,7 @@
   },
   {
     "recordKey": "jefferson-rec-0282",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 577,
     "end": 582,
     "surface": "Hats."
@@ -39229,7 +39229,7 @@
   },
   {
     "recordKey": "jefferson-rec-0282",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3725,
     "end": 3730,
     "surface": "Hats."
@@ -39257,7 +39257,7 @@
   },
   {
     "recordKey": "jefferson-rec-0282",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 6028,
     "end": 6033,
     "surface": "Hats."
@@ -39285,7 +39285,7 @@
   },
   {
     "recordKey": "jefferson-rec-0282",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 8075,
     "end": 8080,
     "surface": "Hats."
@@ -39327,14 +39327,14 @@
   },
   {
     "recordKey": "jefferson-rec-0284",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2409,
     "end": 2414,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0284",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2641,
     "end": 2646,
     "surface": "Hats."
@@ -39348,21 +39348,21 @@
   },
   {
     "recordKey": "jefferson-rec-0284",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2992,
     "end": 2997,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0284",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3334,
     "end": 3339,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0284",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3528,
     "end": 3533,
     "surface": "Hats."
@@ -39376,21 +39376,21 @@
   },
   {
     "recordKey": "jefferson-rec-0284",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3790,
     "end": 3795,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0284",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 4209,
     "end": 4214,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0284",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 4346,
     "end": 4351,
     "surface": "Hats."
@@ -39404,14 +39404,14 @@
   },
   {
     "recordKey": "jefferson-rec-0285",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 346,
     "end": 351,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0285",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 664,
     "end": 669,
     "surface": "Hats."
@@ -39432,7 +39432,7 @@
   },
   {
     "recordKey": "jefferson-rec-0286",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 850,
     "end": 855,
     "surface": "Hats."
@@ -39488,7 +39488,7 @@
   },
   {
     "recordKey": "jefferson-rec-0286",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2859,
     "end": 2864,
     "surface": "Hats."
@@ -39516,7 +39516,7 @@
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 339,
     "end": 344,
     "surface": "Hats."
@@ -39530,7 +39530,7 @@
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 364,
     "end": 369,
     "surface": "Hats."
@@ -39565,14 +39565,14 @@
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1501,
     "end": 1506,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1758,
     "end": 1763,
     "surface": "Hats."
@@ -39586,7 +39586,7 @@
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2166,
     "end": 2171,
     "surface": "Hats."
@@ -39600,28 +39600,28 @@
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2587,
     "end": 2592,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2713,
     "end": 2718,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2877,
     "end": 2882,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3163,
     "end": 3168,
     "surface": "Hats."
@@ -39635,14 +39635,14 @@
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3531,
     "end": 3536,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3657,
     "end": 3662,
     "surface": "Hats."
@@ -39782,21 +39782,21 @@
   },
   {
     "recordKey": "jefferson-rec-0287",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 5304,
     "end": 5309,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0288",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 107,
     "end": 112,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0288",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 185,
     "end": 190,
     "surface": "Hats."
@@ -39859,7 +39859,7 @@
   },
   {
     "recordKey": "jefferson-rec-0288",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2047,
     "end": 2052,
     "surface": "Hats."
@@ -39880,7 +39880,7 @@
   },
   {
     "recordKey": "jefferson-rec-0288",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2594,
     "end": 2599,
     "surface": "Hats."
@@ -39901,7 +39901,7 @@
   },
   {
     "recordKey": "jefferson-rec-0288",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3232,
     "end": 3237,
     "surface": "Hats."
@@ -39915,7 +39915,7 @@
   },
   {
     "recordKey": "jefferson-rec-0289",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 350,
     "end": 355,
     "surface": "Hats."
@@ -39929,7 +39929,7 @@
   },
   {
     "recordKey": "jefferson-rec-0289",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 482,
     "end": 487,
     "surface": "Hats."
@@ -39992,14 +39992,14 @@
   },
   {
     "recordKey": "jefferson-rec-0290",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1583,
     "end": 1588,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0290",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 2257,
     "end": 2262,
     "surface": "Hats."
@@ -40076,14 +40076,14 @@
   },
   {
     "recordKey": "jefferson-rec-0290",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3418,
     "end": 3423,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0290",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3431,
     "end": 3436,
     "surface": "Hats."
@@ -40097,7 +40097,7 @@
   },
   {
     "recordKey": "jefferson-rec-0290",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 3759,
     "end": 3764,
     "surface": "Hats."
@@ -40111,7 +40111,7 @@
   },
   {
     "recordKey": "jefferson-rec-0291",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 338,
     "end": 343,
     "surface": "Hats."
@@ -40146,14 +40146,14 @@
   },
   {
     "recordKey": "jefferson-rec-0291",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1314,
     "end": 1319,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0291",
-    "entityKey": "jefferson-ent-hatsells-precedents",
+    "entityKey": "jefferson-ent-hatsell",
     "start": 1488,
     "end": 1493,
     "surface": "Hats."

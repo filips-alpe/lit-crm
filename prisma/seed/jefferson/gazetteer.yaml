@@ -1085,9 +1085,12 @@ entities:
     type: place
   - key: university-of-virginia
     name: 'University of Virginia'
-    type: place
+    type: organization
   - key: notes-on-virginia
     name: 'Notes on Virginia'
+    type: work
+  - key: british-america
+    name: 'British America'
     type: place
   - key: great-britain
     name: 'Great Britain'
@@ -1987,10 +1990,10 @@ entities:
     aliases: ["Grey's Deb."]
     scopedAliases:
       parliamentary-manual: ['Grey']
-  - key: hatsells-precedents
-    name: "Hatsell's Precedents"
+  - key: hatsell
+    name: 'Hatsell'
     type: work
-    aliases: ['Hats.', 'Hatsell']
+    aliases: ['Hats.']
   - key: scobell
     name: 'Scobell'
     type: work

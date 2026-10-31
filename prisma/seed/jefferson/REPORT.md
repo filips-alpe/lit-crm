@@ -28,15 +28,15 @@ Records: **295**, covering all 41639 raw lines (each in exactly one record).
 | notes-on-virginia | 48 | 15011 |
 | parliamentary-manual | 56 | 5020 |
 
-Entities with at least one mention: **566** of 573 in the gazetteer.
+Entities with at least one mention: **567** of 574 in the gazetteer.
 
 | entity type | entities | mentions |
 | --- | --- | --- |
 | person | 251 | 1857 |
 | people | 30 | 130 |
-| place | 233 | 2873 |
-| organization | 22 | 445 |
-| work | 24 | 478 |
+| place | 232 | 2846 |
+| organization | 23 | 452 |
+| work | 25 | 498 |
 | event | 4 | 5 |
 | thing | 2 | 37 |
 
@@ -77,12 +77,12 @@ gazetteer should resolve.
 | Congress | organization | 199 |
 | France | place | 182 |
 | Virginia | place | 168 |
-| America | place | 155 |
+| America | place | 148 |
 | England | place | 148 |
 | Grey's Debates | work | 148 |
 | Alexander Hamilton | person | 140 |
 | United States | place | 135 |
-| Hatsell's Precedents | work | 116 |
+| Hatsell | work | 116 |
 | Logan | person | 107 |
 | Great Britain | place | 106 |
 | Thomas Jefferson | person | 102 |
@@ -109,12 +109,12 @@ The twelve most mentioned entities with the forms the linker matched (name resol
 | Congress | Congress (199) |
 | France | France (182) |
 | Virginia | Virginia (168) |
-| America | America (155) |
+| America | America (148) |
 | England | England (148) |
 | Grey's Debates | Grey (146); Grey's Deb. (2) |
 | Alexander Hamilton | Hamilton (116); Colonel Hamilton (10); Alexander Hamilton (6); ALEXANDER HAMILTON (5); A. Hamilton (1); Monsieur Hamilton (1); Mr. Hamilton (1) |
 | United States | United States (123); American States (5); United States of America (4); States of America (3) |
-| Hatsell's Precedents | Hats. (111); Hatsell (5) |
+| Hatsell | Hats. (111); Hatsell (5) |
 | Logan | Logan (106); Captain Logan (1) |
 | Great Britain | Great Britain (98); Britain (8) |
 | Thomas Jefferson | Jefferson (39); Mr. Jefferson (32); Thomas Jefferson (24); THOMAS JEFFERSON (5); Honorable Thomas Jefferson (2) |
