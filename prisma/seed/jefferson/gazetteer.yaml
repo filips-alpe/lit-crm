@@ -1600,15 +1600,7 @@ entities:
   - key: washington-county
     name: 'Washington County'
     type: place
-    aliases:
-      [
-        'Washington county',
-        'WASHINGTON COUNTY',
-        'County of Washington',
-        'the County of Washington',
-        'Prothonotary of Washington',
-        'William Huston of Washington',
-      ]
+    aliases: ['Washington county', 'WASHINGTON COUNTY', 'County of Washington']
   - key: lincoln-county
     name: 'Lincoln County'
     type: place
