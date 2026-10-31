@@ -2,6 +2,15 @@ import { prisma } from '$lib/prisma';
 import { Prisma } from '../../../../generated/prisma/client';
 import { layoutSchema } from '$lib/schemas/types';
 import { formatFieldValue } from '$lib/forms/format';
+import type { BestPage, BestPageField, BestPageSequence, RecordRef } from '$lib/records/bestPage';
+
+export type {
+  BestPage,
+  BestPageField,
+  BestPageSequence,
+  MentionContext,
+  RecordRef,
+} from '$lib/records/bestPage';
 
 /** Mention contexts shown per page. */
 export const MENTIONS_PAGE_SIZE = 50;
@@ -10,62 +19,6 @@ const CONTEXT_CHARS = 80;
 const RELATED_LIMIT = 20;
 /** Cap on the distinct-record lists (sources, mentioned entities). */
 const LIST_LIMIT = 200;
-
-export interface BestPageField {
-  id: string;
-  label: string;
-  kind: string;
-  value: string | string[];
-}
-
-export interface RecordRef {
-  id: string;
-  title: string | null;
-  typeCode: string;
-  /** How many mentions (or co-mentioning records) stand behind this entry. */
-  count: number;
-}
-
-export interface MentionContext {
-  recordId: string;
-  recordTitle: string | null;
-  typeCode: string;
-  start: number;
-  end: number;
-  surface: string;
-  before: string;
-  after: string;
-}
-
-export interface BestPageSequence {
-  position: number;
-  total: number;
-  prev: { id: string; title: string | null } | null;
-  next: { id: string; title: string | null } | null;
-}
-
-/** Everything the best page of a record is built from. Nothing here depends on what the record is:
- *  an entity has mentions of it, a source record has entities it mentions, and the lists a record
- *  has no data for come back empty. */
-export interface BestPage {
-  id: string;
-  title: string | null;
-  type: { code: string; color: string; iconSeed: string | null };
-  fields: BestPageField[];
-  references: string[];
-  variants: { surface: string; count: number }[];
-  mentions: {
-    items: MentionContext[];
-    page: number;
-    pageSize: number;
-    total: number;
-    totalPages: number;
-  };
-  sources: RecordRef[];
-  related: RecordRef[];
-  mentionedEntities: RecordRef[];
-  sequence: BestPageSequence | null;
-}
 
 // A mention is live only while its source is active and `text[start, end)` still reads `surface`
 // (the record text may have been edited since the pipeline ran). `m` = lit_mention, `r` = its source.
