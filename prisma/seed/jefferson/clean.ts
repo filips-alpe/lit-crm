@@ -54,7 +54,11 @@ export const LIBRARY_STAMPS: RegExp[] = [
 ];
 export const LIBRARY_STAMP_LAST_LINE = 54;
 
-const SIGNATURE_MARK = /^VO[LR][.,]?\s*[IVXL1l]+\s*[—–-]+\s*\S{1,4}(\s*\(\S{1,3}\))?\s*$/;
+/** `VOL. I—23`, with the OCR damage seen in the volume: `VOL, I.—~9 : 1`, `VOL 1,—10`, `VOL. I1— 26 1`, `YOL. II—I?`. */
+const SIGNATURE_MARK =
+  /^[VY][O0][LR][.,]?\s*[IVXLl1jt/]{1,4}[.,]?\s*[—–~-]+[—–~\s-]*\S{1,4}(?:\s*\(\S{1,3}\))?(?:\s*[:—–-]*\s*\S{0,2})?\s*[.:—–-]*$/;
+/** Dash-less remnant (`VOL II`, `VOL. jt)`): only a signature mark on a numbered page; on title pages it is real wording. */
+const BARE_VOLUME_MARK = /^[VY][O0][LR][.,]?\s*\S{1,3}\s*$/;
 const PAREN_FOLIO = /^\((?:\d{1,4}|[ivxlcIVXLC]{1,6})\)\s*[:.]?$/;
 const ROMAN_FOLIO = /^[ivxlc]{1,6}$/;
 const DIGITS = /^\d{1,4}$/;
@@ -78,6 +82,19 @@ export function isRunningHead(text: string): boolean {
   return false;
 }
 
+/** Unmistakable heads count as furniture anywhere on the leaf (the OCR may order them mid-leaf). */
+const WORKS_HEAD = new RegExp(
+  `^(?:[\\dIOlTos|]{1,4}\\s+)?${RUNNING_TITLES[0].source}(?:\\s+[\\dIOl|]{1,4})?$`,
+);
+const SECTION_HEAD =
+  /^(?:The Anas|Notes on Virginia|Appendix|Autobiography|Parliamentary Manual)\s+(\d{1,4})$/;
+
+/** `Appendix 5` could be a wrapped citation, so a section head must carry its own page number. */
+export function isWholeLineHead(text: string, pageLabel: string): boolean {
+  const t = text.trim();
+  return WORKS_HEAD.test(t) || SECTION_HEAD.exec(t)?.[1] === pageLabel;
+}
+
 export function isSignatureMark(text: string): boolean {
   return SIGNATURE_MARK.test(text.trim());
 }
@@ -85,9 +102,10 @@ export function isSignatureMark(text: string): boolean {
 export type FurnitureClass = (FurnitureKind | null)[];
 
 /**
- * Classify every raw line. Running heads must sit among the first three
- * non-blank lines of their leaf, page numbers must be the first or last
- * non-blank line, signature marks may sit anywhere (the pattern is specific).
+ * Classify every raw line. Loosely matched running heads must sit among the
+ * first three non-blank lines of their leaf; unmistakable whole-line heads and
+ * signature marks may sit anywhere; page numbers must be the first or last
+ * non-blank line. A bare `VOL II` counts only on a numbered page.
  */
 export function classifyFurniture(lines: string[], map: LineMap): FurnitureClass {
   const kinds: FurnitureClass = lines.map(() => null);
@@ -109,12 +127,12 @@ export function classifyFurniture(lines: string[], map: LineMap): FurnitureClass
     idx.forEach((i, pos) => {
       if (kinds[i]) return;
       const t = lines[i].trim();
-      if (isSignatureMark(t)) {
+      if (isSignatureMark(t) || (label !== '' && BARE_VOLUME_MARK.test(t))) {
         kinds[i] = 'signature-mark';
         return;
       }
       const edge = pos === 0 || pos === idx.length - 1;
-      if (pos < 3 && isRunningHead(t)) {
+      if ((pos < 3 && isRunningHead(t)) || isWholeLineHead(t, label)) {
         kinds[i] = 'running-head';
         return;
       }
@@ -139,23 +157,39 @@ const WORD = new RegExp(`${PART}(?:-${PART})*`, 'gu');
 const WORD_END = new RegExp(`${PART}(?:-${PART})*$`, 'u');
 const WORD_START = new RegExp(`^${PART}(?:-${PART})*`, 'u');
 
-/** Lower-cased word forms attested inside single lines, with counts. */
+/**
+ * Lower-cased word forms attested inside single lines, with counts. The word
+ * before a line-end hyphen and the word that continues it are fragments
+ * (`dis`, `tinued`), never evidence that a word exists, so both are left out.
+ */
 export function buildVocabulary(
   lines: string[],
   skip: (i: number) => boolean,
 ): Map<string, number> {
   const vocab = new Map<string, number>();
+  let prevHyphenated = false;
   lines.forEach((l, i) => {
     if (skip(i)) return;
-    for (const m of l.matchAll(WORD)) {
-      const w = m[0].toLowerCase();
-      vocab.set(w, (vocab.get(w) ?? 0) + 1);
-    }
+    const t = l.trim();
+    if (t === '') return;
+    const hyphenated = /\p{L}-$/u.test(t);
+    const words = [...t.matchAll(WORD)].map((m) => m[0].toLowerCase());
+    if (hyphenated) words.pop();
+    if (prevHyphenated) words.shift();
+    for (const w of words) vocab.set(w, (vocab.get(w) ?? 0) + 1);
+    prevHyphenated = hyphenated;
   });
   return vocab;
 }
 
 export type HyphenDecision = { keep: boolean; reason: string; result: string };
+
+const NUMBER_WORD =
+  /^(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)$/;
+const NUMBER_PART =
+  /^(?:one|two|three|four|five|six|seven|eight|nine|half|halves|third|thirds|fourth|fourths|fifth|fifths|sixth|sixths|seventh|sevenths|eighth|eighths|ninth|ninths|tenth|tenths|hundredth|hundredths|thousandth|thousandths|\w+tieth|\w+tieths|\w+teenth|\w+teenths)$/;
+/** Left parts that are whole words in period compounds, not line-break fragments. */
+export const COMPOUND_LEFT = new Set('self ill well double mid half'.split(' '));
 
 /** `left` ends in a letter before the hyphen, `right` starts with the continuation (word part only). */
 export function decideHyphen(
@@ -165,14 +199,56 @@ export function decideHyphen(
 ): HyphenDecision {
   const l = WORD_END.exec(left)?.[0] ?? '';
   const r = WORD_START.exec(right)?.[0] ?? '';
-  const joined = (l + r).toLowerCase();
-  const hyph = (l + '-' + r).toLowerCase();
-  if ((vocab.get(joined) ?? 0) > 0)
-    return { keep: false, reason: 'joined-form-attested', result: l + r };
-  if ((vocab.get(hyph) ?? 0) > 0)
-    return { keep: true, reason: 'hyphenated-form-attested', result: l + '-' + r };
-  return { keep: false, reason: 'default-join', result: l + r };
+  const ll = l.toLowerCase();
+  const rl = r.toLowerCase();
+  const joinedCount = vocab.get(ll + rl) ?? 0;
+  const hyphCount = vocab.get(`${ll}-${rl}`) ?? 0;
+  const keep = (reason: string) => ({ keep: true, reason, result: `${l}-${r}` });
+  const join = (reason: string) => ({ keep: false, reason, result: l + r });
+  if (joinedCount > 0 && hyphCount > 0)
+    return hyphCount > joinedCount
+      ? keep('hyphenated-form-more-frequent')
+      : join('joined-form-at-least-as-frequent');
+  if (joinedCount > 0) return join('joined-form-attested');
+  if (hyphCount > 0) return keep('hyphenated-form-attested');
+  const override = HYPHEN_OVERRIDES.get(`${ll}-${rl}`);
+  if (override) return override === 'keep' ? keep('reviewed-override') : join('reviewed-override');
+  if (NUMBER_WORD.test(ll) && NUMBER_PART.test(rl)) return keep('number-compound');
+  if (COMPOUND_LEFT.has(ll)) return keep('compound-left-part');
+  return join('default-join');
 }
+
+/**
+ * Compounds with neither form attested, reviewed by hand against the corpus.
+ * Both parts being words does not make a compound (`dis-tribute`, `con-text`,
+ * `apart-ment`, `weep-ing` all qualify), so these are listed rather than inferred.
+ */
+export const HYPHEN_OVERRIDES = new Map<string, 'keep' | 'join'>(
+  [
+    'after-world’s',
+    'broad-ways',
+    'city-committee',
+    'corn-market',
+    'court-house',
+    'foot-hold',
+    'heavy-handed',
+    'looking-glass',
+    'lovely-lass',
+    'pay-the',
+    'peace-speech',
+    'port-bill',
+    'school-boys',
+    'school-rooms',
+    'sergeants-at-arms',
+    'slave-holding',
+    'warm-hearted',
+    'watch-word',
+    'wide-spread',
+    'work-bench',
+    'co-operation',
+    'north-eastwardly',
+  ].map((k) => [k, 'keep']),
+);
 
 // ------------------------------------------------------------ block building
 
@@ -184,6 +260,18 @@ type Block = { pieces: Piece[]; afterBreak: boolean };
 
 const TERMINAL = /[.!?:;"”’')\]]$/;
 const FOOTNOTE_START = /^(?:\[?\*|[†‡§¶]|!\s|\|\s)/;
+/** A column divider the OCR read as `|`, with text on both sides. */
+const COLUMN_DIVIDER = /\S\s*\|\s*\S/;
+/** Leaves with this many divided lines are set in columns: nothing on them may be unwrapped. */
+export const COLUMN_LEAF_MIN = 3;
+/** Footnotes and small-print notes are set wider than body text (body lines run to about 59 characters). */
+export const WIDE_MEASURE = 60;
+
+const medianLength = (pieces: Piece[]): number => {
+  const sorted = pieces.map((p) => p.text.length).sort((a, b) => a - b);
+  return sorted[Math.floor(sorted.length / 2)];
+};
+const isWide = (pieces: Piece[]): boolean => medianLength(pieces) >= WIDE_MEASURE;
 
 /** A block of one line has nothing to unwrap; longer blocks must have full-width lines throughout. */
 export const isProse = (pieces: Piece[]): boolean =>
@@ -193,12 +281,21 @@ export type CleanContext = {
   lines: string[];
   furniture: FurnitureClass;
   vocab: Map<string, number>;
+  /** Raw lines on a leaf set in columns. */
+  inColumnLeaf: (i: number) => boolean;
 };
 
 export function buildContext(lines: string[], map: LineMap): CleanContext {
   const furniture = classifyFurniture(lines, map);
   const vocab = buildVocabulary(lines, (i) => furniture[i] !== null);
-  return { lines, furniture, vocab };
+  const dividers = new Map<number, number>();
+  lines.forEach((l, i) => {
+    if (furniture[i] || !COLUMN_DIVIDER.test(l.trim())) return;
+    const leaf = map.lines[i].leaf;
+    dividers.set(leaf, (dividers.get(leaf) ?? 0) + 1);
+  });
+  const inColumnLeaf = (i: number) => (dividers.get(map.lines[i].leaf) ?? 0) >= COLUMN_LEAF_MIN;
+  return { lines, furniture, vocab, inColumnLeaf };
 }
 
 export type CleanStats = {
@@ -286,7 +383,7 @@ export function cleanRange(ctx: CleanContext, start: number, end: number): Clean
   type Out = { pieces: Piece[]; prose: boolean; text?: string; lastRaw: number };
   const out: Out[] = [];
   for (const b of blocks) {
-    const prose = isProse(b.pieces);
+    const prose = isProse(b.pieces) && !b.pieces.some((p) => ctx.inColumnLeaf(p.raw));
     const prev = out.at(-1);
     const prevLast = prev?.pieces.at(-1)?.text ?? '';
     if (
@@ -297,7 +394,10 @@ export function cleanRange(ctx: CleanContext, start: number, end: number): Clean
       prevLast.length >= PROSE_MIN_LINE &&
       !TERMINAL.test(prevLast) &&
       /^[a-z]/.test(b.pieces[0].text) &&
-      !FOOTNOTE_START.test(prev.pieces[0].text)
+      !FOOTNOTE_START.test(prev.pieces[0].text) &&
+      // the OCR can put a footnote's tail right before the next page's body:
+      // different measure means different text, however inviting the hyphen
+      isWide(prev.pieces) === isWide(b.pieces)
     ) {
       const prevText = prev.text ?? unwrap(prev.pieces);
       const nextText = unwrap(b.pieces);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildContext,
+  buildVocabulary,
   cleanRange,
   classifyFurniture,
   decideHyphen,
@@ -220,6 +221,104 @@ describe('cleanRange (synthetic)', () => {
   });
 });
 
+describe('review regressions', () => {
+  it.each([
+    'VOL, I.—~9 : 1',
+    'VOL 1,—10',
+    'VOL. I—23 —-',
+    'VOL. I1— 26 1',
+    'VOL. I—I (x)',
+    'YOL. II—I?',
+  ])('recognises signature mark %j', (t) => expect(isSignatureMark(t)).toBe(true));
+
+  it('keeps a dash-less VOL on an unnumbered title page, drops it on a numbered page', () => {
+    const lines = ['VOL. 7T.', 'VOL II'];
+    const pos = [
+      { leaf: 1, page: '', volume: 1 },
+      { leaf: 2, page: '40', volume: 1 },
+    ];
+    expect(classifyFurniture(lines, { lines: pos, straddling: [] })).toEqual([
+      null,
+      'signature-mark',
+    ]);
+  });
+
+  it('treats an exact running head as furniture anywhere on the leaf', () => {
+    const body = Array.from({ length: 6 }, () => LONG);
+    const r = clean(
+      [...body, "Jefferson's Works", ...body, 'Parliamentary Manual 1', LONG].join('\n'),
+    );
+    expect(r.text).not.toContain('Works');
+    expect(r.text).not.toContain('Manual');
+    expect(r.log.filter((l) => l.kind === 'running-head')).toHaveLength(2);
+  });
+
+  it('does not splice a wide footnote tail onto the narrower body of the next page', () => {
+    const wide = 'with them, to pursue the direction which they may think proper to';
+    const r = clean(
+      [
+        wide,
+        'protection, and you will make known wherever you may judge neces-',
+        '<<leaf>>',
+        '110 Jefferson’s Works',
+        '',
+        'me, when at Amsterdam, of the conduct',
+        'of the Patriots, as he then understood it.',
+      ].join('\n'),
+    );
+    expect(r.text).toContain('judge neces-\n\nme, when');
+    expect(r.stats.pageMerges).toBe(0);
+  });
+
+  it('keeps a two-column leaf line for line, including its undivided lines', () => {
+    const r = clean(
+      [
+        'lish commerce, and to do | contract alliances, estab-',
+        'all other acts and things | lish commerce, and to do',
+        'which independent states | all other acts and things',
+        'may of right do. which independent states',
+      ].join('\n'),
+    );
+    expect(r.text).toContain('estab-\nall other acts');
+    expect(r.text).toContain('and to do\nwhich independent states');
+    expect(r.text).toContain('all other acts and things\nmay of right do.');
+    expect(r.log.filter((l) => l.kind.startsWith('hyphen'))).toHaveLength(0);
+  });
+
+  describe('hyphen decisions', () => {
+    const vocab = new Map([
+      ['north-west', 5],
+      ['northwest', 1],
+      ['sea-coast', 3],
+      ['seacoast', 2],
+    ]);
+    it.each([
+      ['one', 'fortieth', true],
+      ['thirty', 'four', true],
+      ['double', 'faced', true],
+      ['ill', 'intentioned', true],
+      ['self', 'interest', true],
+      ['port', 'bill', true],
+      ['mid', 'channel', true],
+      ['north', 'west', true],
+      ['sea', 'coast', true],
+      ['dis', 'tribute', false],
+      ['con', 'text', false],
+      ['apart', 'ment', false],
+    ])('%s-%s keep=%s', (l, r, keep) => {
+      expect(decideHyphen(l, r, vocab).keep).toBe(keep);
+    });
+  });
+
+  it('does not count line-edge fragments as words', () => {
+    const vocab = buildVocabulary(['some dis-', 'tinued text', 'plain words'], () => false);
+    expect(vocab.has('dis')).toBe(false);
+    expect(vocab.has('tinued')).toBe(false);
+    expect(vocab.get('text')).toBe(1);
+    expect(vocab.get('plain')).toBe(1);
+  });
+});
+
 describe('real corpus invariants', () => {
   const src = loadSources();
   const lines = src.djvu.split('\n');
@@ -250,5 +349,34 @@ describe('real corpus invariants', () => {
       all.log.filter((l) => l.kind.startsWith('hyphen')).length,
     );
     expect(all.stats.furnitureLines).toBeGreaterThan(900);
+  });
+
+  it('leaves no VOL signature mark or running head in the text, only the two title-page lines', () => {
+    const all = cleanRange(ctx, 0, lines.length - 1);
+    const out = all.text.split('\n');
+    expect(out.filter((l) => /^[VY][O0][LR]\b/.test(l))).toEqual(['VOL. /.', 'VOL. 7T.']);
+    expect(out.filter((l) => /^(?:\S+ )?Jefferson.s Works(?: \S+)?$/.test(l))).toEqual([]);
+    expect(out.filter((l) => /^Parliamentary Manual \d+$/.test(l))).toEqual([]);
+  });
+
+  it('only joins a hyphen to the next non-blank, non-furniture raw line', () => {
+    const all = cleanRange(ctx, 0, lines.length - 1);
+    const crossed = all.log
+      .filter((l) => l.kind === 'hyphen-join' || l.kind === 'hyphen-keep')
+      .filter((l) => {
+        let i = l.rawLine;
+        while (i < lines.length && (lines[i].trim() === '' || ctx.furniture[i] !== null)) i++;
+        return lines[i].trim().split(/\s+/)[0] !== l.raw.split('\n')[1];
+      });
+    expect(crossed).toEqual([]);
+  });
+
+  it('fixes the reviewed corruptions on the real text', () => {
+    const { text } = cleanRange(ctx, 0, lines.length - 1);
+    for (const bad of ['necesme', 'estaball', 'reVOL', 'onefortieth', 'thirtyfour', 'portbill']) {
+      expect(text).not.toContain(bad);
+    }
+    expect(text).toContain('contract alliances, estab- | levy war, conclude peace,'.slice(0, 26));
+    expect(text).toContain('refused');
   });
 });
