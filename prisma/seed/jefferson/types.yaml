@@ -1,0 +1,212 @@
+# Types for the Jefferson corpus (Lipscomb & Bergh, The Writings of Thomas Jefferson, 1905, vols. I-II).
+#
+# Derived from what the two volumes contain, not from a catalogue. split.ts assigns exactly one of
+# the source types to every record; the six entity types are the kinds of thing the gazetteer names.
+# Codes do not reuse any code in prisma/seed/data/types.yaml (letter, diary, essay, note, ...), so
+# the Franklin data and these types coexist. Rationale per type is in `description` and in README.md.
+#
+# Source types set `rendererId: source-text` (annotated text with mention links). Entity types set
+# no renderer: they have no body text, only a title, a note and sources.
+#
+# Layouts follow data/types.yaml: the first field is the title, the text field is
+# `kind: markdown, writeTo: text` (the source-text renderer does not run it through markdown, it only
+# uses the column), references are `kind: list, writeTo: references`.
+
+# ---------------------------------------------------------------- source types
+
+- code: memoir-section
+  description: >-
+    Stretch of Jefferson's own retrospective narrative (the Autobiography of 1821, and the notes
+    he appended to it). The Autobiography has no headings, so these are cut at topical anchors.
+  color: '#c0562f'
+  iconSeed: quill-memoir
+  rendererId: source-text
+  layout:
+    fields:
+      - { id: title, label: Title, kind: text, writeTo: title }
+      - { id: date, label: Date, kind: date, writeTo: date }
+      - { id: body, label: Text, kind: markdown, writeTo: text }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: memorandum
+  description: >-
+    Jefferson's own dated memorandum of a conversation, cabinet meeting or occurrence (The Anas), or
+    an undated notes-on piece that the volume prints as a single memorandum.
+  color: '#7a6a2f'
+  iconSeed: memorandum
+  rendererId: source-text
+  layout:
+    fields:
+      - { id: title, label: Title, kind: text, writeTo: title }
+      - { id: date, label: Date, kind: date, writeTo: date }
+      - { id: printed, label: Date as printed, kind: text, writeTo: description }
+      - { id: body, label: Text, kind: markdown, writeTo: text }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: query
+  description: >-
+    One of the twenty-three numbered Queries of the Notes on Virginia: a printed question and
+    Jefferson's answer to it.
+  color: '#1f7a8c'
+  iconSeed: query-mark
+  rendererId: source-text
+  layout:
+    fields:
+      - { id: title, label: Title, kind: text, writeTo: title }
+      - { id: question, label: Question as printed, kind: text, writeTo: description }
+      - { id: body, label: Text, kind: markdown, writeTo: text }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: manual-section
+  description: >-
+    One of the fifty-three numbered sections of A Manual of Parliamentary Practice, each a rule of
+    procedure with its authorities.
+  color: '#5a8f29'
+  iconSeed: manual-section
+  rendererId: source-text
+  layout:
+    fields:
+      - { id: title, label: Title, kind: text, writeTo: title }
+      - { id: body, label: Text, kind: markdown, writeTo: text }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: correspondence-copy
+  description: >-
+    A letter, or extract of one, copied into the appendices (Saunderson, Wells, Wythe, Washington,
+    the Logan letters). Correspondents are named in the text.
+  color: '#a23b72'
+  iconSeed: letter-copy
+  rendererId: source-text
+  layout:
+    fields:
+      - { id: title, label: Title, kind: text, writeTo: title }
+      - { id: date, label: Date, kind: date, writeTo: date }
+      - { id: body, label: Text, kind: markdown, writeTo: text }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: official-paper
+  description: >-
+    A drafted public instrument printed in the appendices: instructions to deputies, a bill, an act,
+    a draft constitution.
+  color: '#44566c'
+  iconSeed: official-paper
+  rendererId: source-text
+  layout:
+    fields:
+      - { id: title, label: Title, kind: text, writeTo: title }
+      - { id: date, label: Date, kind: date, writeTo: date }
+      - { id: body, label: Text, kind: markdown, writeTo: text }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: deposition
+  description: >-
+    A sworn or signed statement, certificate or declaration collected in the appendix relative to the
+    murder of Logan's family.
+  color: '#d1495b'
+  iconSeed: deposition-seal
+  rendererId: source-text
+  layout:
+    fields:
+      - { id: title, label: Title, kind: text, writeTo: title }
+      - { id: date, label: Date, kind: date, writeTo: date }
+      - { id: body, label: Text, kind: markdown, writeTo: text }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: editorial-note
+  description: >-
+    Matter by the editors or others than Jefferson: introductions, Lincoln's tribute, the address
+    on the University of Virginia.
+  color: '#8a7968'
+  iconSeed: editorial-note
+  rendererId: source-text
+  layout:
+    fields:
+      - { id: title, label: Title, kind: text, writeTo: title }
+      - { id: body, label: Text, kind: markdown, writeTo: text }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: front-matter
+  description: >-
+    Title pages, rosters, tables of contents, illustration lists and the scan's own residue (library
+    stamps, catalogue card). Kept so that every line of the scan belongs to a record; not linked.
+  color: '#9aa0a6'
+  iconSeed: front-matter
+  rendererId: source-text
+  layout:
+    fields:
+      - { id: title, label: Title, kind: text, writeTo: title }
+      - { id: body, label: Text, kind: markdown, writeTo: text }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+# ---------------------------------------------------------------- entity types
+# Created from the gazetteer (gazetteer.yaml). Only names, a type and variants are recorded; whatever
+# the text does not itself say is not said here.
+
+- code: person
+  description: A named individual who is mentioned in the text.
+  color: '#e07a1f'
+  iconSeed: person
+  layout:
+    fields:
+      - { id: title, label: Name, kind: text, writeTo: title }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: place
+  description: A country, state, county, city, river, mountain or other named place.
+  color: '#2a9d8f'
+  iconSeed: place
+  layout:
+    fields:
+      - { id: title, label: Name, kind: text, writeTo: title }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: organization
+  description: A government, legislature, court, office, church, college, party or other body.
+  color: '#6d597a'
+  iconSeed: organization
+  layout:
+    fields:
+      - { id: title, label: Name, kind: text, writeTo: title }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: work
+  description: A named book, act, treaty, constitution, resolution or other text referred to.
+  color: '#3d5a80'
+  iconSeed: work
+  layout:
+    fields:
+      - { id: title, label: Name, kind: text, writeTo: title }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: event
+  description: A named war, battle, congress, convention, revolution or other occurrence.
+  color: '#c1121f'
+  iconSeed: event
+  layout:
+    fields:
+      - { id: title, label: Name, kind: text, writeTo: title }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
+
+- code: thing
+  description: A named object, ship, currency, measure or substance that the text refers to.
+  color: '#7f7f3f'
+  iconSeed: thing
+  layout:
+    fields:
+      - { id: title, label: Name, kind: text, writeTo: title }
+      - { id: note, label: Note, kind: text, writeTo: note }
+      - { id: refs, label: Sources, kind: list, writeTo: references }
