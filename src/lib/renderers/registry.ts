@@ -26,6 +26,9 @@ import LetterFourCard from './letter-four/LetterFourCard.svelte';
 import LetterFourRow from './letter-four/LetterFourRow.svelte';
 import LetterFiveCard from './letter-five/LetterFiveCard.svelte';
 import LetterFiveRow from './letter-five/LetterFiveRow.svelte';
+import SourceTextCard from './source-text/SourceTextCard.svelte';
+import SourceTextRow from './source-text/SourceTextRow.svelte';
+import SourceTextDetail from './source-text/SourceTextDetail.svelte';
 import { extensionRenderers } from '$extensions/renderers';
 
 /**
@@ -163,6 +166,17 @@ export const recordRenderers: RecordRenderer[] = [
     card: LetterFiveCard,
     row: LetterFiveRow,
     detail: CorrespondenceDetail,
+    fullBleed: true,
+  },
+  // Text taken from a source, shown with the entities it names linked (annotated text).
+  {
+    id: 'source-text',
+    get name() {
+      return m.maroon_frail_dingo_strive();
+    },
+    card: SourceTextCard,
+    row: SourceTextRow,
+    detail: SourceTextDetail,
     fullBleed: true,
   },
   ...extensionRenderers,

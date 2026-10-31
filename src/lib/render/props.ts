@@ -1,6 +1,7 @@
 import type { SuperForm } from 'sveltekit-superforms';
 import type { FieldKind, FormLayout } from '$lib/forms/layout';
 import { formatFieldValue, type FormattedFieldValue } from '$lib/forms/format';
+import type { MentionSpan } from '$lib/records/mentionSegments';
 
 /** A relation field's resolved target: the linked entity's id + a display label,
  *  plus a person's color/avatar for `user` relations (absent for `record`). */
@@ -205,6 +206,9 @@ export interface RendererDetailProps {
   record: RendererDetailRecord;
   thread: RendererDetailThread;
   letters: RendererDetailMapLetter[];
+  /** Mentions recorded in the record's text (entity links). Optional: only renderers that show
+   *  annotated text read it, every other detail ignores it. */
+  mentions?: MentionSpan[];
   onNavigate?: (id: string) => void;
 }
 
@@ -215,6 +219,7 @@ export function buildRendererDetailProps(
     sf: SuperForm<Record<string, unknown>>;
     thread: RendererDetailThread;
     letters?: RendererDetailMapLetter[];
+    mentions?: MentionSpan[];
     onNavigate?: (id: string) => void;
   },
 ): RendererDetailProps {
@@ -232,6 +237,7 @@ export function buildRendererDetailProps(
     },
     thread: extra.thread,
     letters: extra.letters ?? [],
+    ...(extra.mentions ? { mentions: extra.mentions } : {}),
     onNavigate: extra.onNavigate,
   };
 }

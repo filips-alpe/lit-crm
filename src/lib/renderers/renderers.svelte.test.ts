@@ -148,3 +148,30 @@ describe('registry wiring', () => {
     }
   });
 });
+
+describe('source-text renderer', () => {
+  it('is registered with a card, row and detail', () => {
+    const r = getRenderer('source-text');
+    expect(r?.card).toBeDefined();
+    expect(r?.row).toBeDefined();
+    expect(r?.detail).toBeDefined();
+  });
+
+  it('leads with the title and shows the opening of the text', async () => {
+    const r = getRenderer('source-text')!;
+    render(
+      r.card!,
+      props({
+        title: f({ writeTo: 'title', value: 'Query XVIII' }),
+        body: f({
+          writeTo: 'text',
+          kind: 'markdown',
+          value: 'The manners…',
+          raw: 'The manners of the people',
+        }),
+      }),
+    );
+    await expect.element(page.getByText('Query XVIII')).toBeInTheDocument();
+    await expect.element(page.getByText('The manners of the people')).toBeInTheDocument();
+  });
+});

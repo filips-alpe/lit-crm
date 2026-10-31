@@ -10,6 +10,7 @@
     type RendererTypeInput,
   } from '$lib/render/props';
   import type { FormLayout } from '$lib/forms/layout';
+  import type { MentionSpan } from '$lib/records/mentionSegments';
   import { setRecordOptions, type RecordFormOptions } from '$lib/forms/recordOptions';
 
   const EMPTY_OPTIONS: RecordFormOptions = { users: [], records: [], projects: [] };
@@ -21,6 +22,7 @@
     layout,
     thread,
     letters = [],
+    mentions,
     options = EMPTY_OPTIONS,
     onNavigate,
   }: {
@@ -36,6 +38,8 @@
     thread: RendererDetailThread;
     /** The rest of the plottable correspondence, drawn on the letter map. */
     letters?: RendererDetailMapLetter[];
+    /** Mentions recorded in this record's text, for renderers that annotate it. */
+    mentions?: MentionSpan[];
     /** Relation/project picker options for the editable fields. */
     options?: RecordFormOptions;
     /** Supplied in the modal so thread prev/next flips the record in place. */
@@ -61,7 +65,7 @@
         layout,
         rendererId: type.rendererId,
       },
-      { sf, thread, letters, onNavigate },
+      { sf, thread, letters, mentions, onNavigate },
     ),
   );
 

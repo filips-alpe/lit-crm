@@ -54,11 +54,18 @@
         >{m.long_direct_rook_grace()}</span
       >
     {/if}
-    {#if record.creator}
-      <span title={record.creator.name} class="ml-auto shrink-0">
-        <AvatarImage user={record.creator} class="size-9" />
-      </span>
-    {/if}
+    <div class="ml-auto flex shrink-0 items-center gap-3">
+      <a
+        href={resolve('/(app)/entity/[id]', { id: record.id })}
+        class="text-sm text-stone-500 underline hover:text-stone-800"
+        >{m.topical_yummy_wren_amuse()}</a
+      >
+      {#if record.creator}
+        <span title={record.creator.name}>
+          <AvatarImage user={record.creator} class="size-9" />
+        </span>
+      {/if}
+    </div>
   </header>
 
   <ProjectMultiselect

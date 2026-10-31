@@ -19,6 +19,7 @@ import {
 } from '$lib/forms/layout';
 import type { FormLayout } from '$lib/forms/layout';
 import { layoutSchema } from '$lib/schemas/types';
+import { listMentionsForRecord } from '$lib/server/repos/mentions';
 import { buildRecordFormOptions } from '$lib/server/recordFormOptions';
 import { applyInvalidDateError, applyRecordRelationErrors } from '$lib/server/forms/relationErrors';
 import * as m from '$lib/paraglide/messages.js';
@@ -48,7 +49,7 @@ export const load: PageServerLoad = async (event) => {
   // every letter of the type that carries coordinates; only fetched for types that
   // map a location field, other detail views ignore it.
   const hasLocation = layout.fields.some((f) => f.kind === 'location');
-  const [thread, letters, options] = await Promise.all([
+  const [thread, letters, options, mentions] = await Promise.all([
     getCorrespondenceNeighbors({
       id: record.id,
       from: record.from ?? '',
@@ -60,6 +61,7 @@ export const load: PageServerLoad = async (event) => {
       excludeRecordId: record.id,
       values: form.data as Record<string, unknown>,
     }),
+    listMentionsForRecord(record.id),
   ]);
 
   const type = {
@@ -71,7 +73,7 @@ export const load: PageServerLoad = async (event) => {
     layout,
   };
 
-  return { record, type, form, layout, thread, letters, options };
+  return { record, type, form, layout, thread, letters, options, mentions };
 };
 
 export const actions: Actions = {
