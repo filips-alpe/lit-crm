@@ -24,3 +24,4 @@ project.inlang/README.md
 /prisma/seed/generated/
 /prisma/seed/data/projects.yaml
 /prisma/seed/sources/*.json
+/prisma/seed/sources/jefferson/

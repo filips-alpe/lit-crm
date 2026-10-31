@@ -1,0 +1,30 @@
+{
+  "itemId": "writingsofthomas0000vari_v5r4",
+  "detailsUrl": "https://archive.org/details/writingsofthomas0000vari_v5r4",
+  "files": [
+    {
+      "name": "writingsofthomas0000vari_v5r4_djvu.txt",
+      "url": "https://archive.org/download/writingsofthomas0000vari_v5r4/writingsofthomas0000vari_v5r4_djvu.txt",
+      "md5": "90abaa04ea9822bfa0a066a3b2c1099b",
+      "bytes": 1597395
+    },
+    {
+      "name": "writingsofthomas0000vari_v5r4_hocr_searchtext.txt.gz",
+      "url": "https://archive.org/download/writingsofthomas0000vari_v5r4/writingsofthomas0000vari_v5r4_hocr_searchtext.txt.gz",
+      "md5": "ecda3e1eb8c5580353336bc1acf3d3e6",
+      "bytes": 567544
+    },
+    {
+      "name": "writingsofthomas0000vari_v5r4_hocr_pageindex.json.gz",
+      "url": "https://archive.org/download/writingsofthomas0000vari_v5r4/writingsofthomas0000vari_v5r4_hocr_pageindex.json.gz",
+      "md5": "d1d884c793506696d604808904fe8bf5",
+      "bytes": 12950
+    },
+    {
+      "name": "writingsofthomas0000vari_v5r4_page_numbers.json",
+      "url": "https://archive.org/download/writingsofthomas0000vari_v5r4/writingsofthomas0000vari_v5r4_page_numbers.json",
+      "md5": "28d38a3c9743d965585fd1d364e102db",
+      "bytes": 178495
+    }
+  ]
+}
