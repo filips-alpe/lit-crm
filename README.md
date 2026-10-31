@@ -66,7 +66,7 @@ The types are defined in `prisma/seed/data/types.yaml`, and the generator assign
 | `petition`    | 71      | Founders Online | Petitions, memorials, proposals          |
 | `document`    | 47      | Founders Online | Other documents                          |
 
-Founders Online types are assigned from document titles, so some documents outside `letter` land in a neighbouring type. Wikidata people are matched by name, so a few obscure names may be the wrong person. Only 17 records have full text.
+Founders Online types are assigned from document titles, so some documents outside `letter` land in a neighbouring type. Wikidata people are matched by name, so a few obscure names may be the wrong person. Only a small share of records have full text, and most of it is uncorrected OCR from Smyth's 1905-07 edition (see `prisma/seed/sources/smyth/REPORT.md`).
 
 Seed data is generated from snapshots committed under `prisma/seed/sources/`. Generation uses no network and gives the same output every time:
 
