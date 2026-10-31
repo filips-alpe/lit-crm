@@ -40,6 +40,9 @@
   <div class="flex flex-1 items-center justify-center px-5 py-12">
     <!-- Each user is a native submit button, so a click works before hydration
          (plain POST of username=…) as well as through the enhanced form. -->
+    {#if data.users.length === 0}
+      <p class="text-center text-base-content/60">{m.lucky_many_oryx_file()}</p>
+    {/if}
     <form method="POST" use:enhance>
       <div
         role="group"

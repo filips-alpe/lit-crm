@@ -5,12 +5,11 @@ import type { Actions, PageServerLoad } from './$types';
 import * as m from '$lib/paraglide/messages.js';
 import { prisma } from '$lib/prisma';
 import { loginSchema } from '$lib/schemas/login';
+import { safeRedirectTo } from '$lib/server/auth/redirectTo';
 import { setSession } from '$lib/server/auth/session';
 import { UserStatus } from '../../../generated/prisma/enums';
 
-export const load: PageServerLoad = async ({ locals }) => {
-  if (locals.user) redirect(303, '/');
-
+export const load: PageServerLoad = async () => {
   const users = await prisma.user.findMany({
     where: { status: UserStatus.ACTIVE },
     select: { id: true, username: true, name: true, color: true, avatarSeed: true },
@@ -37,6 +36,6 @@ export const actions: Actions = {
 
     setSession(event.cookies, user.id, event.url);
 
-    redirect(303, '/');
+    redirect(303, safeRedirectTo(event.url.searchParams.get('redirectTo')));
   },
 };
