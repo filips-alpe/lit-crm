@@ -90,7 +90,24 @@ bunx playwright test
 The `server` and e2e suites write to their database, so they refuse to run against your dev data:
 
 - **Server tests** truncate tables between cases and need a `TEST_DATABASE_URL` that differs from `DATABASE_URL`. `.env.example` has the setup steps.
-- **e2e tests** only run when `DATABASE_URL` points at a local Postgres. `playwright.config.ts` has the setup steps.
+- **e2e tests** (`bun run test:e2e`) need a local Postgres — `docker compose up -d postgres` is enough. See [End-to-end tests](#end-to-end-tests).
+
+### End-to-end tests
+
+```sh
+docker compose up -d postgres   # or set E2E_DATABASE_URL to any local Postgres
+bun run test:e2e
+```
+
+That single command does everything:
+
+1. `e2e/global-setup.ts` creates a template database (`lit_crm_e2e_template`), runs `prisma migrate deploy` and the seed on it, and builds the app.
+2. Each Playwright worker clones the template (`CREATE DATABASE … TEMPLATE`) into `lit_crm_e2e_w<N>` and starts its own `vite preview` server on port `4180+N` bound to that clone.
+3. After the run the worker databases and the template are dropped.
+
+`E2E_DATABASE_URL` (default: the docker-compose Postgres on `:5433`) selects the server; it must be `localhost`/`127.0.0.1`, and the dev database is never used.
+
+Specs import `test`/`expect` from `e2e/fixtures.ts` rather than `@playwright/test`. Besides the normal fixtures it provides worker-scoped `db` (a `PrismaClient` bound to the worker's database, for arranging or asserting data), `workerDbUrl` and `serverUrl`; `baseURL` already points at the worker's server. `e2e/db-isolation.e2e.ts` is a worked example.
 
 ## Translations
 

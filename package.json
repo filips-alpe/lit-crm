@@ -16,7 +16,7 @@
     "ext": "bun scripts/ext.ts",
     "test:unit": "vitest",
     "test": "npm run test:unit -- --run && npm run test:e2e",
-    "test:e2e": "playwright install && playwright test",
+    "test:e2e": "playwright install chromium && playwright test",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
