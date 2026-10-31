@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_TYPE_COLOR, layoutSchema, recipientColumn, typeSchema } from './types';
+import * as m from '$lib/paraglide/messages.js';
+
+describe('typeSchema code validation', () => {
+  it('rejects a blank code with the localized required message', () => {
+    const result = typeSchema.safeParse({ id: '', code: '   ' });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].path).toEqual(['code']);
+    expect(result.error?.issues[0].message).toBe(m.early_key_lamb_taste());
+  });
+});
 
 describe('typeSchema layout validation', () => {
   it('accepts a layout with text, number, and date kinds', () => {

@@ -95,6 +95,39 @@ test('list kind is disabled on other fields once one field has kind=list', async
   await closeMenu(secondKind);
 });
 
+test('a type can be created, renamed and deleted', async ({ page }) => {
+  await page.context().clearCookies();
+  await loginAs(page, USER);
+
+  // Create
+  const code = `crud-${Date.now()}`;
+  await page.goto('/types/new');
+  await page.locator('input[name="code"]').fill(code);
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page).toHaveURL(/\/types$/);
+
+  // The new row shows its name and created date
+  const row = page.locator('#TypesList li', { hasText: code });
+  await expect(row).toContainText(/Created .*\d{4}/);
+
+  // Edit (rename)
+  const renamed = `${code}-renamed`;
+  await row.getByRole('link').click();
+  await expect(page).toHaveURL(/\/types\/[^/]+$/);
+  await page.locator('input[name="code"]').fill(renamed);
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page).toHaveURL(/\/types$/);
+  const renamedRow = page.locator('#TypesList li', { hasText: renamed });
+  await expect(renamedRow).toBeVisible();
+
+  // Delete from the row: confirm, stay on the list, row is marked deleted
+  await renamedRow.getByRole('button', { name: `Delete ${renamed}` }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Delete', exact: true }).click();
+  await expect(page).toHaveURL(/\/types$/);
+  await expect(renamedRow).toContainText('deleted');
+  await expect(renamedRow.getByRole('button', { name: `Delete ${renamed}` })).toHaveCount(0);
+});
+
 // The kind control is a custom dropdown (button + role="menu"), not a native
 // <select>. Each field's menu is scoped under its own dropdown container so
 // identically-labelled items in other fields' menus aren't matched.

@@ -1,10 +1,22 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
   import { resolve } from '$app/paths';
   import TypeBadge from '$lib/components/TypeBadge.svelte';
-  import type { PageData } from './$types';
+  import { formatDate } from '$lib/utils/formatDate';
+  import AlertIcon from './AlertIcon.svelte';
+  import type { ActionData, PageData } from './$types';
   import * as m from '$lib/paraglide/messages.js';
 
-  let { data }: { data: PageData } = $props();
+  let { data, form }: { data: PageData; form?: ActionData } = $props();
+
+  // One shared confirm dialog: the row's delete button picks what it applies to.
+  let confirmDialog = $state<HTMLDialogElement | null>(null);
+  let pendingDelete = $state<{ id: string; code: string } | null>(null);
+
+  function askDelete(row: { id: string; code: string }) {
+    pendingDelete = { id: row.id, code: row.code };
+    confirmDialog?.showModal();
+  }
 </script>
 
 <svelte:head><title>{m.quiet_pink_parrot_clasp()}</title></svelte:head>
@@ -12,6 +24,13 @@
 <h2 class="my-3 text-center text-lg font-semibold">{m.quiet_pink_parrot_clasp()}</h2>
 
 <div class="mx-auto w-full max-w-[820px] px-3 sm:px-4">
+  {#if form?.error}
+    <div role="alert" class="mb-3 alert alert-error">
+      <AlertIcon />
+      <span>{form.error}</span>
+    </div>
+  {/if}
+
   <ul id="TypesList" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
     <li class="col-span-full">
       <a
@@ -34,7 +53,7 @@
 
     {#each data.rows as row (row.id)}
       {@const deleted = row.status === 'INACTIVE'}
-      <li>
+      <li class="relative">
         <a
           id={`type-${row.id}`}
           href={resolve('/(app)/types/[id]', { id: row.id })}
@@ -71,11 +90,74 @@
             {#if row.description}
               <div class="truncate text-xs text-stone-500">{row.description}</div>
             {/if}
+            <div class="mt-0.5 pr-5 text-xs text-stone-500">
+              {m.dirty_calm_firefox_taste({ date: formatDate(row.createdAt) })}
+            </div>
           </div>
         </a>
+        <!-- A sibling of the card link: a button may not nest inside an <a>. Deleted
+             rows are restored or purged from their own page, so only active rows get it. -->
+        {#if !deleted}
+          <button
+            type="button"
+            class="btn absolute right-1.5 bottom-1.5 btn-square btn-ghost btn-xs btn-error"
+            aria-label={m.warm_fluffy_lizard_inspire({ code: row.code })}
+            title={m.warm_fluffy_lizard_inspire({ code: row.code })}
+            onclick={() => askDelete(row)}
+          >
+            <svg
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="size-3.5"
+            >
+              <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v5M14 11v5" />
+            </svg>
+          </button>
+        {/if}
       </li>
     {/each}
   </ul>
+
+  <form id="TypeRowDeleteForm" method="POST" action="?/delete" use:enhance>
+    <input type="hidden" name="id" value={pendingDelete?.id ?? ''} />
+  </form>
+  <dialog
+    bind:this={confirmDialog}
+    class="modal"
+    aria-labelledby="type-row-delete-title"
+    aria-describedby="type-row-delete-body"
+  >
+    <div class="modal-box max-w-md">
+      <h3 id="type-row-delete-title" class="text-base font-semibold">
+        {m.dirty_trick_lynx_edit()}
+      </h3>
+      <p id="type-row-delete-body" class="mt-2 text-sm">
+        {m.funny_nice_snake_ascend({ code: pendingDelete?.code ?? '' })}
+      </p>
+      <div class="modal-action">
+        <button type="button" class="btn btn-ghost" onclick={() => confirmDialog?.close()}>
+          {m.minor_basic_vulture_renew()}
+        </button>
+        <button
+          type="submit"
+          form="TypeRowDeleteForm"
+          class="btn btn-error"
+          onclick={() => confirmDialog?.close()}
+        >
+          {m.plane_small_ocelot_jest()}
+        </button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button aria-label={m.major_sleek_macaw_shine()}>{m.yummy_alive_termite_commend()}</button>
+    </form>
+  </dialog>
 </div>
 
 <style>

@@ -84,7 +84,11 @@ const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, { error: () => m.novel_ma
 
 export const typeSchema = z.object({
   id: z.string().default(''),
-  code: z.string().trim().min(1).max(40),
+  code: z
+    .string()
+    .trim()
+    .min(1, { error: () => m.early_key_lamb_taste() })
+    .max(40),
   description: z.string().max(200).optional().nullable(),
   color: hexColor.default(DEFAULT_TYPE_COLOR),
   iconSeed: z.string().min(1).max(64).optional().nullable(),
