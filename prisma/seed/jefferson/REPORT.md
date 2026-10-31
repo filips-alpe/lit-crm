@@ -28,11 +28,11 @@ Records: **295**, covering all 41639 raw lines (each in exactly one record).
 | notes-on-virginia | 48 | 15011 |
 | parliamentary-manual | 56 | 5020 |
 
-Entities with at least one mention: **567** of 574 in the gazetteer.
+Entities with at least one mention: **568** of 575 in the gazetteer.
 
 | entity type | entities | mentions |
 | --- | --- | --- |
-| person | 251 | 1857 |
+| person | 252 | 1837 |
 | people | 30 | 130 |
 | place | 232 | 2846 |
 | organization | 23 | 452 |
@@ -40,7 +40,7 @@ Entities with at least one mention: **567** of 574 in the gazetteer.
 | event | 4 | 5 |
 | thing | 2 | 37 |
 
-Mentions (linked): **5825**.
+Mentions (linked): **5805**.
 
 Gazetteer entries without a mention (kept as ambiguity candidates or for completeness): 7 (`dewitt-clinton`, `robert-smith`, `john-rutledge`, `thomas-pinckney`, `jefferson-county`, `society-of-the-cincinnati`, `chesapeake-ship`).
 
@@ -54,18 +54,18 @@ offices and nationality adjectives excluded) that overlaps neither. Front-matter
 
 |  | count |
 | --- | --- |
-| linked | 5825 |
-| ambiguous-unlinked | 257 |
+| linked | 5805 |
+| ambiguous-unlinked | 277 |
 | unmatched name candidates | 3105 |
-| **link rate** | **63.4%** |
+| **link rate** | **63.2%** |
 
 | part | linked | ambiguous-unlinked | unmatched | link rate |
 | --- | --- | --- | --- | --- |
 | editorial | 168 | 5 | 80 | 66.4% |
-| autobiography | 1415 | 38 | 899 | 60.2% |
-| anas | 1706 | 98 | 470 | 75.0% |
-| notes-on-virginia | 1954 | 114 | 1511 | 54.6% |
-| parliamentary-manual | 582 | 2 | 145 | 79.8% |
+| autobiography | 1414 | 39 | 899 | 60.1% |
+| anas | 1701 | 103 | 470 | 74.8% |
+| notes-on-virginia | 1941 | 127 | 1511 | 54.2% |
+| parliamentary-manual | 581 | 3 | 145 | 79.7% |
 
 The rate is a floor: the unmatched count includes lone given names, citation fragments and OCR noise that no
 gazetteer should resolve.
@@ -121,8 +121,8 @@ The twelve most mentioned entities with the forms the linker matched (name resol
 
 ## Ambiguous mentions left unlinked
 
-31 surfaces are declared ambiguous; 26 of them occur in the text,
-257 times in all. Each stays plain text.
+38 surfaces are declared ambiguous; 32 of them occur in the text,
+277 times in all. Each stays plain text.
 
 | surface | occurrences left unlinked | candidates | why |
 | --- | --- | --- | --- |
@@ -137,8 +137,10 @@ The twelve most mentioned entities with the forms the linker matched (name resol
 | Jersey | 8 | East Jersey; West Jersey; New Jersey | East, West and New Jersey. |
 | Mr. Smith | 8 | Samuel Smith; Robert Smith; William Stephens Smith | Several Smiths in the Anas. |
 | Mr. Morris | 7 | Robert Morris; Gouverneur Morris | Robert and Gouverneur Morris both occur as Mr. Morris. |
+| Penn | 7 | William Penn; Pennsylvania | Notes on Virginia cites "Repr. Penn." for Pennsylvania, and "Mr. Penn" need not be William Penn. |
 | Rutledge | 7 | Edward Rutledge; John Rutledge | Two Rutledges are named. |
 | Chesapeake | 6 | Chesapeake; Chesapeake (ship) | The bay in the Autobiography and Notes, but the frigate attacked in 1807 in the Anas. |
+| Humphreys | 6 | Colonel Humphreys | At least three different men: a delegate in the Autobiography, the colonel, and "one Humphreys" sent abroad in the Anas. |
 | Kanhaway | 6 | Great Kanhaway; Little Kanhaway | Two rivers named Kanhaway. |
 | Lee | 6 | Richard Henry Lee; Francis Lightfoot Lee; Thomas Ludwell Lee; Arthur Lee; Henry Lee | At least five Lees are named, often by bare surname. |
 | Mr. Lee | 6 | Richard Henry Lee; Francis Lightfoot Lee; Arthur Lee | Three Lees sit in the same Congress; the title does not say which. |
@@ -147,13 +149,17 @@ The twelve most mentioned entities with the forms the linker matched (name resol
 | Livingston | 4 | Robert R. Livingston; William Livingston; Edward Livingston; Brockhurst Livingston | Four Livingstons are named. |
 | Mason | 4 | George Mason; Stevens Thompson Mason | Two Masons are named. |
 | Morris | 4 | Robert Morris; Gouverneur Morris; Lewis Morris | Robert, Gouverneur and Lewis Morris all occur. |
+| Coxe | 3 | Tench Coxe | In the Anas this is Tenche Coxe; Notes on Virginia names a Governor Coxe and a Dr. Coxe who are not. |
 | Mr. Nicholas | 3 | Robert Carter Nicholas; Wilson Cary Nicholas; John Nicholas | Three Nicholases are named. |
 | Nicholas | 3 | Robert Carter Nicholas; Wilson Cary Nicholas; John Nicholas | Three Nicholases are named. |
+| Byrd | 2 | Colonel Byrd | The surveyor Colonel Byrd of the Autobiography is not shown to be the Byrd spared by the Cherokees in Notes on Virginia. |
 | Franklin | 2 | Benjamin Franklin; William Temple Franklin | Benjamin Franklin in the Autobiography and Anas; bare in the Notes it is a figure of speech. |
+| Claiborne | 1 | Governor Claiborne | The governor in the Anas is not the Claiborne who petitioned against Lord Baltimore in Notes on Virginia. |
 | Lincoln | 1 | Abraham Lincoln; Lincoln County | Abraham Lincoln in the editorial matter, Lincoln county in the Notes on Virginia and the Logan appendix. |
+| Lord Berkeley | 1 | Lord Berkeley | The colonial proprietor in Notes on Virginia is not the medieval lord arraigned in the Manual. |
 | Randolph | 1 | Edmund Randolph; Peyton Randolph; Thomas Mann Randolph; Thomas Jefferson Randolph; Isham Randolph; Jane Randolph | Several Randolphs; only the Autobiography (Peyton) and the Anas (Edmund) are resolved by part. |
 
-Declared ambiguous but absent from the text: `Mr. Randolph`, `Mr. Henry`, `Hamilton`, `Madison`, `Mr. Mason`.
+Declared ambiguous but absent from the text: `Hale`, `Mr. Randolph`, `Mr. Henry`, `Hamilton`, `Madison`, `Mr. Mason`.
 
 ## Top unlinked surfaces
 
@@ -224,19 +230,19 @@ Capitalised name candidates that matched nothing in the gazetteer, most frequent
 
 ## Cleanup and OCR issues
 
-Raw lines: 41639; non-blank: 32800; blocks after cleanup: 3668 (3080 unwrapped prose, 588 kept line-for-line as tables or short lines).
+Raw lines: 41639; non-blank: 32800; blocks after cleanup: 3667 (3079 unwrapped prose, 588 kept line-for-line as tables or short lines).
 
 | logged change | count |
 | --- | --- |
 | running-head lines removed | 978 |
-| signature-mark lines removed | 52 |
+| signature-mark lines removed | 53 |
 | page-number lines removed | 38 |
 | library-stamp lines removed | 7 |
-| line-end hyphens joined | 3268 |
-| line-end hyphens kept | 73 |
+| line-end hyphens joined | 3267 |
+| line-end hyphens kept | 74 |
 | paragraphs merged across a page break | 544 |
 
-Every change is logged with its raw line in `cleanup-log.json` (4960 entries).
+Every change is logged with its raw line in `cleanup-log.json` (4961 entries).
 
 | issue left in the text (never corrected) | count |
 | --- | --- |
@@ -287,9 +293,9 @@ Every decision is in `cleanup-log.json`.
 | decision / reason | count |
 | --- | --- |
 | hyphen-join / joined-form-attested | 2947 |
-| hyphen-join / default-join | 319 |
+| hyphen-join / default-join | 318 |
 | hyphen-keep / hyphenated-form-attested | 36 |
-| hyphen-keep / reviewed-override | 22 |
+| hyphen-keep / reviewed-override | 23 |
 | hyphen-keep / number-compound | 6 |
 | hyphen-keep / compound-left-part | 4 |
 | hyphen-keep / unrelated-words | 3 |
@@ -309,7 +315,7 @@ break becomes a space:
 
 ### Default joins
 
-319 breaks had neither form attested and were joined by default. Every one is listed so that each
+318 breaks had neither form attested and were joined by default. Every one is listed so that each
 can be audited against its raw lines.
 
 | line | raw | result |
@@ -614,7 +620,6 @@ can be audited against its raw lines.
 | 36035 | `tum-⏎bling` | `tumbling` |
 | 36273 | `Con-⏎rad` | `Conrad` |
 | 36518 | `apart-⏎ment;` | `apartment` |
-| 36804 | `common-⏎placed` | `commonplaced` |
 | 37096 | `promul-⏎gated,` | `promulgated` |
 | 37314 | `appor-⏎tioned` | `apportioned` |
 | 38013 | `nip-⏎ping,` | `nipping` |

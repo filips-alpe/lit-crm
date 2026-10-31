@@ -37,6 +37,16 @@ ambiguous:
     ).toThrow(/both an alias and ambiguous/);
   });
 
+  it('accepts one candidate only when the surface also names someone without a record', () => {
+    const g = parseGazetteer(`
+entities:
+  - { key: a, name: A One, type: person }
+ambiguous:
+  - { surface: Coxe, candidates: [a], otherReferents: true, reason: another Coxe has no record }
+`);
+    expect(g.ambiguous[0].otherReferents).toBe(true);
+  });
+
   it('refuses an ambiguous surface with fewer than two or unknown candidates', () => {
     expect(() =>
       parseGazetteer(`
@@ -125,7 +135,7 @@ describe('the curated gazetteer', () => {
       expect(surfaces.has(s), s).toBe(true);
     }
     for (const a of g.ambiguous) {
-      expect(a.candidates.length).toBeGreaterThanOrEqual(2);
+      expect(a.candidates.length).toBeGreaterThanOrEqual(a.otherReferents ? 1 : 2);
       for (const c of a.candidates) expect(ix.entities.has(c), `${a.surface} -> ${c}`).toBe(true);
     }
   });

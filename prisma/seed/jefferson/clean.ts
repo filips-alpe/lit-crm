@@ -56,7 +56,7 @@ export const LIBRARY_STAMP_LAST_LINE = 54;
 
 /** `VOL. I—23`, with the OCR damage seen in the volume: `VOL, I.—~9 : 1`, `VOL 1,—10`, `VOL. I1— 26 1`, `YOL. II—I?`. */
 const SIGNATURE_MARK =
-  /^[VY][O0][LR][.,]?\s*[IVXLl1jt/]{1,4}[.,]?\s*[—–~-]+[—–~\s-]*\S{1,4}(?:\s*\(\S{1,3}\))?(?:\s*[:—–-]*\s*\S{0,2})?\s*[.:—–-]*$/;
+  /^[VY][O0o][LRl][.,]?\s*[IVXLl1jt/]{1,4}[.,]?\s*[—–~-]+[—–~\s-]*\S{1,4}(?:\s*\(\S{1,3}\))?(?:\s*[:—–-]*\s*\S{0,2})?\s*[.:—–-]*$/;
 /** Dash-less remnant (`VOL II`, `VOL. jt)`): only a signature mark on a numbered page; on title pages it is real wording. */
 const BARE_VOLUME_MARK = /^[VY][O0][LR][.,]?\s*\S{1,3}\s*$/;
 const PAREN_FOLIO = /^\((?:\d{1,4}|[ivxlcIVXLC]{1,6})\)\s*[:.]?$/;
@@ -238,6 +238,7 @@ export const HYPHEN_OVERRIDES = new Map<string, 'keep' | 'join'>(
     'after-world’s',
     'broad-ways',
     'city-committee',
+    'common-placed',
     'corn-market',
     'court-house',
     'foot-hold',

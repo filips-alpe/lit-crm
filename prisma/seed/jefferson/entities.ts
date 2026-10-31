@@ -36,11 +36,15 @@ const entitySchema = z.object({
   note: z.string().optional(),
 });
 
-const ambiguousSchema = z.object({
-  surface,
-  candidates: z.array(z.string()).min(2),
-  reason: z.string().min(10),
-});
+const ambiguousSchema = z
+  .object({
+    surface,
+    candidates: z.array(z.string()).min(1),
+    /** The surface also names someone with no record of their own, so one candidate is enough. */
+    otherReferents: z.boolean().optional(),
+    reason: z.string().min(10),
+  })
+  .refine((a) => a.otherReferents || a.candidates.length >= 2, 'needs at least two candidates');
 
 export const gazetteerSchema = z.object({
   entities: z.array(entitySchema),

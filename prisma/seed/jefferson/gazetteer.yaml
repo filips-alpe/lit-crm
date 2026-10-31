@@ -438,7 +438,9 @@ entities:
   - key: colonel-byrd
     name: 'Colonel Byrd'
     type: person
-    aliases: ['Byrd', 'William Byrd']
+    aliases: ['William Byrd']
+    scopedAliases:
+      autobiography: ['Byrd']
   - key: sir-walter-raleigh
     name: 'Sir Walter Raleigh'
     type: person
@@ -446,7 +448,6 @@ entities:
   - key: william-penn
     name: 'William Penn'
     type: person
-    aliases: ['Penn']
   - key: lord-baltimore
     name: 'Lord Baltimore'
     type: person
@@ -471,6 +472,9 @@ entities:
   - key: lord-berkeley
     name: 'Lord Berkeley'
     type: person
+    nameIsAlias: false
+    scopedAliases:
+      notes-on-virginia: ['Lord Berkeley']
   - key: sir-william-berkeley
     name: 'Sir William Berkeley'
     type: person
@@ -643,7 +647,9 @@ entities:
   - key: tench-coxe
     name: 'Tench Coxe'
     type: person
-    aliases: ['Tenche Coxe', 'Coxe']
+    aliases: ['Tenche Coxe']
+    scopedAliases:
+      anas: ['Coxe']
   - key: colonel-hitchburn
     name: 'Colonel Hitchburn'
     type: person
@@ -651,7 +657,6 @@ entities:
   - key: colonel-humphreys
     name: 'Colonel Humphreys'
     type: person
-    aliases: ['Humphreys']
   - key: baldwin
     name: 'Baldwin'
     type: person
@@ -772,9 +777,17 @@ entities:
     nameIsAlias: false
     scopedAliases:
       editorial: ['Cabell']
-  - key: hale
-    name: 'Hale'
+  - key: lord-hale
+    name: 'Lord Hale'
     type: person
+    scopedAliases:
+      autobiography: ['Hale']
+      parliamentary-manual: ['Hale']
+  - key: mr-hale
+    name: 'Mr. Hale'
+    type: person
+    scopedAliases:
+      anas: ['Hale']
   - key: prince-of-orange
     name: 'Prince of Orange'
     type: person
@@ -790,7 +803,8 @@ entities:
   - key: governor-claiborne
     name: 'Governor Claiborne'
     type: person
-    aliases: ['Claiborne']
+    scopedAliases:
+      anas: ['Claiborne']
   - key: general-gage
     name: 'General Gage'
     type: person
@@ -2092,6 +2106,32 @@ entities:
     type: thing
 
 ambiguous:
+  - surface: 'Hale'
+    candidates: ['lord-hale', 'mr-hale']
+    reason: 'The law writer cited in the Autobiography and Manual is not the Mr. Hale of Massachusetts in the Anas.'
+  - surface: 'Penn'
+    candidates: ['william-penn', 'pennsylvania']
+    reason: 'Notes on Virginia cites "Repr. Penn." for Pennsylvania, and "Mr. Penn" need not be William Penn.'
+  - surface: 'Coxe'
+    candidates: ['tench-coxe']
+    otherReferents: true
+    reason: 'In the Anas this is Tenche Coxe; Notes on Virginia names a Governor Coxe and a Dr. Coxe who are not.'
+  - surface: 'Humphreys'
+    candidates: ['colonel-humphreys']
+    otherReferents: true
+    reason: 'At least three different men: a delegate in the Autobiography, the colonel, and "one Humphreys" sent abroad in the Anas.'
+  - surface: 'Claiborne'
+    candidates: ['governor-claiborne']
+    otherReferents: true
+    reason: 'The governor in the Anas is not the Claiborne who petitioned against Lord Baltimore in Notes on Virginia.'
+  - surface: 'Lord Berkeley'
+    candidates: ['lord-berkeley']
+    otherReferents: true
+    reason: 'The colonial proprietor in Notes on Virginia is not the medieval lord arraigned in the Manual.'
+  - surface: 'Byrd'
+    candidates: ['colonel-byrd']
+    otherReferents: true
+    reason: 'The surveyor Colonel Byrd of the Autobiography is not shown to be the Byrd spared by the Cherokees in Notes on Virginia.'
   - surface: 'Washington'
     candidates: ['george-washington', 'washington-county', 'city-of-washington']
     reason: 'The bare name is the general, a county named for him, and the federal city.'

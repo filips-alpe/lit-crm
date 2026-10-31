@@ -897,7 +897,7 @@
       "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
       "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. I, p. 2 (leaf 40; djvu_txt line 1056); first mention in \"Autobiography: family, birth and education\""
     ],
-    "mentionCount": 6
+    "mentionCount": 4
   },
   {
     "key": "jefferson-ent-sir-walter-raleigh",
@@ -917,7 +917,7 @@
       "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
       "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. II, p. 3 (leaf 619; djvu_txt line 21801); first mention in \"Query I: An exact description of the limits and boundaries of the State of Virginia?\""
     ],
-    "mentionCount": 15
+    "mentionCount": 8
   },
   {
     "key": "jefferson-ent-lord-baltimore",
@@ -997,7 +997,7 @@
       "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
       "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. II, p. 253 (leaf 869; djvu_txt line 32834); first mention in \"Query XXIII: The histories of the State, the memorials published in its name in the time of its being a colony, and the pamphlets relating to its interior or exterior affairs present or ancient?\""
     ],
-    "mentionCount": 4
+    "mentionCount": 3
   },
   {
     "key": "jefferson-ent-sir-william-berkeley",
@@ -1487,7 +1487,7 @@
       "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
       "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. I, p. 417 (leaf 479; djvu_txt line 16971); first mention in \"Conversation with John Adams: 27 December\""
     ],
-    "mentionCount": 15
+    "mentionCount": 12
   },
   {
     "key": "jefferson-ent-colonel-hitchburn",
@@ -1505,9 +1505,9 @@
     "title": "Colonel Humphreys",
     "references": [
       "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
-      "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. I, p. 179 (leaf 237; djvu_txt line 7928); first mention in \"Appendix to the Autobiography, Note B: letter to Samuel A. Wells, 12 May 1819\""
+      "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. I, p. 357 (leaf 419; djvu_txt line 14727); first mention in \"Conversation with President Washington: 10 June 1793\""
     ],
-    "mentionCount": 7
+    "mentionCount": 1
   },
   {
     "key": "jefferson-ent-baldwin",
@@ -1720,14 +1720,24 @@
     "mentionCount": 6
   },
   {
-    "key": "jefferson-ent-hale",
+    "key": "jefferson-ent-lord-hale",
     "type": "person",
-    "title": "Hale",
+    "title": "Lord Hale",
     "references": [
       "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
       "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. I, p. 223 (leaf 281; djvu_txt line 9601); first mention in \"Appendix to the Autobiography, Note E: a bill for proportioning crimes and punishments in cases heretofore capital\""
     ],
-    "mentionCount": 17
+    "mentionCount": 11
+  },
+  {
+    "key": "jefferson-ent-mr-hale",
+    "type": "person",
+    "title": "Mr. Hale",
+    "references": [
+      "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
+      "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. I, p. 438 (leaf 500; djvu_txt line 17726); first mention in \"Dinner with President Adams: 25 December 1800\""
+    ],
+    "mentionCount": 6
   },
   {
     "key": "jefferson-ent-prince-of-orange",
@@ -1777,7 +1787,7 @@
       "Internet Archive: https://archive.org/details/writingsofthomas0000vari_v5r4",
       "Lipscomb & Bergh, The Writings of Thomas Jefferson (1905), vol. I, p. 461 (leaf 527; djvu_txt line 18582); first mention in \"Cabinet Meetings: 24 October\""
     ],
-    "mentionCount": 7
+    "mentionCount": 6
   },
   {
     "key": "jefferson-ent-general-gage",

@@ -9818,6 +9818,13 @@
   },
   {
     "recordKey": "jefferson-rec-0034",
+    "rawLine": 9706,
+    "kind": "signature-mark",
+    "raw": "Vol. 1.—15.",
+    "result": ""
+  },
+  {
+    "recordKey": "jefferson-rec-0034",
     "rawLine": 9709,
     "kind": "running-head",
     "raw": "226 Jefferson’s Works",
@@ -34754,10 +34761,10 @@
   {
     "recordKey": "jefferson-rec-0242",
     "rawLine": 36804,
-    "kind": "hyphen-join",
+    "kind": "hyphen-keep",
     "raw": "common-\nplaced",
-    "result": "commonplaced",
-    "reason": "default-join"
+    "result": "common-placed",
+    "reason": "reviewed-override"
   },
   {
     "recordKey": "jefferson-rec-0242",

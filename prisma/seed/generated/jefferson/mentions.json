@@ -7890,13 +7890,6 @@
   },
   {
     "recordKey": "jefferson-rec-0030",
-    "entityKey": "jefferson-ent-colonel-humphreys",
-    "start": 13025,
-    "end": 13034,
-    "surface": "Humphreys"
-  },
-  {
-    "recordKey": "jefferson-rec-0030",
     "entityKey": "jefferson-ent-benjamin-rush",
     "start": 13163,
     "end": 13167,
@@ -9206,14 +9199,14 @@
   },
   {
     "recordKey": "jefferson-rec-0034",
-    "entityKey": "jefferson-ent-hale",
+    "entityKey": "jefferson-ent-lord-hale",
     "start": 10661,
     "end": 10665,
     "surface": "Hale"
   },
   {
     "recordKey": "jefferson-rec-0034",
-    "entityKey": "jefferson-ent-hale",
+    "entityKey": "jefferson-ent-lord-hale",
     "start": 12806,
     "end": 12810,
     "surface": "Hale"
@@ -9256,218 +9249,218 @@
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-beccaria",
-    "start": 16669,
-    "end": 16677,
+    "start": 16656,
+    "end": 16664,
     "surface": "Beccaria"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 16801,
-    "end": 16806,
+    "start": 16788,
+    "end": 16793,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 17245,
-    "end": 17250,
+    "start": 17232,
+    "end": 17237,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 17266,
-    "end": 17271,
+    "start": 17253,
+    "end": 17258,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 17311,
-    "end": 17316,
+    "start": 17298,
+    "end": 17303,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-bracton",
-    "start": 17322,
-    "end": 17329,
+    "start": 17309,
+    "end": 17316,
     "surface": "Bracton"
   },
   {
     "recordKey": "jefferson-rec-0034",
-    "entityKey": "jefferson-ent-hale",
-    "start": 19132,
-    "end": 19136,
-    "surface": "Hale"
+    "entityKey": "jefferson-ent-lord-hale",
+    "start": 19114,
+    "end": 19123,
+    "surface": "Lord Hale"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 19655,
-    "end": 19660,
+    "start": 19642,
+    "end": 19647,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-beccaria",
-    "start": 20726,
-    "end": 20734,
+    "start": 20713,
+    "end": 20721,
     "surface": "Beccaria"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-bracton",
-    "start": 20754,
-    "end": 20761,
+    "start": 20741,
+    "end": 20748,
     "surface": "Bracton"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-bracton",
-    "start": 22090,
-    "end": 22097,
+    "start": 22077,
+    "end": 22084,
     "surface": "Bracton"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-united-states",
-    "start": 23377,
-    "end": 23401,
+    "start": 23364,
+    "end": 23388,
     "surface": "United States of America"
   },
   {
     "recordKey": "jefferson-rec-0034",
-    "entityKey": "jefferson-ent-hale",
-    "start": 24799,
-    "end": 24803,
-    "surface": "Hale"
+    "entityKey": "jefferson-ent-lord-hale",
+    "start": 24781,
+    "end": 24790,
+    "surface": "Lord Hale"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 25942,
-    "end": 25947,
+    "start": 25929,
+    "end": 25934,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-bracton",
-    "start": 26800,
-    "end": 26807,
+    "start": 26787,
+    "end": 26794,
     "surface": "Bracton"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 27115,
-    "end": 27120,
+    "start": 27102,
+    "end": 27107,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 28439,
-    "end": 28444,
+    "start": 28426,
+    "end": 28431,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 28905,
-    "end": 28910,
+    "start": 28892,
+    "end": 28897,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 30601,
-    "end": 30606,
+    "start": 30588,
+    "end": 30593,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-united-states",
-    "start": 36426,
-    "end": 36450,
+    "start": 36413,
+    "end": 36437,
     "surface": "United States of America"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-bracton",
-    "start": 37393,
-    "end": 37400,
+    "start": 37380,
+    "end": 37387,
     "surface": "Bracton"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-france",
-    "start": 37995,
-    "end": 38001,
+    "start": 37982,
+    "end": 37988,
     "surface": "France"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 38071,
-    "end": 38076,
+    "start": 38058,
+    "end": 38063,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 40210,
-    "end": 40215,
+    "start": 40197,
+    "end": 40202,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
-    "entityKey": "jefferson-ent-hale",
-    "start": 40244,
-    "end": 40248,
+    "entityKey": "jefferson-ent-lord-hale",
+    "start": 40231,
+    "end": 40235,
     "surface": "Hale"
   },
   {
     "recordKey": "jefferson-rec-0034",
-    "entityKey": "jefferson-ent-hale",
-    "start": 41332,
-    "end": 41336,
+    "entityKey": "jefferson-ent-lord-hale",
+    "start": 41319,
+    "end": 41323,
     "surface": "Hale"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 41755,
-    "end": 41760,
+    "start": 41742,
+    "end": 41747,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-cokes-institutes",
-    "start": 43130,
-    "end": 43135,
+    "start": 43117,
+    "end": 43122,
     "surface": "Inst."
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-west-indies",
-    "start": 45485,
-    "end": 45496,
+    "start": 45472,
+    "end": 45483,
     "surface": "West Indies"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-south-america",
-    "start": 45498,
-    "end": 45511,
+    "start": 45485,
+    "end": 45498,
     "surface": "South America"
   },
   {
     "recordKey": "jefferson-rec-0034",
     "entityKey": "jefferson-ent-africa",
-    "start": 45516,
-    "end": 45522,
+    "start": 45503,
+    "end": 45509,
     "surface": "Africa"
   },
   {
@@ -12594,38 +12587,10 @@
   },
   {
     "recordKey": "jefferson-rec-0070",
-    "entityKey": "jefferson-ent-colonel-humphreys",
-    "start": 240,
-    "end": 249,
-    "surface": "Humphreys"
-  },
-  {
-    "recordKey": "jefferson-rec-0070",
-    "entityKey": "jefferson-ent-colonel-humphreys",
-    "start": 443,
-    "end": 452,
-    "surface": "Humphreys"
-  },
-  {
-    "recordKey": "jefferson-rec-0070",
-    "entityKey": "jefferson-ent-colonel-humphreys",
-    "start": 542,
-    "end": 551,
-    "surface": "Humphreys"
-  },
-  {
-    "recordKey": "jefferson-rec-0070",
     "entityKey": "jefferson-ent-united-states",
     "start": 620,
     "end": 633,
     "surface": "United States"
-  },
-  {
-    "recordKey": "jefferson-rec-0070",
-    "entityKey": "jefferson-ent-colonel-humphreys",
-    "start": 787,
-    "end": 796,
-    "surface": "Humphreys"
   },
   {
     "recordKey": "jefferson-rec-0070",
@@ -17647,13 +17612,6 @@
     "surface": "France"
   },
   {
-    "recordKey": "jefferson-rec-0124",
-    "entityKey": "jefferson-ent-colonel-humphreys",
-    "start": 478,
-    "end": 487,
-    "surface": "Humphreys"
-  },
-  {
     "recordKey": "jefferson-rec-0125",
     "entityKey": "jefferson-ent-england",
     "start": 195,
@@ -18768,10 +18726,10 @@
   },
   {
     "recordKey": "jefferson-rec-0142",
-    "entityKey": "jefferson-ent-hale",
-    "start": 517,
+    "entityKey": "jefferson-ent-mr-hale",
+    "start": 513,
     "end": 521,
-    "surface": "Hale"
+    "surface": "Mr. Hale"
   },
   {
     "recordKey": "jefferson-rec-0142",
@@ -18810,21 +18768,21 @@
   },
   {
     "recordKey": "jefferson-rec-0142",
-    "entityKey": "jefferson-ent-hale",
+    "entityKey": "jefferson-ent-mr-hale",
     "start": 1092,
     "end": 1096,
     "surface": "Hale"
   },
   {
     "recordKey": "jefferson-rec-0142",
-    "entityKey": "jefferson-ent-hale",
+    "entityKey": "jefferson-ent-mr-hale",
     "start": 1155,
     "end": 1159,
     "surface": "Hale"
   },
   {
     "recordKey": "jefferson-rec-0142",
-    "entityKey": "jefferson-ent-hale",
+    "entityKey": "jefferson-ent-mr-hale",
     "start": 1285,
     "end": 1289,
     "surface": "Hale"
@@ -18845,7 +18803,7 @@
   },
   {
     "recordKey": "jefferson-rec-0142",
-    "entityKey": "jefferson-ent-hale",
+    "entityKey": "jefferson-ent-mr-hale",
     "start": 1446,
     "end": 1450,
     "surface": "Hale"
@@ -18887,7 +18845,7 @@
   },
   {
     "recordKey": "jefferson-rec-0143",
-    "entityKey": "jefferson-ent-hale",
+    "entityKey": "jefferson-ent-mr-hale",
     "start": 162,
     "end": 166,
     "surface": "Hale"
@@ -26909,20 +26867,6 @@
   },
   {
     "recordKey": "jefferson-rec-0198",
-    "entityKey": "jefferson-ent-colonel-byrd",
-    "start": 80276,
-    "end": 80280,
-    "surface": "Byrd"
-  },
-  {
-    "recordKey": "jefferson-rec-0198",
-    "entityKey": "jefferson-ent-colonel-byrd",
-    "start": 80445,
-    "end": 80449,
-    "surface": "Byrd"
-  },
-  {
-    "recordKey": "jefferson-rec-0198",
     "entityKey": "jefferson-ent-cicero",
     "start": 85200,
     "end": 85206,
@@ -30759,13 +30703,6 @@
   },
   {
     "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-governor-claiborne",
-    "start": 12610,
-    "end": 12619,
-    "surface": "Claiborne"
-  },
-  {
-    "recordKey": "jefferson-rec-0215",
     "entityKey": "jefferson-ent-lord-baltimore",
     "start": 12639,
     "end": 12653,
@@ -31620,13 +31557,6 @@
   },
   {
     "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-william-penn",
-    "start": 23268,
-    "end": 23272,
-    "surface": "Penn"
-  },
-  {
-    "recordKey": "jefferson-rec-0215",
     "entityKey": "jefferson-ent-lord-baltimore",
     "start": 23274,
     "end": 23288,
@@ -31680,13 +31610,6 @@
     "start": 24278,
     "end": 24290,
     "surface": "Pennsylvania"
-  },
-  {
-    "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-william-penn",
-    "start": 24302,
-    "end": 24306,
-    "surface": "Penn"
   },
   {
     "recordKey": "jefferson-rec-0215",
@@ -31760,20 +31683,6 @@
   },
   {
     "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-william-penn",
-    "start": 24984,
-    "end": 24988,
-    "surface": "Penn"
-  },
-  {
-    "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-william-penn",
-    "start": 25008,
-    "end": 25012,
-    "surface": "Penn"
-  },
-  {
-    "recordKey": "jefferson-rec-0215",
     "entityKey": "jefferson-ent-duke-of-york",
     "start": 25025,
     "end": 25037,
@@ -31788,13 +31697,6 @@
   },
   {
     "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-william-penn",
-    "start": 25127,
-    "end": 25131,
-    "surface": "Penn"
-  },
-  {
-    "recordKey": "jefferson-rec-0215",
     "entityKey": "jefferson-ent-duke-of-york",
     "start": 25140,
     "end": 25152,
@@ -31806,13 +31708,6 @@
     "start": 25245,
     "end": 25257,
     "surface": "William Penn"
-  },
-  {
-    "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-william-penn",
-    "start": 25269,
-    "end": 25273,
-    "surface": "Penn"
   },
   {
     "recordKey": "jefferson-rec-0215",
@@ -31855,13 +31750,6 @@
     "start": 25885,
     "end": 25899,
     "surface": "Lord Baltimore"
-  },
-  {
-    "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-william-penn",
-    "start": 25908,
-    "end": 25912,
-    "surface": "Penn"
   },
   {
     "recordKey": "jefferson-rec-0215",
@@ -31956,13 +31844,6 @@
   },
   {
     "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-tench-coxe",
-    "start": 27620,
-    "end": 27624,
-    "surface": "Coxe"
-  },
-  {
-    "recordKey": "jefferson-rec-0215",
     "entityKey": "jefferson-ent-west-jersey",
     "start": 27672,
     "end": 27683,
@@ -31988,13 +31869,6 @@
     "start": 27771,
     "end": 27778,
     "surface": "England"
-  },
-  {
-    "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-tench-coxe",
-    "start": 27810,
-    "end": 27814,
-    "surface": "Coxe"
   },
   {
     "recordKey": "jefferson-rec-0215",
@@ -32037,13 +31911,6 @@
     "start": 28774,
     "end": 28785,
     "surface": "West Jersey"
-  },
-  {
-    "recordKey": "jefferson-rec-0215",
-    "entityKey": "jefferson-ent-tench-coxe",
-    "start": 28810,
-    "end": 28814,
-    "surface": "Coxe"
   },
   {
     "recordKey": "jefferson-rec-0215",
@@ -36773,15 +36640,15 @@
   {
     "recordKey": "jefferson-rec-0242",
     "entityKey": "jefferson-ent-hatsell",
-    "start": 5574,
-    "end": 5579,
+    "start": 5575,
+    "end": 5580,
     "surface": "Hats."
   },
   {
     "recordKey": "jefferson-rec-0242",
     "entityKey": "jefferson-ent-hatsell",
-    "start": 6150,
-    "end": 6155,
+    "start": 6151,
+    "end": 6156,
     "surface": "Hats."
   },
   {
@@ -37885,7 +37752,7 @@
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hale",
+    "entityKey": "jefferson-ent-lord-hale",
     "start": 2600,
     "end": 2604,
     "surface": "Hale"
@@ -37934,7 +37801,7 @@
   },
   {
     "recordKey": "jefferson-rec-0258",
-    "entityKey": "jefferson-ent-hale",
+    "entityKey": "jefferson-ent-lord-hale",
     "start": 3766,
     "end": 3770,
     "surface": "Hale"
@@ -40034,7 +39901,7 @@
   },
   {
     "recordKey": "jefferson-rec-0290",
-    "entityKey": "jefferson-ent-hale",
+    "entityKey": "jefferson-ent-lord-hale",
     "start": 2768,
     "end": 2772,
     "surface": "Hale"
@@ -40657,13 +40524,6 @@
   },
   {
     "recordKey": "jefferson-rec-0294",
-    "entityKey": "jefferson-ent-lord-berkeley",
-    "start": 6458,
-    "end": 6471,
-    "surface": "Lord Berkeley"
-  },
-  {
-    "recordKey": "jefferson-rec-0294",
     "entityKey": "jefferson-ent-parliament",
     "start": 6864,
     "end": 6874,
@@ -40678,14 +40538,14 @@
   },
   {
     "recordKey": "jefferson-rec-0294",
-    "entityKey": "jefferson-ent-hale",
-    "start": 7276,
+    "entityKey": "jefferson-ent-lord-hale",
+    "start": 7271,
     "end": 7280,
-    "surface": "Hale"
+    "surface": "Lord Hale"
   },
   {
     "recordKey": "jefferson-rec-0294",
-    "entityKey": "jefferson-ent-hale",
+    "entityKey": "jefferson-ent-lord-hale",
     "start": 7340,
     "end": 7344,
     "surface": "Hale"

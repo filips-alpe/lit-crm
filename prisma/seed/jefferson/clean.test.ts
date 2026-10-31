@@ -229,6 +229,7 @@ describe('review regressions', () => {
     'VOL. I1— 26 1',
     'VOL. I—I (x)',
     'YOL. II—I?',
+    'Vol. 1.—15.',
   ])('recognises signature mark %j', (t) => expect(isSignatureMark(t)).toBe(true));
 
   it('keeps a dash-less VOL on an unnumbered title page, drops it on a numbered page', () => {
@@ -386,6 +387,7 @@ describe('real corpus invariants', () => {
       'onefortieth',
       'thirtyfour',
       'portbill',
+      'commonplaced',
       'paralcivilized',
     ]) {
       expect(text).not.toContain(bad);
