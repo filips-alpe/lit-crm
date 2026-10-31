@@ -247,7 +247,7 @@ Every change is logged with its raw line in `cleanup-log.json` (4960 entries).
 | Anas memoranda with no full date in the text (no date recorded) | 91 |
 | autobiography records titled by the dataset (text has no headings) | 20 |
 
-Letterspaced forms of the name remain in the text: 1 lines (for example `JEF FERSON`). They are not corrected and are not linked.
+Letterspaced forms of the name remain in the text: 1 line (for example `JEF FERSON`). They are not corrected and are not linked.
 
 ### Garbled lines
 

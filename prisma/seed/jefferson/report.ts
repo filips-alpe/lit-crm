@@ -332,7 +332,7 @@ export function renderReport(d: Dataset): string {
     .filter((m) => m.includes(' '));
   p(
     '',
-    `Letterspaced forms of the name remain in the text: ${letterspaced.length} lines` +
+    `Letterspaced forms of the name remain in the text: ${letterspaced.length} ${letterspaced.length === 1 ? 'line' : 'lines'}` +
       (letterspaced.length ? ` (for example ${code(letterspaced[0])})` : '') +
       '. They are not corrected and are not linked.',
   );
