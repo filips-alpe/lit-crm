@@ -4,7 +4,7 @@ title: Split Smyth's Writings of Benjamin Franklin into per-document full text
 status: To Do
 assignee: []
 created_date: '2026-10-15 15:35'
-updated_date: '2026-10-31 18:13'
+updated_date: '2026-10-31 19:13'
 labels:
   - seed-data
   - franklin
@@ -46,4 +46,6 @@ Pipeline in prisma/seed/sources/smyth/ (fetch, split, match, build). 1,743 docum
 Not measured: precision against Founders Online transcriptions. founders.archives.gov answers scripted requests with an AWS WAF challenge (HTTP 202, x-amzn-waf-action: challenge), and it was not bypassed. SPOT-CHECK.md has a fixed sample of 40 matches with record links for checking in a browser. A separate review pass read about 60 matches and all title-rule matches and found no wrong match after fixes.
 
 To rebuild: tsx prisma/seed/sources/smyth/fetch.ts, then build.ts, then prisma/seed/generate.ts. The OCR cache is uncommitted, in .workflow/scratch/smyth/. Status left for the owner to change.
+
+Review round 1 fixes: note stripping no longer deletes letter text when a signed note's mark is garbled; Franklin's own notes signed '— F.' are kept. 115 of 1,005 merged texts can still contain some of Smyth's note text, reported in REPORT.md.
 <!-- SECTION:NOTES:END -->
