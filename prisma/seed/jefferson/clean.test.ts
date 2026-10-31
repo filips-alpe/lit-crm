@@ -310,6 +310,12 @@ describe('review regressions', () => {
     });
   });
 
+  it('leaves a garbled break between unrelated words as it stands', () => {
+    const r = clean('the head of a nation scarcely paral-\ncivilized nation here at the end of it');
+    expect(r.text).toContain('paral- civilized');
+    expect(r.log.find((l) => l.reason === 'unrelated-words')?.result).toBe('paral- civilized');
+  });
+
   it('does not count line-edge fragments as words', () => {
     const vocab = buildVocabulary(['some dis-', 'tinued text', 'plain words'], () => false);
     expect(vocab.has('dis')).toBe(false);
@@ -373,7 +379,15 @@ describe('real corpus invariants', () => {
 
   it('fixes the reviewed corruptions on the real text', () => {
     const { text } = cleanRange(ctx, 0, lines.length - 1);
-    for (const bad of ['necesme', 'estaball', 'reVOL', 'onefortieth', 'thirtyfour', 'portbill']) {
+    for (const bad of [
+      'necesme',
+      'estaball',
+      'reVOL',
+      'onefortieth',
+      'thirtyfour',
+      'portbill',
+      'paralcivilized',
+    ]) {
       expect(text).not.toContain(bad);
     }
     expect(text).toContain('contract alliances, estab- | levy war, conclude peace,'.slice(0, 26));

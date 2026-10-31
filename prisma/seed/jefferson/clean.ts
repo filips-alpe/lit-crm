@@ -182,7 +182,8 @@ export function buildVocabulary(
   return vocab;
 }
 
-export type HyphenDecision = { keep: boolean; reason: string; result: string };
+/** `unrelated`: the line break joins two different words (garbled OCR), so neither change is safe. */
+export type HyphenDecision = { keep: boolean; reason: string; result: string; unrelated?: boolean };
 
 const NUMBER_WORD =
   /^(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)$/;
@@ -211,12 +212,21 @@ export function decideHyphen(
       : join('joined-form-at-least-as-frequent');
   if (joinedCount > 0) return join('joined-form-attested');
   if (hyphCount > 0) return keep('hyphenated-form-attested');
+  if (UNRELATED_BREAKS.has(`${ll}-${rl}`))
+    return { keep: true, reason: 'unrelated-words', result: `${l}- ${r}`, unrelated: true };
   const override = HYPHEN_OVERRIDES.get(`${ll}-${rl}`);
   if (override) return override === 'keep' ? keep('reviewed-override') : join('reviewed-override');
   if (NUMBER_WORD.test(ll) && NUMBER_PART.test(rl)) return keep('number-compound');
   if (COMPOUND_LEFT.has(ll)) return keep('compound-left-part');
   return join('default-join');
 }
+
+/**
+ * Line breaks where the OCR lost text after the hyphen and the next line starts
+ * another word (`paral-` is cut short before `civilized`). Found by auditing every
+ * default join; the raw hyphen and the break stay as a space.
+ */
+export const UNRELATED_BREAKS = new Set(['paral-civilized', 'eccle-v', 'foh-ae']);
 
 /**
  * Compounds with neither form attested, reviewed by hand against the corpus.
@@ -367,6 +377,7 @@ export function cleanRange(ctx: CleanContext, start: number, end: number): Clean
       });
       if (d.keep) stats.hyphenKept++;
       else stats.hyphenJoined++;
+      if (d.unrelated) return `${a} ${b}`;
       return d.keep ? a + b : a.slice(0, -1) + b;
     }
     return a + ' ' + b;
