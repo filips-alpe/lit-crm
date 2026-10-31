@@ -45,7 +45,7 @@ export async function getBestPage(
     if (f.kind === 'markdown') continue;
     const value = formatFieldValue(f.kind, f.writeTo, (row as Record<string, unknown>)[f.writeTo]);
     if (value === null || value === '' || (Array.isArray(value) && value.length === 0)) continue;
-    fields.push({ id: f.id, label: f.label, kind: f.kind, value });
+    fields.push({ id: f.id, label: f.label, kind: f.kind, writeTo: f.writeTo, value });
   }
 
   const [totalRows, variants, sources, related, mentionedEntities, sequence] = await Promise.all([

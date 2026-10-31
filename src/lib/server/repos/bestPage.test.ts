@@ -72,8 +72,8 @@ describe('getBestPage', () => {
     expect(p.type).toEqual({ code: 'person', color: '#e07a1f', iconSeed: 'p' });
     // only non-empty layout fields, with labels
     expect(p.fields).toEqual([
-      { id: 'title', label: 'Name', kind: 'text', value: 'Thomas Jefferson' },
-      { id: 'refs', label: 'Sources', kind: 'list', value: ['IA: x'] },
+      { id: 'title', label: 'Name', kind: 'text', writeTo: 'title', value: 'Thomas Jefferson' },
+      { id: 'refs', label: 'Sources', kind: 'list', writeTo: 'references', value: ['IA: x'] },
     ]);
     expect(p.references).toEqual(['IA: x']);
     expect(p.variants).toEqual([{ surface: 'Jefferson', count: 3 }]);

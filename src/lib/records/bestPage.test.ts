@@ -22,7 +22,7 @@ describe('bestPageSections', () => {
   it('omits every empty section and keeps the others in a fixed order', () => {
     const sections = bestPageSections({
       ...empty,
-      fields: [{ id: 'note', label: 'Note', kind: 'text', value: 'n' }],
+      fields: [{ id: 'note', label: 'Note', kind: 'text', writeTo: 'note', value: 'n' }],
       variants: [{ surface: 'Jeff', count: 2 }],
       related: [ref('a')],
     });
@@ -31,7 +31,7 @@ describe('bestPageSections', () => {
 
   it('orders all sections: fields, references, variants, mentions, sources, related, mentioned, sequence', () => {
     const sections = bestPageSections({
-      fields: [{ id: 'f', label: 'F', kind: 'text', value: 'v' }],
+      fields: [{ id: 'f', label: 'F', kind: 'text', writeTo: 'note', value: 'v' }],
       references: ['r'],
       variants: [{ surface: 's', count: 1 }],
       mentions: {
@@ -92,6 +92,18 @@ describe('bestPageSections', () => {
       },
     });
     expect(mentions).toMatchObject({ kind: 'mentions', page: 2, totalPages: 2, total: 51 });
+  });
+
+  it('does not repeat the title or the references as fields', () => {
+    const sections = bestPageSections({
+      ...empty,
+      fields: [
+        { id: 't', label: 'Name', kind: 'text', writeTo: 'title', value: 'T' },
+        { id: 'r', label: 'Sources', kind: 'list', writeTo: 'references', value: ['x'] },
+      ],
+      references: ['x'],
+    });
+    expect(sections.map((s) => s.kind)).toEqual(['references']);
   });
 
   it('omits a sequence with neither neighbour', () => {

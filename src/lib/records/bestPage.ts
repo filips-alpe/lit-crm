@@ -3,6 +3,8 @@ export interface BestPageField {
   id: string;
   label: string;
   kind: string;
+  /** The record column the field reads (see the field registry). */
+  writeTo: string;
   value: string | string[];
 }
 
@@ -92,7 +94,9 @@ export type BestPageSection =
  */
 export function bestPageSections(page: BestPageInput): BestPageSection[] {
   const out: BestPageSection[] = [];
-  if (page.fields.length) out.push({ kind: 'fields', fields: page.fields });
+  // The title is the page heading and the references have their own section; neither is repeated.
+  const fields = page.fields.filter((f) => f.writeTo !== 'title' && f.writeTo !== 'references');
+  if (fields.length) out.push({ kind: 'fields', fields });
   if (page.references.length) out.push({ kind: 'references', references: page.references });
   if (page.variants.length) out.push({ kind: 'variants', variants: page.variants });
   if (page.mentions.items.length) out.push({ kind: 'mentions', ...page.mentions });
