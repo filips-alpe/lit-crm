@@ -1,10 +1,10 @@
 ---
 id: LIT-5
 title: Split Smyth's Writings of Benjamin Franklin into per-document full text
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-10-15 15:35'
-updated_date: '2026-10-31 19:13'
+updated_date: '2026-11-03 04:15'
 labels:
   - seed-data
   - franklin
