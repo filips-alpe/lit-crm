@@ -1,9 +1,10 @@
 ---
 id: LIT-4
 title: Types CRUD
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-05-17 15:10'
+updated_date: '2026-11-03 04:09'
 labels:
   - feature
 dependencies:
