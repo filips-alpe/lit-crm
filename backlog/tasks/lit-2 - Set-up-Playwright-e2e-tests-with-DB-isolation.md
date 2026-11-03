@@ -1,9 +1,10 @@
 ---
 id: LIT-2
 title: Set up Playwright e2e tests with DB isolation
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-05-17 14:38'
+updated_date: '2026-11-03 02:41'
 labels:
   - chore
 dependencies:
@@ -19,12 +20,12 @@ Wire Playwright e2e tests to run against an isolated database per worker so suit
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Each Playwright worker uses its own database (template + per-worker clone, or per-worker schema/file)
-- [ ] #2 DB is migrated and seeded automatically before tests; torn down or reset after
-- [ ] #3 A documented test helper exposes a Prisma client bound to the worker's DB for use in tests
-- [ ] #4 At least one example e2e spec exercises a DB-backed flow end-to-end
-- [ ] #5 CI-friendly: no manual setup beyond a single npm/bun script
-- [ ] #6 README / docs explain how to run e2e tests locally
+- [x] #1 Each Playwright worker uses its own database (template + per-worker clone, or per-worker schema/file)
+- [x] #2 DB is migrated and seeded automatically before tests; torn down or reset after
+- [x] #3 A documented test helper exposes a Prisma client bound to the worker's DB for use in tests
+- [x] #4 At least one example e2e spec exercises a DB-backed flow end-to-end
+- [x] #5 CI-friendly: no manual setup beyond a single npm/bun script
+- [x] #6 README / docs explain how to run e2e tests locally
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -36,3 +37,9 @@ Wire Playwright e2e tests to run against an isolated database per worker so suit
 4. Add npm run test:e2e prerequisites (ensure DB tooling installed, env vars documented in .env.example).
 5. Add a sample spec under e2e/ that creates + reads a record to prove isolation.
 <!-- SECTION:PLAN:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Playwright e2e now runs with per-worker Postgres isolation. global-setup builds a template DB (migrate deploy + seed) and builds the app; each worker clones it (CREATE DATABASE ... TEMPLATE) and runs its own vite preview server; global-teardown drops the databases. e2e/fixtures.ts exposes worker-scoped `db` (PrismaClient), `workerDbUrl`, `serverUrl`. Example spec: e2e/db-isolation.e2e.ts. `bun run test:e2e` is the single entry point; README and .env.example document it. Tests: 5/5 e2e specs pass.
+<!-- SECTION:FINAL_SUMMARY:END -->
