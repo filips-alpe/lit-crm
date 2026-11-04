@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './fixtures';
 
-const USER_A = 'bfranklin';
-const USER_B = 'dfranklin';
+const USER_A = 'alice';
+const USER_B = 'bob';
 
 test('login → logout → login as different user → logout', async ({ page }) => {
   await page.context().clearCookies();
@@ -19,7 +19,7 @@ async function loginAs(page: Page, username: string) {
   await expect(page).toHaveURL(/\/login$/);
   await page.locator(`button[name="username"][value="${username}"]`).click();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByText(username, { exact: false })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Account menu' })).toContainText(username);
 }
 
 async function logout(page: Page) {

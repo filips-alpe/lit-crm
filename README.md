@@ -2,7 +2,7 @@
 
 A CRM built around typed records. A type defines a record's fields and how it is displayed, so one shared record table can hold letters, diary entries, accounts or anything else.
 
-The demo data is Benjamin Franklin's world: 25,827 records from Founders Online and Wikidata, with 17 of the people around him as users. It also includes 217 documents and 413 linked entities from volumes I–II of Lipscomb & Bergh's _Writings of Thomas Jefferson_ (see [`prisma/seed/sources/jefferson/README.md`](prisma/seed/sources/jefferson/README.md)).
+The demo data is Benjamin Franklin's world: 25,827 records from Founders Online and Wikidata, with 17 of the people around him as users, plus 217 documents and 413 linked entities from volumes I–II of Lipscomb & Bergh's _Writings of Thomas Jefferson_ (Jefferson dataset, with record mentions). It lives in its own repository, [lit-crm-seeds](https://github.com/filips-alpe/lit-crm-seeds); see [Franklin demo data](#franklin-demo-data). This repo ships only a tiny fixture.
 
 Built with SvelteKit 2, Svelte 5, TypeScript, Prisma 7 with PostgreSQL, Tailwind and daisyUI, and paraglide (English and Latvian). It deploys to Vercel.
 
@@ -15,13 +15,30 @@ bun install
 cp .env.example .env       # set AUTH_SECRET
 docker compose up -d       # starts Postgres on host port 5433
 bunx prisma migrate dev    # applies migrations and generates the client
-bunx prisma db seed        # loads the demo data
+bunx prisma db seed        # loads a small fixture (users alice and bob, one type, one project, three records)
 bun run dev
 ```
 
 Log in by picking a user on the login screen.
 
-> `bunx prisma db seed` deletes all users, projects, types and records in the database that `DATABASE_URL` points at before loading the demo data.
+> `bunx prisma db seed` deletes all users, projects, types and records in the database that `DATABASE_URL` points at before loading the fixture.
+
+## Franklin demo data
+
+The full dataset, its loader and the Franklin renderers and dashboards are in [lit-crm-seeds](https://github.com/filips-alpe/lit-crm-seeds). With the schema migrated (`bunx prisma migrate deploy`):
+
+```sh
+git clone https://github.com/filips-alpe/lit-crm-seeds ../lit-crm-seeds
+(cd ../lit-crm-seeds && bun install && bun run seed --db "$DATABASE_URL")   # loads the data
+bun run ext install ../lit-crm-seeds --path extension                       # renderers, dashboards, messages
+bun run dev
+```
+
+`bun run seed` there **deletes all users, projects, types and records** in the target database first, and refuses to run without `--db`. The extension is optional but the data's types name its renderers (`rendererId`); without it they fall back to the default view and users get the generic dashboard.
+
+You can also install straight from git: `bun run ext install https://github.com/filips-alpe/lit-crm-seeds.git --path extension`.
+
+The extension's own tests import app code, so they run here once it is installed (`bunx vitest run`). Two of them also read seed data and need a checkout of lit-crm-seeds: set `SEEDS_DIR` (default `../lit-crm-seeds`), otherwise they are skipped.
 
 ## How it works
 
@@ -40,44 +57,15 @@ An extension adds renderers and dashboards from `src/extensions/<id>/`. Anything
 
 ```sh
 bun run ext list
-bun run ext install <path|git-url> [--force]
+bun run ext install <path|git-url> [--path <subdir>] [--force]
 bun run ext uninstall <id>
 ```
 
+`--path` names the folder inside the source that holds the extension (its `extension.json`). If the extension has `messages/<locale>.json` files, `install` merges those keys into `messages/` and `uninstall` removes them again.
+
 Extensions run as code in the app, so only install ones you trust.
 
-The `franklin` extension provides the renderers for the demo types and a dashboard for each demo user.
-
-## Demo data
-
-The types are defined in `prisma/seed/data/types.yaml`, and the generator assigns each record a type from its source data:
-
-| Type          | Records | Source          | Contents                                 |
-| ------------- | ------- | --------------- | ---------------------------------------- |
-| `letter`      | 22,258  | Founders Online | Letters and dispatches                   |
-| `life`        | 910     | Wikidata        | Births, deaths, marriages, with places   |
-| `diary`       | 806     | Founders Online | Diary and journal entries                |
-| `essay`       | 423     | Founders Online | Essays, verse, almanacs                  |
-| `note`        | 300     | Founders Online | Memoranda, notes, extracts               |
-| `instrument`  | 265     | Founders Online | Treaties, contracts, certificates, deeds |
-| `office`      | 244     | Wikidata        | Offices and positions held               |
-| `proceedings` | 218     | Founders Online | Minutes, reports, resolutions, speeches  |
-| `account`     | 162     | Founders Online | Accounts, bills, receipts, lists         |
-| `membership`  | 123     | Wikidata        | Society memberships and awards           |
-| `petition`    | 71      | Founders Online | Petitions, memorials, proposals          |
-| `document`    | 47      | Founders Online | Other documents                          |
-
-Founders Online types are assigned from document titles, so some documents outside `letter` land in a neighbouring type. Wikidata people are matched by name, so a few obscure names may be the wrong person. Only a small share of records have full text, and most of it is uncorrected OCR from Smyth's 1905-07 edition (see `prisma/seed/sources/smyth/REPORT.md`).
-
-Seed data is generated from snapshots committed under `prisma/seed/sources/`. Generation uses no network and gives the same output every time:
-
-```sh
-bunx tsx prisma/seed/generate.ts                  # regenerate seed data from the snapshots
-bunx tsx prisma/seed/sources/extract-fo.ts <path> # rebuild the Founders Online snapshot from the raw metadata dump
-bunx tsx prisma/seed/sources/wikidata/fetch.ts    # refetch the Wikidata snapshot (network)
-bunx tsx prisma/seed/sources/jefferson/fetch.ts   # cache the Jefferson OCR once (network)
-bunx tsx prisma/seed/sources/jefferson/build.ts   # rebuild the Jefferson dataset from that cache
-```
+The `franklin` extension (in lit-crm-seeds) provides the renderers for the demo types and a dashboard for each demo user.
 
 ## Testing
 
@@ -93,7 +81,7 @@ bunx playwright test
 The `server` and e2e suites write to their database, so they refuse to run against your dev data:
 
 - **Server tests** truncate tables between cases and need a `TEST_DATABASE_URL` that differs from `DATABASE_URL`. `.env.example` has the setup steps.
-- **e2e tests** (`bun run test:e2e`) need a local Postgres — `docker compose up -d postgres` is enough. See [End-to-end tests](#end-to-end-tests).
+- **e2e tests** (`bun run test:e2e`) need a local Postgres - `docker compose up -d postgres` is enough. See [End-to-end tests](#end-to-end-tests).
 
 ### End-to-end tests
 

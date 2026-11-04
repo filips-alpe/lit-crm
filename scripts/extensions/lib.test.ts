@@ -10,7 +10,14 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { gitCloneArgs, installExtension, listExtensions, uninstallExtension } from './lib';
+import { readFileSync } from 'node:fs';
+import {
+  gitCloneArgs,
+  installExtension,
+  listExtensions,
+  resolveSubdir,
+  uninstallExtension,
+} from './lib';
 
 let work: string;
 let root: string;
@@ -162,5 +169,68 @@ describe('gitCloneArgs', () => {
 
   it('rejects sources that git would parse as options', () => {
     expect(() => gitCloneArgs('--upload-pack=evil.git', '/tmp/d')).toThrow(/Invalid source/);
+  });
+});
+
+describe('resolveSubdir', () => {
+  it('returns the source itself without a subdirectory', () => {
+    expect(resolveSubdir('/a/b', undefined)).toBe('/a/b');
+  });
+
+  it('resolves a subdirectory inside the source', () => {
+    expect(resolveSubdir('/a/b', 'extension')).toBe('/a/b/extension');
+  });
+
+  it('refuses paths that escape the source', () => {
+    expect(() => resolveSubdir('/a/b', '../c')).toThrow(/inside the source/);
+    expect(() => resolveSubdir('/a/b', '/etc')).toThrow(/inside the source/);
+  });
+});
+
+describe('extension messages', () => {
+  let messagesDir: string;
+  const read = (locale: string) =>
+    JSON.parse(readFileSync(join(messagesDir, `${locale}.json`), 'utf8'));
+  const withMessages = (en: object, lv?: object) =>
+    makeSource('m', {
+      'extension.json': '{"id":"m"}',
+      'renderers/index.ts': '',
+      'messages/en.json': JSON.stringify(en),
+      ...(lv ? { 'messages/lv.json': JSON.stringify(lv) } : {}),
+      'messages/de.json': '{"k":"x"}',
+    });
+
+  beforeEach(() => {
+    messagesDir = join(work, 'messages');
+    mkdirSync(messagesDir);
+    writeFileSync(join(messagesDir, 'en.json'), JSON.stringify({ own: 'Own' }));
+    writeFileSync(join(messagesDir, 'lv.json'), JSON.stringify({ own: 'Savs' }));
+  });
+
+  it('merges shipped keys into the locales the app has, and skips the others', () => {
+    installExtension(withMessages({ k: 'K' }, { k: 'Ka' }), root, { messagesDir });
+    expect(read('en')).toEqual({ own: 'Own', k: 'K' });
+    expect(read('lv')).toEqual({ own: 'Savs', k: 'Ka' });
+    expect(existsSync(join(messagesDir, 'de.json'))).toBe(false);
+  });
+
+  it('refuses a key the app already has with different text', () => {
+    expect(() => installExtension(withMessages({ own: 'Other' }), root, { messagesDir })).toThrow(
+      /"own".*different text/,
+    );
+  });
+
+  it('replaces its own keys on --force and removes them on uninstall', () => {
+    installExtension(withMessages({ k: 'K' }), root, { messagesDir });
+    const v2 = withMessages({ k: 'K2' });
+    installExtension(v2, root, { messagesDir, force: true });
+    expect(read('en')).toEqual({ own: 'Own', k: 'K2' });
+    uninstallExtension('m', root, { messagesDir });
+    expect(read('en')).toEqual({ own: 'Own' });
+  });
+
+  it('leaves messages alone when no messagesDir is given', () => {
+    installExtension(withMessages({ k: 'K' }), root);
+    expect(read('en')).toEqual({ own: 'Own' });
   });
 });
