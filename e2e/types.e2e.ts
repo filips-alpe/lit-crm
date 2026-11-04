@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-const USER = 'bfranklin';
+const USER = 'alice';
 
 test('creating a type persists the picked color and icon', async ({ page }) => {
   await page.context().clearCookies();

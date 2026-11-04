@@ -19,8 +19,3 @@ project.inlang/README.md
 # Tooling state
 .omc/
 .workflow/
-
-# Generated seed data and source snapshots
-/prisma/seed/generated/
-/prisma/seed/data/projects.yaml
-/prisma/seed/sources/*.json
