@@ -19,6 +19,10 @@ model User {
   color      String     @default("#000000")
   avatarSeed String?
 
+  // Data, not code: the read-only gateway's row-level security policies let an
+  // admin see every record and project (see the rls migration).
+  isAdmin Boolean @default(false)
+
   createdProjects  Project[] @relation(name: "ProjectCreator")
   assignedProjects Project[] @relation(name: "ProjectAssignee")
   createdRecords   Record[]  @relation(name: "RecordCreator")

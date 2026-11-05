@@ -100,6 +100,19 @@ That single command does everything:
 
 Specs import `test`/`expect` from `e2e/fixtures.ts` rather than `@playwright/test`. Besides the normal fixtures it provides worker-scoped `db` (a `PrismaClient` bound to the worker's database, for arranging or asserting data), `workerDbUrl` and `serverUrl`; `baseURL` already points at the worker's server. `e2e/db-isolation.e2e.ts` is a worked example.
 
+## Read-only gateway role (row-level security)
+
+The `rls_gateway` migration enables Postgres row-level security on `lit_record`, `lit_project` and `lit_project_record` for one NOLOGIN role, `lit_gateway`, which has `SELECT` only. The app connects as the table owner (no `FORCE ROW LEVEL SECURITY`) and is not affected. A gateway sets `SET LOCAL app.user_id` (`set_config('app.user_id', id, true)`) per transaction; unset or empty sees nothing. A user sees records they created or are assigned to, plus every record in a project they created or are assigned to; a user with `lit_user.isAdmin` sees everything. `lit_user` and `lit_type` stay readable.
+
+Create a login role for the gateway outside migrations, with your own password:
+
+```sql
+CREATE ROLE lit_gateway_login LOGIN PASSWORD '<password>';  -- not superuser, not BYPASSRLS
+GRANT lit_gateway TO lit_gateway_login;
+```
+
+The Groundtruth gateway in `groundtruth/delivery/lit-crm-gateway` connects as that login role.
+
 ## Translations
 
 Message keys are `humanId()` values from `@inlang/sdk`. Add each key to every file in `messages/`, then use it as `m.<id>()`:

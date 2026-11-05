@@ -27,7 +27,13 @@ async function main() {
   await prisma.user.deleteMany({});
 
   const alice = await prisma.user.create({
-    data: { username: 'alice', name: 'Alice Example', color: '#3b6ea5', bio: 'Fixture user.' },
+    data: {
+      username: 'alice',
+      name: 'Alice Example',
+      color: '#3b6ea5',
+      bio: 'Fixture user.',
+      isAdmin: true, // the fixture admin: sees every row through the RLS gateway
+    },
   });
   const bob = await prisma.user.create({
     data: { username: 'bob', name: 'Bob Example', color: '#8a2f3e', bio: 'Fixture user.' },
