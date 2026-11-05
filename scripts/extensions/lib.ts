@@ -3,8 +3,10 @@ import {
   existsSync,
   lstatSync,
   mkdirSync,
+  mkdtempSync,
   readFileSync,
   readdirSync,
+  renameSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
@@ -73,32 +75,51 @@ function writeMessages(file: string, messages: Messages): void {
   writeFileSync(file, JSON.stringify(messages, null, 2) + '\n');
 }
 
-/** Add an extension's message keys to the app's `<messagesDir>/<locale>.json` (locales the app
- *  lacks are skipped). Refuses a key the app already defines with different text. */
-function mergeMessages(extDir: string, messagesDir: string): void {
-  for (const [locale, shipped] of shippedMessages(extDir)) {
-    const file = join(messagesDir, `${locale}.json`);
-    if (!existsSync(file)) continue;
-    const app = JSON.parse(readFileSync(file, 'utf8')) as Messages;
-    for (const [key, text] of Object.entries(shipped)) {
-      if (key in app && app[key] !== text) {
-        throw new Error(`Message "${key}" (${locale}) already exists with different text`);
-      }
-      app[key] = text;
-    }
-    writeMessages(file, app);
+/** Record, inside an installed extension folder, of the message keys the install added
+ *  (locale -> keys). Keys the app already had with identical text are not listed. */
+const ADDED_FILE = '.messages-added.json';
+type Added = Record<string, string[]>;
+
+function readAdded(extDir: string): Added {
+  const f = join(extDir, ADDED_FILE);
+  if (!existsSync(f)) return {};
+  try {
+    return JSON.parse(readFileSync(f, 'utf8')) as Added;
+  } catch {
+    return {};
   }
 }
 
-/** Remove the message keys an installed extension shipped from the app's locale files. */
-function unmergeMessages(extDir: string, messagesDir: string): void {
-  for (const [locale, shipped] of shippedMessages(extDir)) {
+/** Compute (without writing) the new `<messagesDir>/<locale>.json` contents after removing the
+ *  keys `previous` added and adding the keys `shipped` ships (locales the app lacks are skipped).
+ *  Throws on a key the app defines with different text. Returns the files to write and the
+ *  keys actually added. */
+function planMessages(
+  shipped: Map<string, Messages>,
+  previous: Added,
+  messagesDir: string,
+): { writes: Map<string, Messages>; added: Added } {
+  const writes = new Map<string, Messages>();
+  const added: Added = {};
+  const locales = new Set([...shipped.keys(), ...Object.keys(previous)]);
+  for (const locale of locales) {
     const file = join(messagesDir, `${locale}.json`);
     if (!existsSync(file)) continue;
     const app = JSON.parse(readFileSync(file, 'utf8')) as Messages;
-    for (const key of Object.keys(shipped)) delete app[key];
-    writeMessages(file, app);
+    for (const key of previous[locale] ?? []) delete app[key];
+    for (const [key, text] of Object.entries(shipped.get(locale) ?? {})) {
+      if (key in app) {
+        if (app[key] !== text) {
+          throw new Error(`Message "${key}" (${locale}) already exists with different text`);
+        }
+        continue;
+      }
+      app[key] = text;
+      (added[locale] ??= []).push(key);
+    }
+    writes.set(file, app);
   }
+  return { writes, added };
 }
 
 /** Resolve `sub` inside the cloned/local `source`, refusing paths that escape it. */
@@ -133,19 +154,31 @@ export function installExtension(
   if (replaced && !opts.force) {
     throw new Error(`Extension "${id}" is already installed (use --force to replace it)`);
   }
+  // Validate and merge every locale in memory first, so a conflict leaves the tree untouched.
+  const plan = opts.messagesDir
+    ? planMessages(shippedMessages(source), replaced ? readAdded(target) : {}, opts.messagesDir)
+    : null;
   mkdirSync(root, { recursive: true });
-  if (replaced) {
-    if (opts.messagesDir) unmergeMessages(target, opts.messagesDir);
+  const staging = mkdtempSync(join(root, `.install-${id}-`));
+  try {
+    cpSync(source, staging, {
+      recursive: true,
+      // Never copy VCS/dependency folders, or symlinks (they could point outside the extension).
+      filter: (path) =>
+        path === source ||
+        (!['.git', 'node_modules'].includes(basename(path)) && !lstatSync(path).isSymbolicLink()),
+    });
+    rmSync(join(staging, ADDED_FILE), { force: true });
+    if (plan && Object.keys(plan.added).length) {
+      writeFileSync(join(staging, ADDED_FILE), JSON.stringify(plan.added, null, 2) + '\n');
+    }
     rmSync(target, { recursive: true, force: true });
+    renameSync(staging, target);
+  } catch (e) {
+    rmSync(staging, { recursive: true, force: true });
+    throw e;
   }
-  cpSync(source, target, {
-    recursive: true,
-    // Never copy VCS/dependency folders, or symlinks (they could point outside the extension).
-    filter: (path) =>
-      path === source ||
-      (!['.git', 'node_modules'].includes(basename(path)) && !lstatSync(path).isSymbolicLink()),
-  });
-  if (opts.messagesDir) mergeMessages(target, opts.messagesDir);
+  if (plan) for (const [file, messages] of plan.writes) writeMessages(file, messages);
   return { id, replaced };
 }
 
@@ -158,7 +191,10 @@ export function uninstallExtension(
   assertId(id);
   const target = join(root, id);
   if (!existsSync(target)) throw new Error(`Extension "${id}" is not installed`);
-  if (opts.messagesDir) unmergeMessages(target, opts.messagesDir);
+  if (opts.messagesDir) {
+    const { writes } = planMessages(new Map(), readAdded(target), opts.messagesDir);
+    for (const [file, messages] of writes) writeMessages(file, messages);
+  }
   rmSync(target, { recursive: true, force: true });
 }
 
