@@ -229,6 +229,43 @@ describe('extension messages', () => {
     expect(read('en')).toEqual({ own: 'Own' });
   });
 
+  it('is atomic: a conflict in a later locale leaves the tree unchanged', () => {
+    const before = { en: read('en'), lv: read('lv') };
+    const bytes = readFileSync(join(messagesDir, 'en.json'), 'utf8');
+    expect(() =>
+      installExtension(withMessages({ k: 'K' }, { own: 'Cits' }), root, { messagesDir }),
+    ).toThrow(/"own" \(lv\)/);
+    expect(readFileSync(join(messagesDir, 'en.json'), 'utf8')).toBe(bytes);
+    expect({ en: read('en'), lv: read('lv') }).toEqual(before);
+    expect(readdirSync(root)).toEqual([]);
+  });
+
+  it('keeps an existing install intact when a --force replace conflicts', () => {
+    installExtension(withMessages({ k: 'K' }), root, { messagesDir });
+    expect(() =>
+      installExtension(withMessages({ own: 'Other' }), root, { messagesDir, force: true }),
+    ).toThrow(/different text/);
+    expect(read('en')).toEqual({ own: 'Own', k: 'K' });
+    expect(existsSync(join(root, 'm/renderers/index.ts'))).toBe(true);
+    uninstallExtension('m', root, { messagesDir });
+    expect(read('en')).toEqual({ own: 'Own' });
+  });
+
+  it('uninstall keeps a key the app already had with identical text', () => {
+    installExtension(withMessages({ own: 'Own', k: 'K' }), root, { messagesDir });
+    expect(read('en')).toEqual({ own: 'Own', k: 'K' });
+    uninstallExtension('m', root, { messagesDir });
+    expect(read('en')).toEqual({ own: 'Own' });
+  });
+
+  it('uninstall leaves the locale files byte-identical to before install', () => {
+    const before = readFileSync(join(messagesDir, 'en.json'), 'utf8');
+    installExtension(withMessages({ own: 'Own', k: 'K' }, { k: 'Ka' }), root, { messagesDir });
+    uninstallExtension('m', root, { messagesDir });
+    const after = JSON.stringify(JSON.parse(before), null, 2) + '\n';
+    expect(readFileSync(join(messagesDir, 'en.json'), 'utf8')).toBe(after);
+  });
+
   it('leaves messages alone when no messagesDir is given', () => {
     installExtension(withMessages({ k: 'K' }), root);
     expect(read('en')).toEqual({ own: 'Own' });

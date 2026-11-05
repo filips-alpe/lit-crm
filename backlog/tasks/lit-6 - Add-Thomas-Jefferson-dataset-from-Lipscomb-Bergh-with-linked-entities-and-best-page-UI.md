@@ -15,8 +15,8 @@ references:
   - >-
     https://archive.org/stream/writingsofthomas0000vari_v5r4/writingsofthomas0000vari_v5r4_djvu.txt
   - 'https://archive.org/details/writingsofthomas0000vari_v5r4'
-  - prisma/seed/pipeline/
-  - src/extensions/franklin/
+  - lit-crm-seeds repo, seed/pipeline/
+  - lit-crm-seeds repo, extension/
 priority: medium
 ordinal: 6000
 ---
@@ -30,7 +30,7 @@ Create a new dataset from the Internet Archive OCR of "The Writings of Thomas Je
 
 **OCR quality:** the sampled prose reads well, but the front matter and end pages are noisy. Sampled artefacts include garbled scan text, library stamps, broken letterspacing ("JEF FERSON") and end-of-line hyphenation ("discon-/tinued"). Running heads are likely too, but were not seen in the samples.
 
-**Starting points:** the Franklin pipeline in `prisma/seed/pipeline/` and the extension layout in `src/extensions/franklin/`. Franklin's bespoke renderers and dashboards are not the target pattern for the entity pages, which must stay generic.
+**Starting points:** the Franklin pipeline in `seed/pipeline/` in the lit-crm-seeds repo and the extension layout in `extension/` in the lit-crm-seeds repo. Franklin's bespoke renderers and dashboards are not the target pattern for the entity pages, which must stay generic.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

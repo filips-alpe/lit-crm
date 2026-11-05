@@ -61,7 +61,7 @@ bun run ext install <path|git-url> [--path <subdir>] [--force]
 bun run ext uninstall <id>
 ```
 
-`--path` names the folder inside the source that holds the extension (its `extension.json`). If the extension has `messages/<locale>.json` files, `install` merges those keys into `messages/` and `uninstall` removes them again.
+`--path` names the folder inside the source that holds the extension (its `extension.json`). If the extension has `messages/<locale>.json` files, `install` merges those keys into `messages/` and recompiles the paraglide messages (so `bun run check` is clean straight away); `uninstall` removes only the keys the install added and recompiles. A key the app already has with different text makes `install` fail without changing anything.
 
 Extensions run as code in the app, so only install ones you trust.
 
