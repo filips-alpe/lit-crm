@@ -102,16 +102,21 @@ Specs import `test`/`expect` from `e2e/fixtures.ts` rather than `@playwright/tes
 
 ## Read-only gateway role (row-level security)
 
-The `rls_gateway` migration enables Postgres row-level security on `lit_record`, `lit_project` and `lit_project_record` for one NOLOGIN role, `lit_gateway`, which has `SELECT` only. The app connects as the table owner (no `FORCE ROW LEVEL SECURITY`) and is not affected. A gateway sets `SET LOCAL app.user_id` (`set_config('app.user_id', id, true)`) per transaction; unset or empty sees nothing. A user sees records they created or are assigned to, plus every record in a project they created or are assigned to; a user with `lit_user.isAdmin` sees everything. `lit_user` and `lit_type` stay readable.
+The `rls_gateway` migration enables Postgres row-level security on `lit_record`, `lit_project` and `lit_project_record` for one NOLOGIN role, `lit_gateway`, which has `SELECT` only. The app connects as the table owner (no `FORCE ROW LEVEL SECURITY`) and is not affected. A gateway sets `SET LOCAL app.user_id` (`set_config('app.user_id', id, true)`) per transaction; unset, empty, unknown or inactive sees nothing. A user sees records they created or are assigned to, plus every record in a project they created or are assigned to; a user with `lit_user.isAdmin` sees everything. A user whose `status` is not `ACTIVE` sees nothing, even an inactive admin (`rls_inactive_users` migration). `lit_user` and `lit_type` stay readable.
 
-Create a login role for the gateway outside migrations, with your own password:
+Create a login role for the gateway outside migrations, with your own password and a connection limit that matches the gateway's pool:
 
 ```sql
-CREATE ROLE lit_gateway_login LOGIN PASSWORD '<password>';  -- not superuser, not BYPASSRLS
+CREATE ROLE lit_gateway_login LOGIN PASSWORD '<password>' NOSUPERUSER NOBYPASSRLS CONNECTION LIMIT 8;
 GRANT lit_gateway TO lit_gateway_login;
 ```
 
-The Groundtruth gateway in `groundtruth/delivery/lit-crm-gateway` connects as that login role.
+The Groundtruth gateway in `groundtruth/delivery/lit-crm-gateway` connects as that login role. Things to know when you deploy it:
+
+- **The migrating role needs `CREATEROLE`** (or be a superuser): the `rls_gateway` migration runs `CREATE ROLE lit_gateway` unless it already exists. Without `CREATEROLE`, create the role once as an admin (`CREATE ROLE lit_gateway NOLOGIN NOINHERIT;`) and run the migration afterwards; it then skips the creation. Roles are cluster-wide, so a second database in the same cluster reuses the role.
+- **Policies exist only for `lit_gateway`.** The app works because it runs as the table owner. If you ever run the app as a different, non-owner role, it would see zero rows from the three protected tables (row security is on and no policy applies to that role). Keep the app on the owner role, or add policies for the new role.
+- **`PUBLIC` holds `TEMP` on the database by default**, so the gateway role can create temporary tables. They are private to its session, hold nothing it could not already read, and cannot reach other roles' data, but they do use disk and the role can run `CREATE TEMP TABLE ... AS SELECT` of what it sees. As a hardening step run `REVOKE TEMP ON DATABASE <db> FROM PUBLIC;` (the migration does not, since it would also remove temp tables from every other non-owner role, for example reporting users). Consequence: roles that relied on `PUBLIC` for `TEMP` need an explicit `GRANT TEMP ON DATABASE <db> TO <role>`.
+- **Table sizes are not hidden from the gateway role.** `pg_stat_user_tables.n_live_tup`, `pg_class.reltuples` and `EXPLAIN` row estimates report totals for the whole table whatever the policies say. Row-level security protects rows, not statistics.
 
 ## Translations
 
