@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { PrismaClient } from '../../generated/prisma/client';
-import { users, types, projects, records } from './load';
+import { users, types, projects, records, jefferson } from './load';
+import { firstEnteredByType as jeffersonFirstEntered, jeffersonRows } from './jefferson';
 
 // Postgres parameter limit is 65535; createMany batches are kept well under
 // that per call (comfortably so even with the widest Record row).
@@ -16,6 +17,7 @@ async function createManyChunked<T>(
 }
 
 export async function seed(prisma: PrismaClient) {
+  await prisma.recordMention.deleteMany({});
   await prisma.projectRecord.deleteMany({});
   await prisma.record.deleteMany({});
   await prisma.project.deleteMany({});
@@ -34,6 +36,10 @@ export async function seed(prisma: PrismaClient) {
     const d = new Date(r.entered);
     const cur = firstEnteredByType.get(r.type);
     if (!cur || d < cur) firstEnteredByType.set(r.type, d);
+  }
+  for (const [code, d] of jeffersonFirstEntered(jefferson)) {
+    const cur = firstEnteredByType.get(code);
+    if (!cur || d < cur) firstEnteredByType.set(code, d);
   }
 
   const typeRows = await Promise.all(
@@ -125,4 +131,10 @@ export async function seed(prisma: PrismaClient) {
   await createManyChunked(projectJoinRows, (chunk) =>
     prisma.projectRecord.createMany({ data: chunk }),
   );
+
+  // The Jefferson dataset: documents and entities as records, then the
+  // mentions that link a document's text to the entities it names.
+  const j = jeffersonRows(jefferson, typeIdByCode, randomUUID);
+  await createManyChunked(j.records, (chunk) => prisma.record.createMany({ data: chunk }));
+  await createManyChunked(j.mentions, (chunk) => prisma.recordMention.createMany({ data: chunk }));
 }
