@@ -6,7 +6,7 @@ title: >-
 status: To Do
 assignee: []
 created_date: '2026-10-30 10:04'
-updated_date: '2026-11-06 00:35'
+updated_date: '2026-11-06 00:43'
 labels:
   - seed-data
   - jefferson
@@ -61,4 +61,6 @@ Ready for owner review (status left To Do). Second, independent implementation o
 - Known limits: about 15 paragraphs still end in a broken hyphen; some plate OCR stays in front matter; 'Grey', 'Hatsell' etc. link to the parliamentary authorities they cite. No e2e spec was added.
 
 Review round 1 (CHANGES) addressed: (1) bare 'New York'/'New-York' now unlinked (city vs state is ambiguous in this text; no unambiguous form occurs, so the state entity drops out), regression test against the real gazetteer; (2) best-page text heading falls back to a paraglide message (sharp_lost_cuckoo_commend, en/lv) instead of hardcoded 'Text'; (3) BestPage list/reference loops keyed by index, component test with duplicate values. Checks: unit+client 966 passed, svelte-check 0 errors, lint clean, best-page server tests 7/7 on PGlite, rebuild byte-identical.
+
+Review round 2 (CHANGES) addressed: (1) updateRecord clears a record's RecordMention rows in the same transaction when its text changes (unchanged text keeps them); server tests cover edit → no linked segments, same-text edit keeps mentions. (2) best-page mention total counts only ACTIVE source records (test). (3) removed the no-op honest_tasty_gazelle_sail message; <title> uses the record title. Checks: server 162 passed / 4 pre-existing auth failures (also on main) on PGlite; unit+client 966 passed; svelte-check 0; lint clean.
 <!-- SECTION:NOTES:END -->
