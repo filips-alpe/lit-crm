@@ -6,7 +6,7 @@ title: >-
 status: To Do
 assignee: []
 created_date: '2026-10-30 10:04'
-updated_date: '2026-11-06 00:10'
+updated_date: '2026-11-06 00:35'
 labels:
   - seed-data
   - jefferson
@@ -54,9 +54,11 @@ Create a new dataset from the Internet Archive OCR of "The Writings of Thomas Je
 Ready for owner review (status left To Do). Second, independent implementation on current main; pushed as branch autoplay/lit-6-r2 because origin/autoplay/lit-6 already holds an earlier implementation (2026-10-31, based on old main 72a5965, with e2e). Both merge cleanly into current main; pick one.
 
 - Pipeline: prisma/seed/sources/jefferson/ (fetch, pages, clean, contents, split, entities, build, report; README.md has types rationale and rules). Cache: .workflow/scratch/jefferson/ (gitignored). Rebuild: bunx tsx prisma/seed/sources/jefferson/build.ts (no network, byte-identical output).
-- Result: 217 documents (4 memoir, 114 memorandum incl. 110 Anas entries, 7 epistle, 10 paper, 23 query, 54 rule, 5 editorial), 414 entities, 5,210 linked mentions in 207 documents; link rate 65% over gazetteer matches. Counts, OCR issues and unlinked names in REPORT.md; every correction with its raw line in corrections.tsv.
+- Result: 217 documents (4 memoir, 114 memorandum incl. 110 Anas entries, 7 epistle, 10 paper, 23 query, 54 rule, 5 editorial), 413 entities, 5,129 linked mentions in 207 documents; link rate 64% over gazetteer matches. Counts, OCR issues and unlinked names in REPORT.md; every correction with its raw line in corrections.tsv.
 - Storage/UI: additive RecordMention table (migration 20261106120000_record_mentions); generic best page at /page/[id] for any record (src/lib/bestPage/assemble.ts), linked from /data/[id] as 'Open page'. Jefferson records have no creator, so existing dashboards and Franklin records/types are unchanged.
 - Verified on PGlite (no local Postgres here): migrations apply, full seed runs twice cleanly (26,458 records); server tests 159 passed, 4 failed. The 4 failures are pre-existing auth tests that still expect '/login' without the ?redirectTo= LIT-3 added. Unit+client 963 passed, svelte-check 0 errors, lint clean. SSR and client navigation of /page/[id] checked in Chrome.
 - A fresh reviewer found: stray running heads, broken hyphens/footnotes at page breaks, an OCR-digit Anas year (18oo), and wrong links (Lincoln county, George Logan, Greene county). All fixed, with regression tests.
 - Known limits: about 15 paragraphs still end in a broken hyphen; some plate OCR stays in front matter; 'Grey', 'Hatsell' etc. link to the parliamentary authorities they cite. No e2e spec was added.
+
+Review round 1 (CHANGES) addressed: (1) bare 'New York'/'New-York' now unlinked (city vs state is ambiguous in this text; no unambiguous form occurs, so the state entity drops out), regression test against the real gazetteer; (2) best-page text heading falls back to a paraglide message (sharp_lost_cuckoo_commend, en/lv) instead of hardcoded 'Text'; (3) BestPage list/reference loops keyed by index, component test with duplicate values. Checks: unit+client 966 passed, svelte-check 0 errors, lint clean, best-page server tests 7/7 on PGlite, rebuild byte-identical.
 <!-- SECTION:NOTES:END -->
