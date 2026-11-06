@@ -83,7 +83,29 @@ model Record {
   recordId   String?
   records    Record[]        @relation("LinkedRecord")
 
+  // Entity mentions inside this record's text, and the mentions of this
+  // record (as an entity) in other records' text.
+  mentions    RecordMention[] @relation("MentionSource")
+  mentionedIn RecordMention[] @relation("MentionEntity")
+
   @@map("lit_record")
+}
+
+/// A span of a record's `text` that names another record (an entity).
+/// `start`/`end` are UTF-16 offsets into `text`, as JavaScript strings index
+/// it; the text itself is never altered.
+model RecordMention {
+  id       String @id @default(cuid(2))
+  source   Record @relation("MentionSource", fields: [sourceId], references: [id], onDelete: Cascade)
+  sourceId String
+  entity   Record @relation("MentionEntity", fields: [entityId], references: [id], onDelete: Cascade)
+  entityId String
+  start    Int
+  end      Int
+
+  @@index([sourceId])
+  @@index([entityId])
+  @@map("lit_record_mention")
 }
 
 model Project {
