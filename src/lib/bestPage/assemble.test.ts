@@ -162,6 +162,20 @@ describe('buildBestPage', () => {
     ]);
   });
 
+  it('leaves the text heading to the page when the type has no body field label', () => {
+    const page = buildBestPage(
+      input({
+        record: { ...input().record, text: 'Body' },
+        type: {
+          code: 'x',
+          color: '#000',
+          layout: { fields: [{ id: 't', label: 'Title', kind: 'text', writeTo: 'title' }] },
+        },
+      }),
+    );
+    expect(page.sections).toEqual([{ kind: 'text', label: null, segments: [{ text: 'Body' }] }]);
+  });
+
   it('caps the source groups and counts the rest', () => {
     const incoming = Array.from({ length: 5 }, (_, i) => ({
       source: ref(`d${i}`, `Doc ${i}`),

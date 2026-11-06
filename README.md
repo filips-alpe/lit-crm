@@ -2,7 +2,7 @@
 
 A CRM built around typed records. A type defines a record's fields and how it is displayed, so one shared record table can hold letters, diary entries, accounts or anything else.
 
-The demo data is Benjamin Franklin's world: 25,827 records from Founders Online and Wikidata, with 17 of the people around him as users. It also includes 217 documents and 414 linked entities from volumes I–II of Lipscomb & Bergh's _Writings of Thomas Jefferson_ (see [`prisma/seed/sources/jefferson/README.md`](prisma/seed/sources/jefferson/README.md)).
+The demo data is Benjamin Franklin's world: 25,827 records from Founders Online and Wikidata, with 17 of the people around him as users. It also includes 217 documents and 413 linked entities from volumes I–II of Lipscomb & Bergh's _Writings of Thomas Jefferson_ (see [`prisma/seed/sources/jefferson/README.md`](prisma/seed/sources/jefferson/README.md)).
 
 Built with SvelteKit 2, Svelte 5, TypeScript, Prisma 7 with PostgreSQL, Tailwind and daisyUI, and paraglide (English and Latvian). It deploys to Vercel.
 

@@ -88,7 +88,8 @@ export type RelatedEntity = RecordRef & { count: number };
 
 export type BestPageSection =
   | { kind: 'facts'; facts: Fact[] }
-  | { kind: 'text'; label: string; segments: TextSegment[] }
+  /** `label` is the layout field's own label; null when the type has no text field (the page supplies a translated default). */
+  | { kind: 'text'; label: string | null; segments: TextSegment[] }
   | { kind: 'mentions'; total: number; groups: MentionGroup[]; more: number }
   | { kind: 'mentioned'; entities: RelatedEntity[] }
   | { kind: 'related'; entities: RelatedEntity[] }
@@ -186,7 +187,7 @@ export function buildBestPage(input: BestPageInput): BestPage {
   if (text.trim()) {
     sections.push({
       kind: 'text',
-      label: body?.label ?? 'Text',
+      label: body?.label ?? null,
       segments: segmentText(text, input.outgoing),
     });
   }

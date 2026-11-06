@@ -57,7 +57,7 @@
             <dd class="text-stone-900">
               {#if fact.value.kind === 'list'}
                 <ul>
-                  {#each fact.value.value as item (item)}
+                  {#each fact.value.value as item, i (i)}
                     <li>
                       {#if isUrl(item)}<a
                           href={item}
@@ -77,7 +77,9 @@
           {/each}
         </dl>
       {:else if section.kind === 'text'}
-        <h2 class="text-sm font-semibold text-stone-600">{section.label}</h2>
+        <h2 class="text-sm font-semibold text-stone-600">
+          {section.label ?? m.sharp_lost_cuckoo_commend()}
+        </h2>
         <div class="rounded border border-stone-200 bg-white p-4 sm:p-6">
           <MentionText segments={section.segments} />
         </div>
@@ -137,7 +139,7 @@
       {:else if section.kind === 'sources'}
         <h2 class="text-sm font-semibold text-stone-600">{m.plain_clear_swan_strive()}</h2>
         <ul class="text-sm">
-          {#each section.references as ref (ref)}
+          {#each section.references as ref, i (i)}
             <li>
               {#if isUrl(ref)}<a
                   href={ref}

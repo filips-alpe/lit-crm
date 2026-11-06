@@ -45,6 +45,22 @@ describe('BestPage', () => {
     await expect.element(browserPage.getByRole('heading', { name: 'The Anas' })).toBeVisible();
   });
 
+  it('uses a translated heading when the type has no text field, and tolerates repeated list values', async () => {
+    render(BestPage, {
+      page: {
+        ...data,
+        sections: [
+          { kind: 'text', label: null, segments: [{ text: 'Body' }] },
+          { kind: 'facts', facts: [{ label: 'Tags', value: { kind: 'list', value: ['a', 'a'] } }] },
+          { kind: 'sources', references: ['https://x.test/1', 'https://x.test/1'] },
+        ],
+      },
+    });
+    await expect.element(browserPage.getByRole('heading', { name: 'Text' })).toBeVisible();
+    expect(document.querySelectorAll('[data-section="sources"] li')).toHaveLength(2);
+    expect(document.querySelectorAll('[data-section="facts"] li')).toHaveLength(2);
+  });
+
   it('draws only the sections it is given', () => {
     render(BestPage, { page: data });
     expect(
