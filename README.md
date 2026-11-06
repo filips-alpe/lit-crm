@@ -2,7 +2,7 @@
 
 A CRM built around typed records. A type defines a record's fields and how it is displayed, so one shared record table can hold letters, diary entries, accounts or anything else.
 
-The demo data is Benjamin Franklin's world: 25,827 records from Founders Online and Wikidata, with 17 of the people around him as users.
+The demo data is Benjamin Franklin's world: 25,827 records from Founders Online and Wikidata, with 17 of the people around him as users. It also includes 217 documents and 416 linked entities from volumes I–II of Lipscomb & Bergh's _Writings of Thomas Jefferson_ (see [`prisma/seed/sources/jefferson/README.md`](prisma/seed/sources/jefferson/README.md)).
 
 Built with SvelteKit 2, Svelte 5, TypeScript, Prisma 7 with PostgreSQL, Tailwind and daisyUI, and paraglide (English and Latvian). It deploys to Vercel.
 
@@ -28,6 +28,7 @@ Log in by picking a user on the login screen.
 - **Types** (`/types`) set a record's fields. Each field has a kind and is stored in a column of the shared record table, chosen by its `writeTo`. The field kinds are in `src/lib/fields/registry.ts`.
 - **Records** (`/data`) appear in a timeline with infinite scroll, and open in a modal or on their own page.
 - **Renderers** give a type its own row, card and detail view. A type selects one with `rendererId`; without one it uses the generic view. The built-in renderers are in `src/lib/renderers`.
+- **Best pages** (`/page/[id]`) show any record as one page assembled from its data: fields, text with linked mentions, where it is mentioned, related entities and sources. A section with no data is left out.
 - **Dashboards** (`/`) are per user and get SQL aggregates plus capped record lists. See [`src/lib/dashboards/README.md`](src/lib/dashboards/README.md).
 
 ## Extensions
@@ -74,6 +75,8 @@ Seed data is generated from snapshots committed under `prisma/seed/sources/`. Ge
 bunx tsx prisma/seed/generate.ts                  # regenerate seed data from the snapshots
 bunx tsx prisma/seed/sources/extract-fo.ts <path> # rebuild the Founders Online snapshot from the raw metadata dump
 bunx tsx prisma/seed/sources/wikidata/fetch.ts    # refetch the Wikidata snapshot (network)
+bunx tsx prisma/seed/sources/jefferson/fetch.ts   # cache the Jefferson OCR once (network)
+bunx tsx prisma/seed/sources/jefferson/build.ts   # rebuild the Jefferson dataset from that cache
 ```
 
 ## Testing
