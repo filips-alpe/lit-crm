@@ -52,7 +52,7 @@
       {#if section.kind === 'facts'}
         <h2 class="text-sm font-semibold text-stone-600">{m.helpful_equal_raven_sway()}</h2>
         <dl class="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm">
-          {#each section.facts as fact (fact.label)}
+          {#each section.facts as fact, i (i)}
             <dt class="text-stone-500">{fact.label}</dt>
             <dd class="text-stone-900">
               {#if fact.value.kind === 'list'}
