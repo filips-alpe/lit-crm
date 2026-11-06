@@ -3,7 +3,7 @@ id: LIT-6
 title: >-
   Add Thomas Jefferson dataset from Lipscomb & Bergh with linked entities and
   best-page UI
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-10-30 10:04'
 updated_date: '2026-11-06 00:43'
