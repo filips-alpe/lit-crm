@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { prisma } from '$lib/prisma';
 import { addType } from '$lib/server/repos/types';
-import { createRecord } from '$lib/server/repos/records';
+import { createRecord, updateRecord } from '$lib/server/repos/records';
 import { loadBestPageInput } from './bestPage';
 import { buildBestPage } from '$lib/bestPage/assemble';
 
@@ -85,6 +85,36 @@ describe('loadBestPageInput', () => {
       ['Hamilton', hamilton.id],
       ['Knox', knox.id],
     ]);
+  });
+
+  it('drops a record’s mentions when its text is edited, so no link points at the wrong words', async () => {
+    const { doc1 } = await fixture();
+    await updateRecord(doc1.id, {
+      text: 'Edited: Th: Jefferson mentioned a letter from Hamilton about Knox.',
+    });
+    expect(await prisma.recordMention.count({ where: { sourceId: doc1.id } })).toBe(0);
+    const page = buildBestPage((await loadBestPageInput(doc1.id))!);
+    const text = page.sections.find((s) => s.kind === 'text');
+    if (text?.kind !== 'text') throw new Error('no text');
+    expect(text.segments.filter((s) => s.entityId)).toEqual([]);
+    expect(page.sections.some((s) => s.kind === 'mentioned')).toBe(false);
+  });
+
+  it('keeps the mentions when an edit leaves the text unchanged', async () => {
+    const { doc1 } = await fixture();
+    await updateRecord(doc1.id, {
+      title: 'Renamed',
+      text: 'Th: Jefferson mentioned to him a letter from Hamilton about Knox.',
+    });
+    expect(await prisma.recordMention.count({ where: { sourceId: doc1.id } })).toBe(2);
+  });
+
+  it('counts only mentions from active records in the total', async () => {
+    const { doc2, hamilton } = await fixture();
+    await prisma.record.update({ where: { id: doc2.id }, data: { status: 'INACTIVE' } });
+    const input = await loadBestPageInput(hamilton.id);
+    expect(input?.incomingTotal).toBe(1);
+    expect(input?.incoming).toHaveLength(1);
   });
 
   it('removes mentions with their record', async () => {

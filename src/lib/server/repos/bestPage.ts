@@ -94,7 +94,7 @@ export async function loadBestPageInput(id: string): Promise<BestPageInput | nul
       WHERE m."entityId" = ${id} AND r."status" = 'ACTIVE'
       ORDER BY r."createdAt" ASC, m."start" ASC
       LIMIT ${INCOMING_LIMIT}`,
-    prisma.recordMention.count({ where: { entityId: id } }),
+    prisma.recordMention.count({ where: { entityId: id, source: { status: 'ACTIVE' } } }),
     prisma.$queryRaw<RelatedRow[]>`
       WITH src AS (
         SELECT DISTINCT "sourceId" FROM "lit_record_mention" WHERE "entityId" = ${id}

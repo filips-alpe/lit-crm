@@ -7,11 +7,7 @@
 </script>
 
 <svelte:head>
-  <title
-    >{m.honest_tasty_gazelle_sail({
-      title: data.page.record.title ?? m.large_brief_cobra_laugh(),
-    })}</title
-  >
+  <title>{data.page.record.title ?? m.large_brief_cobra_laugh()}</title>
 </svelte:head>
 
 <div class="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6">

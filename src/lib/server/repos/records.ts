@@ -454,19 +454,29 @@ export async function createRecord(input: CreateRecordInput) {
 
 export async function updateRecord(id: string, input: UpdateRecordInput) {
   const { projectIds, creatorId, assigneeId, recordId } = input;
-  const updated = await prisma.record.update({
-    where: { id },
-    data: {
-      // A provided list replaces the membership wholesale (clear, then re-link).
-      ...(projectIds !== undefined
-        ? { projects: { deleteMany: {}, create: projectLinks(projectIds) } }
-        : {}),
-      // Relation FKs are written as scalars on update (null clears the link).
-      ...(creatorId !== undefined ? { creatorId } : {}),
-      ...(assigneeId !== undefined ? { assigneeId } : {}),
-      ...(recordId !== undefined ? { recordId } : {}),
-      ...writableColumns(input),
-    },
+  const updated = await prisma.$transaction(async (tx) => {
+    // Mentions are character offsets into `text`: once the text changes they
+    // would point at the wrong words, so a text edit drops them.
+    let textChanged = false;
+    if (input.text !== undefined) {
+      const current = await tx.record.findUnique({ where: { id }, select: { text: true } });
+      textChanged = (current?.text ?? null) !== (input.text ?? null);
+    }
+    return tx.record.update({
+      where: { id },
+      data: {
+        // A provided list replaces the membership wholesale (clear, then re-link).
+        ...(projectIds !== undefined
+          ? { projects: { deleteMany: {}, create: projectLinks(projectIds) } }
+          : {}),
+        // Relation FKs are written as scalars on update (null clears the link).
+        ...(creatorId !== undefined ? { creatorId } : {}),
+        ...(assigneeId !== undefined ? { assigneeId } : {}),
+        ...(recordId !== undefined ? { recordId } : {}),
+        ...(textChanged ? { mentions: { deleteMany: {} } } : {}),
+        ...writableColumns(input),
+      },
+    });
   });
   return plainRecord(updated);
 }
