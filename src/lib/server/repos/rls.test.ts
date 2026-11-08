@@ -264,3 +264,158 @@ describe('admin repos', () => {
     expect((await runAs(w.admin.id, () => listGrants())).length).toBe(2);
   });
 });
+
+// Security review F1: a writer whose amounts are masked must not be able to learn them
+// by writing guesses (success vs failure was an equality oracle).
+describe('no amount oracle (F1)', () => {
+  let carol: { id: string };
+  beforeEach(async () => {
+    carol = await prismaOwner.user.create({ data: { username: 'carol', name: 'CAROL' } });
+    // WRITE on bob's record R2 (amounts 50 / total 55), amounts hidden
+    await prismaOwner.grant.create({
+      data: { userId: carol.id, recordId: w.r2.id, level: 'WRITE', hideAmounts: true },
+    });
+  });
+
+  const guess = (col: 'sum' | 'hours' | 'total', v: number | null) =>
+    runAs(carol.id, () =>
+      prisma.$executeRawUnsafe(`UPDATE lit_record SET "${col}" = $1 WHERE id = $2`, v, w.r2.id),
+    );
+
+  it('raises for any UPDATE naming an amount column, right guess or wrong, even NULL', async () => {
+    for (const v of [1, 50, 55, null]) {
+      for (const col of ['sum', 'hours', 'total'] as const) {
+        await expect(guess(col, v), `${col}=${v}`).rejects.toThrow(/amounts are hidden/);
+      }
+    }
+    // brute force: not a single value gets through, so no value is ever confirmed
+    let hits = 0;
+    for (let g = 40; g <= 60; g++) {
+      try {
+        await guess('sum', g);
+        hits++;
+      } catch {
+        /* denied */
+      }
+    }
+    expect(hits).toBe(0);
+    // the ON CONFLICT DO UPDATE door is shut too
+    await expect(
+      runAs(
+        carol.id,
+        () =>
+          prisma.$executeRaw`INSERT INTO lit_record (id, "updatedAt", "typeId", "creatorId")
+          VALUES (${w.r2.id}, now(), ${w.type.id}, ${carol.id})
+          ON CONFLICT (id) DO UPDATE SET "sum" = 50`,
+      ),
+    ).rejects.toThrow();
+    expect(
+      Number((await prismaOwner.record.findUniqueOrThrow({ where: { id: w.r2.id } })).title),
+    ).toBeNaN();
+  });
+
+  it('the masked writer can still edit everything else, and the app does not send amounts', async () => {
+    const saved = await runAs(carol.id, () =>
+      updateRecord(w.r2.id, { title: 'edited', sum: 999, hours: 9, total: 9 }),
+    );
+    expect(saved).toMatchObject({ title: 'edited', amountsMasked: true, sum: null });
+    const [raw] = await prismaOwner.$queryRaw<{ sum: unknown; total: unknown }[]>`
+      SELECT "sum", "total" FROM lit_record WHERE id = ${w.r2.id}`;
+    expect([Number(raw.sum), Number(raw.total)]).toEqual([50, 55]);
+  });
+
+  it('unmasked writers (creator, admin, grant without hideAmounts) still write amounts', async () => {
+    expect(await runAs(w.bob.id, () => updateRecord(w.r2.id, { sum: 51 }))).toMatchObject({
+      sum: 51,
+    });
+    expect(await runAs(w.admin.id, () => updateRecord(w.r2.id, { sum: 52 }))).toMatchObject({
+      sum: 52,
+    });
+    await prismaOwner.grant.updateMany({
+      where: { userId: carol.id },
+      data: { hideAmounts: false },
+    });
+    expect(await runAs(carol.id, () => updateRecord(w.r2.id, { sum: 53 }))).toMatchObject({
+      sum: 53,
+      amountsMasked: false,
+    });
+  });
+});
+
+// Security review F2: link changes need write on the record AND on the project.
+describe('project links (F2)', () => {
+  let eve: { id: string };
+  let p2: { id: string };
+  let mine: { id: string };
+  beforeEach(async () => {
+    eve = await prismaOwner.user.create({ data: { username: 'eve', name: 'EVE' } });
+    p2 = await prismaOwner.project.create({ data: { code: 'P2', creatorId: w.alice.id } });
+    mine = await prismaOwner.record.create({
+      data: { typeId: w.type.id, creatorId: eve.id, title: 'mine' },
+    });
+  });
+  const link = (userId: string, projectId: string, recordId: string) =>
+    runAs(userId, () => prisma.projectRecord.create({ data: { projectId, recordId } }));
+  const unlink = (userId: string, projectId: string, recordId: string) =>
+    runAs(userId, () =>
+      prisma.projectRecord.deleteMany({ where: { projectId, recordId } }).then((r) => r.count),
+    );
+  const grant = (level: 'READ' | 'WRITE') =>
+    prismaOwner.grant.create({
+      data: { userId: eve.id, projectId: w.project.id, level, hideAmounts: false },
+    });
+
+  it('a READ grant on the project is not enough to link or unlink', async () => {
+    await grant('READ');
+    await expect(link(eve.id, w.project.id, mine.id)).rejects.toThrow();
+    // R1 is in P and readable to eve through the project; she cannot write it, so no unlink either
+    expect(await unlink(eve.id, w.project.id, w.r1.id)).toBe(0);
+    // the record's own writer, still with only READ on the project
+    await prismaOwner.projectRecord.create({
+      data: { projectId: w.project.id, recordId: mine.id },
+    });
+    expect(await unlink(eve.id, w.project.id, mine.id)).toBe(0);
+    expect(await prismaOwner.projectRecord.count()).toBe(2);
+  });
+
+  it('a WRITE grant on the project plus write on the record may link and unlink', async () => {
+    await grant('WRITE');
+    await link(eve.id, w.project.id, mine.id);
+    expect(await prismaOwner.projectRecord.count({ where: { recordId: mine.id } })).toBe(1);
+    expect(await unlink(eve.id, w.project.id, mine.id)).toBe(1);
+    // record write is still required: R1 belongs to alice, eve's project WRITE covers it (records in it)
+    expect(await unlink(eve.id, w.project.id, w.r1.id)).toBe(1);
+  });
+
+  it('the project creator and an admin may link; a stranger to the project may not', async () => {
+    const own = await prismaOwner.record.create({
+      data: { typeId: w.type.id, creatorId: w.alice.id, title: 'alice2' },
+    });
+    await link(w.alice.id, p2.id, own.id);
+    await link(w.admin.id, p2.id, mine.id);
+    await expect(link(w.bob.id, w.project.id, w.r2.id)).rejects.toThrow();
+    expect(await unlink(w.bob.id, p2.id, mine.id)).toBe(0);
+  });
+
+  it('app: moving a record between projects works for a writer of both; unchanged lists need no project right', async () => {
+    const moved = await runAs(w.alice.id, () => updateRecord(w.r1.id, { projectIds: [p2.id] }));
+    expect(moved.id).toBe(w.r1.id);
+    expect(
+      (await prismaOwner.projectRecord.findMany({ where: { recordId: w.r1.id } })).map(
+        (l) => l.projectId,
+      ),
+    ).toEqual([p2.id]);
+    // eve writes her record, which sits in P where she has only READ: saving with the same
+    // project list must not try to touch the link
+    await prismaOwner.projectRecord.create({
+      data: { projectId: w.project.id, recordId: mine.id },
+    });
+    await grant('READ');
+    const same = await runAs(eve.id, () =>
+      updateRecord(mine.id, { title: 'renamed', projectIds: [w.project.id] }),
+    );
+    expect(same.title).toBe('renamed');
+    // but she cannot add herself to another project she only reads, or leave this one
+    await expect(runAs(eve.id, () => updateRecord(mine.id, { projectIds: [] }))).rejects.toThrow();
+  });
+});

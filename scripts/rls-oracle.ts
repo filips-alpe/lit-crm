@@ -173,6 +173,7 @@ type Expected = {
   projWritable: Set<string>;
   linkVisible: Set<string>; // "projectId|recordId"
   linkWritable: Set<string>;
+  linkable: (projectId: string) => boolean;
   groupsVisible: Set<string>;
   membersVisible: Set<string>;
   grantsVisible: Set<string>;
@@ -251,6 +252,7 @@ function buildOracle(w: World) {
       projWritable: new Set(),
       linkVisible: new Set(),
       linkWritable: new Set(),
+      linkable: () => false,
       groupsVisible: new Set(),
       membersVisible: new Set(),
       grantsVisible: new Set(),
@@ -274,10 +276,19 @@ function buildOracle(w: World) {
       if (admin || own || rd.project.has(p.id)) e.projVisible.add(p.id);
       if (admin || own) e.projWritable.add(p.id);
     }
+    // projects a user may put records into / take records out of: admin, creator, assignee,
+    // or a WRITE grant on the project (a READ grant is not enough)
+    const linkable = (pid: string) => {
+      const p = projById.get(pid);
+      return (
+        !!p && (admin || p.creatorId === userId || p.assigneeId === userId || wr.project.has(pid))
+      );
+    };
+    e.linkable = linkable;
     for (const l of w.links) {
       const k = `${l.projectId}|${l.recordId}`;
       if (e.recVisible.has(l.recordId) && e.projVisible.has(l.projectId)) e.linkVisible.add(k);
-      if (e.recWritable.has(l.recordId) && e.projVisible.has(l.projectId)) e.linkWritable.add(k);
+      if (e.recWritable.has(l.recordId) && linkable(l.projectId)) e.linkWritable.add(k);
     }
     for (const g of w.groupIds) if (admin || myGroups.has(g)) e.groupsVisible.add(g);
     for (const m of w.members)
@@ -623,7 +634,7 @@ async function probeUser(
       );
       expect(
         L(`link insert ${p}->${r}`, 'lit_app'),
-        res.ok === (e.recWritable.has(r) && e.projVisible.has(p)),
+        res.ok === (e.admin || (e.recWritable.has(r) && e.linkable(p))),
         JSON.stringify(res),
       );
     }

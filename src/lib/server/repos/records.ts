@@ -1,4 +1,4 @@
-import { prisma } from '$lib/prisma';
+import { ownerFallback, prisma } from '$lib/prisma';
 import { Prisma } from '../../../../generated/prisma/client';
 import { layoutSchema, recipientColumn } from '$lib/schemas/types';
 import { FIELD_TYPES } from '$lib/fields/registry';
@@ -459,11 +459,33 @@ export async function updateRecord(id: string, input: UpdateRecordInput) {
   if (access.amountsMasked) for (const col of AMOUNT_COLUMNS) delete rest[col];
 
   const { projectIds, creatorId, assigneeId, recordId } = rest;
+  // A provided list sets the membership, by difference: only links that are added or
+  // removed are written. Linking and unlinking need write on the project too (see the
+  // link policies), so a writer who leaves the project list as it is must not touch it.
+  let projects: object | undefined;
+  if (projectIds !== undefined) {
+    const want = new Set(projectIds);
+    const have = new Set(
+      (await prisma.projectRecord.findMany({ where: { recordId: id } })).map((l) => l.projectId),
+    );
+    const add = [...want].filter((p) => !have.has(p));
+    const drop = [...have].filter((p) => !want.has(p));
+    if (add.length + drop.length && !ownerFallback()) {
+      // The database would silently skip a link it may not delete; say so instead.
+      const ok = new Set(
+        (await prisma.$queryRaw<{ id: string }[]>`SELECT lit_project_ids('link') AS id`).map(
+          (r) => r.id,
+        ),
+      );
+      if ([...add, ...drop].some((p) => !ok.has(p))) throw new ForbiddenError();
+    }
+    projects = {
+      ...(drop.length ? { deleteMany: { projectId: { in: drop } } } : {}),
+      ...(add.length ? { create: projectLinks(add) } : {}),
+    };
+  }
   const data = {
-    // A provided list replaces the membership wholesale (clear, then re-link).
-    ...(projectIds !== undefined
-      ? { projects: { deleteMany: {}, create: projectLinks(projectIds) } }
-      : {}),
+    ...(projects ? { projects } : {}),
     // Relation FKs are written as scalars on update (null clears the link).
     ...(creatorId !== undefined ? { creatorId } : {}),
     ...(assigneeId !== undefined ? { assigneeId } : {}),

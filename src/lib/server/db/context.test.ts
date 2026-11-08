@@ -93,4 +93,23 @@ describe('request context', () => {
       await runAs(null, () => prisma.$queryRaw`SELECT id FROM lit_resolve_user(${'gone'})`),
     ).toEqual([]);
   });
+
+  it('refuses an interactive $transaction instead of silently running it non-atomically (F7)', async () => {
+    scoped();
+    const w = await makeWorld();
+    const before = await prismaOwner.record.count();
+    await expect(
+      runAs(w.alice.id, () =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (prisma as any).$transaction(async (tx: typeof prisma) => {
+          await tx.record.create({ data: { typeId: w.type.id, creatorId: w.alice.id } });
+          throw new Error('would be rolled back if atomic');
+        }),
+      ),
+    ).rejects.toThrow(/Interactive \$transaction.*not supported/);
+    expect(await prismaOwner.record.count()).toBe(before);
+    // the array form still works and is atomic under the same role and user id
+    const [n] = await runAs(w.alice.id, () => prisma.$transaction([prisma.record.count()]));
+    expect(n).toBe(1);
+  });
 });
