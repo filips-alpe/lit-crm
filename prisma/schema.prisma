@@ -154,7 +154,9 @@ model Project {
 model ProjectRecord {
   project   Project @relation(fields: [projectId], references: [id])
   projectId String
-  record    Record  @relation(fields: [recordId], references: [id])
+  // Deleting a record removes its links (the cascade runs as the table owner, so a writer can
+  // delete a record even when some of its links point at projects they cannot see).
+  record    Record  @relation(fields: [recordId], references: [id], onDelete: Cascade)
   recordId  String
 
   @@id([projectId, recordId])

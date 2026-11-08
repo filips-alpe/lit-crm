@@ -480,29 +480,13 @@ export async function updateRecord(id: string, input: UpdateRecordInput) {
   return (await withAccess([updated]))[0];
 }
 
-/** The record cannot be deleted because project links to projects the user cannot see
- *  (they cannot remove those links) or other rows still reference it. */
-export class RecordInUseError extends Error {
-  constructor() {
-    super('record is still referenced');
-    this.name = 'RecordInUseError';
-  }
-}
-
-/** Hard-delete a record together with its project links, in one statement. Whoever may
- *  write the record may delete it (the delete policy is the write set); anyone else gets
- *  {@link ForbiddenError}. */
+/** Hard-delete a record; its project links cascade. Whoever may write the record may delete
+ *  it (the delete policy is the write set); anyone else gets {@link ForbiddenError}. */
 export async function deleteRecord(id: string): Promise<void> {
-  let count: number;
   try {
-    count = await prisma.$executeRaw`
-      WITH links AS (DELETE FROM "lit_project_record" WHERE "recordId" = ${id})
-      DELETE FROM "lit_record" WHERE "id" = ${id}`;
+    await prisma.record.delete({ where: { id } });
   } catch (e) {
     if (asForbidden(e)) throw new ForbiddenError();
-    if (JSON.stringify(e, Object.getOwnPropertyNames(e as object)).includes('23503'))
-      throw new RecordInUseError();
     throw e;
   }
-  if (count === 0) throw new ForbiddenError();
 }

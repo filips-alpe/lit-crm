@@ -9,7 +9,6 @@ import {
   listCorrespondenceMap,
   updateRecord,
   deleteRecord,
-  RecordInUseError,
   validateRecordRelations,
   type UpdateRecordInput,
 } from '$lib/server/repos/records';
@@ -139,7 +138,6 @@ export const actions: Actions = {
       await deleteRecord(event.params.id);
     } catch (err) {
       if (err instanceof ForbiddenError) error(403, m.best_slimy_barbel_peek());
-      if (err instanceof RecordInUseError) error(409, m.quaint_tasty_crow_fulfill());
       throw err;
     }
     redirect(303, '/data');
