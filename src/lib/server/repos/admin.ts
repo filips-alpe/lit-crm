@@ -41,6 +41,8 @@ async function write<T>(fn: () => Promise<T>): Promise<T> {
     return await fn();
   } catch (e) {
     if (e instanceof LastAdminError) throw e;
+    // the database's own guard (lit_guard_last_admin): authoritative, race-free
+    if (/last active admin/i.test(text(e))) throw new LastAdminError();
     if (code(e) === 'P2002') throw new DuplicateNameError();
     if (code(e) === 'P2003' || /23503|23514|check constraint/i.test(text(e)))
       throw new InvalidGrantError();
@@ -59,7 +61,8 @@ export function listAdminUsers() {
   });
 }
 
-/** Set a user's admin flag and status. Refuses to leave the system without an active admin. */
+/** Set a user's admin flag and status. Refuses to leave the system without an active admin:
+ *  the check here gives the message early, the database trigger is the race-free enforcement. */
 export async function updateUserAccess(
   id: string,
   input: { isAdmin: boolean; status: UserStatus },
