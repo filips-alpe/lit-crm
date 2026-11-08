@@ -29,6 +29,7 @@
         ...$formData,
         createdAt: record.createdAt,
         status: record.status,
+        amountsMasked: record.amountsMasked,
         creator: rel.creator ?? record.creator,
         assignee: rel.assignee,
         record: rel.record,

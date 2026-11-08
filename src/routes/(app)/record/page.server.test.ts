@@ -4,9 +4,9 @@ import { addType } from '$lib/server/repos/types';
 import { actions, load } from './+page.server';
 import { load as layoutLoad } from './+layout.server';
 
-async function makeUser() {
+async function makeUser(isAdmin = false) {
   return prisma.user.create({
-    data: { username: `u-${Date.now()}-${Math.random()}`, name: 'Tester' },
+    data: { username: `u-${Date.now()}-${Math.random()}`, name: 'Tester', isAdmin },
   });
 }
 
@@ -127,8 +127,21 @@ describe('/record save action', () => {
     expect(sneakyRecords.length).toBe(0);
   });
 
-  it('uses the form-selected creator over the logged-in user', async () => {
+  it('a non-admin is always the creator, whatever the form posts', async () => {
     const user = await makeUser();
+    const other = await makeUser();
+    const type = await addType({
+      code: 'CREATORLOCK',
+      layout: { fields: [{ id: 'c', label: 'Author', kind: 'user', writeTo: 'creatorId' }] },
+    });
+    await actions.save(postEvent(`/record?type=${type.id}`, user, { creatorId: other.id }));
+    const records = await prisma.record.findMany({ where: { typeId: type.id } });
+    expect(records.length).toBe(1);
+    expect(records[0].creatorId).toBe(user.id);
+  });
+
+  it('an admin may pick the creator: it uses the form-selected creator over the logged-in user', async () => {
+    const user = await makeUser(true);
     const chosen = await makeUser();
     const type = await addType({
       code: 'CREATORFIELD',

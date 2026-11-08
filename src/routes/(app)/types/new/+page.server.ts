@@ -4,11 +4,12 @@ import type { Actions, PageServerLoad } from './$types';
 import { DEFAULT_TYPE_COLOR, typeSchema } from '$lib/schemas/types';
 import { starterLayout } from '$lib/forms/builder';
 import { sampleIcons } from '$lib/icons/typeIcons';
-import { requireUser } from '$lib/server/auth/requireUser';
+import { requireAdmin } from '$lib/server/auth/requireUser';
+import * as m from '$lib/paraglide/messages.js';
 import { saveTypeForm } from '../saveType';
 
 export const load: PageServerLoad = async (event) => {
-  requireUser(event);
+  requireAdmin(event, m.round_white_turkey_reside());
   const form = await superValidate(zod4(typeSchema));
   form.data.color = DEFAULT_TYPE_COLOR;
   form.data.iconSeed = sampleIcons(1)[0];
@@ -18,7 +19,7 @@ export const load: PageServerLoad = async (event) => {
 
 export const actions: Actions = {
   save: async (event) => {
-    requireUser(event);
+    requireAdmin(event, m.round_white_turkey_reside());
     return saveTypeForm(event.request, null);
   },
 };

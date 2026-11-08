@@ -11,6 +11,7 @@ import type { UpdateRecordInput } from '$lib/server/repos/records';
 import { getTypeById } from '$lib/server/repos/types';
 import { buildRecordFormOptions } from '$lib/server/recordFormOptions';
 import { applyInvalidDateError, applyRecordRelationErrors } from '$lib/server/forms/relationErrors';
+import { ForbiddenError } from '$lib/server/db/errors';
 import * as m from '$lib/paraglide/messages.js';
 
 async function loadLayout(url: URL): Promise<{ id: string; layout: FormLayout } | null> {
@@ -23,7 +24,7 @@ async function loadLayout(url: URL): Promise<{ id: string; layout: FormLayout } 
 }
 
 export const load: PageServerLoad = async (event) => {
-  requireUser(event);
+  const user = requireUser(event);
   const selected = await loadLayout(event.url);
   if (!selected) return { form: null, layout: null, typeId: null };
 
@@ -31,6 +32,8 @@ export const load: PageServerLoad = async (event) => {
   const form = await superValidate(initial, zod4(buildRecordFormSchema(selected.layout)));
   const options = await buildRecordFormOptions(selected.layout, {
     values: form.data as Record<string, unknown>,
+    // Only an admin picks the author of a new record; everyone else is the creator.
+    access: { readOnly: false, lockCreator: !user.isAdmin, maskedColumns: [] },
   });
   return { form, layout: selected.layout, typeId: selected.id, options };
 };
@@ -53,7 +56,7 @@ export const actions: Actions = {
       typeof input[key] === 'string' && input[key] ? (input[key] as string) : undefined;
     // A creator field in the layout lets the form pick the author; otherwise the
     // logged-in user owns the record.
-    const creatorId = str('creatorId') ?? user.id;
+    const creatorId = user.isAdmin ? (str('creatorId') ?? user.id) : user.id;
     const assigneeId = str('assigneeId');
     const recordId = str('recordId');
 
@@ -80,6 +83,8 @@ export const actions: Actions = {
         projectIds,
       });
     } catch (err) {
+      if (err instanceof ForbiddenError)
+        return message(form, { error: m.best_slimy_barbel_peek() }, { status: 403 });
       if (!applyInvalidDateError(form, err)) throw err;
       return fail(400, { form });
     }

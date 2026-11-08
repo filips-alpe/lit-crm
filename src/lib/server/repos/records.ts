@@ -3,20 +3,8 @@ import { Prisma } from '../../../../generated/prisma/client';
 import { layoutSchema, recipientColumn } from '$lib/schemas/types';
 import { FIELD_TYPES } from '$lib/fields/registry';
 import type { RecordOption } from '$lib/forms/recordOptions';
-
-// Prisma returns `sum` / `total` as Decimal instances, which SvelteKit cannot
-// serialize across the load boundary. Coerce them to plain numbers so every
-// consumer gets a POJO.
-const DECIMAL_COLUMNS = ['sum', 'total'] as const;
-
-function plainRecord<T extends Record<string, unknown>>(row: T): T {
-  const out: Record<string, unknown> = { ...row };
-  for (const col of DECIMAL_COLUMNS) {
-    const value = out[col];
-    out[col] = value == null ? null : Number(value);
-  }
-  return out as T;
-}
+import { AMOUNT_COLUMNS, recordAccess, withAccess } from '$lib/server/db/amounts';
+import { asForbidden, ForbiddenError } from '$lib/server/db/errors';
 
 const person = {
   select: { id: true, username: true, name: true, color: true, avatarSeed: true },
@@ -187,7 +175,7 @@ export async function listRecords(options: ListRecordsOptions = {}) {
     }),
     prisma.record.count({ where }),
   ]);
-  return { rows: rows.map(plainRecord), total, page, pageSize };
+  return { rows: await withAccess(rows), total, page, pageSize };
 }
 
 const OPTION_LABEL_MAX = 120;
@@ -269,7 +257,7 @@ export async function resolveRecordOptions(ids: string[]): Promise<RecordOption[
 
 export async function getRecordById(id: string) {
   const row = await prisma.record.findUnique({ where: { id }, include: recordInclude });
-  return row ? plainRecord(row) : null;
+  return row ? (await withAccess([row]))[0] : null;
 }
 
 export interface CorrespondenceThread {
@@ -439,44 +427,82 @@ export async function createRecord(input: CreateRecordInput) {
   const { typeId, creatorId, assigneeId, recordId, projectIds } = input;
   // `type: { connect }` forces Prisma's checked create input, so every relation
   // FK must use the connect form (scalar `assigneeId`/`recordId` are rejected there).
-  const created = await prisma.record.create({
-    data: {
-      type: { connect: { id: typeId } },
-      ...(creatorId ? { creator: { connect: { id: creatorId } } } : {}),
-      ...(assigneeId ? { assignee: { connect: { id: assigneeId } } } : {}),
-      ...(recordId ? { record: { connect: { id: recordId } } } : {}),
-      ...(projectIds?.length ? { projects: { create: projectLinks(projectIds) } } : {}),
-      ...writableColumns(input),
-    },
-  });
-  return plainRecord(created);
+  const data = {
+    type: { connect: { id: typeId } },
+    ...(creatorId ? { creator: { connect: { id: creatorId } } } : {}),
+    ...(assigneeId ? { assignee: { connect: { id: assigneeId } } } : {}),
+    ...(recordId ? { record: { connect: { id: recordId } } } : {}),
+    ...(projectIds?.length ? { projects: { create: projectLinks(projectIds) } } : {}),
+    ...writableColumns(input),
+  };
+  let created;
+  try {
+    created = await prisma.record.create({ data });
+  } catch (e) {
+    if (asForbidden(e)) throw new ForbiddenError();
+    throw e;
+  }
+  return (await withAccess([created]))[0];
 }
 
+/**
+ * Edit a record the acting user may write. Throws {@link ForbiddenError} when the record
+ * is not visible or not writable for them (the database says so too; checking first gives
+ * a clean answer instead of a bare "not found"). When the amounts are masked for them
+ * (sum, hours, total read as NULL) they are dropped from the input: writing the masked
+ * NULL back would be refused, and an editor must not overwrite what they cannot see.
+ */
 export async function updateRecord(id: string, input: UpdateRecordInput) {
-  const { projectIds, creatorId, assigneeId, recordId } = input;
-  const updated = await prisma.$transaction(async (tx) => {
-    // Mentions are character offsets into `text`: once the text changes they
-    // would point at the wrong words, so a text edit drops them.
-    let textChanged = false;
-    if (input.text !== undefined) {
-      const current = await tx.record.findUnique({ where: { id }, select: { text: true } });
-      textChanged = (current?.text ?? null) !== (input.text ?? null);
-    }
-    return tx.record.update({
-      where: { id },
-      data: {
-        // A provided list replaces the membership wholesale (clear, then re-link).
-        ...(projectIds !== undefined
-          ? { projects: { deleteMany: {}, create: projectLinks(projectIds) } }
-          : {}),
-        // Relation FKs are written as scalars on update (null clears the link).
-        ...(creatorId !== undefined ? { creatorId } : {}),
-        ...(assigneeId !== undefined ? { assigneeId } : {}),
-        ...(recordId !== undefined ? { recordId } : {}),
-        ...(textChanged ? { mentions: { deleteMany: {} } } : {}),
-        ...writableColumns(input),
-      },
-    });
-  });
-  return plainRecord(updated);
+  const access = (await recordAccess([id])).get(id);
+  if (!access?.canWrite) throw new ForbiddenError();
+  const rest: UpdateRecordInput = { ...input };
+  if (access.amountsMasked) for (const col of AMOUNT_COLUMNS) delete rest[col];
+
+  const { projectIds, creatorId, assigneeId, recordId } = rest;
+  const data = {
+    // A provided list replaces the membership wholesale (clear, then re-link).
+    ...(projectIds !== undefined
+      ? { projects: { deleteMany: {}, create: projectLinks(projectIds) } }
+      : {}),
+    // Relation FKs are written as scalars on update (null clears the link).
+    ...(creatorId !== undefined ? { creatorId } : {}),
+    ...(assigneeId !== undefined ? { assigneeId } : {}),
+    ...(recordId !== undefined ? { recordId } : {}),
+    ...writableColumns(rest),
+  };
+  let updated;
+  try {
+    updated = await prisma.record.update({ where: { id }, data });
+  } catch (e) {
+    if (asForbidden(e)) throw new ForbiddenError();
+    throw e;
+  }
+  return (await withAccess([updated]))[0];
+}
+
+/** The record cannot be deleted because project links to projects the user cannot see
+ *  (they cannot remove those links) or other rows still reference it. */
+export class RecordInUseError extends Error {
+  constructor() {
+    super('record is still referenced');
+    this.name = 'RecordInUseError';
+  }
+}
+
+/** Hard-delete a record together with its project links, in one statement. Whoever may
+ *  write the record may delete it (the delete policy is the write set); anyone else gets
+ *  {@link ForbiddenError}. */
+export async function deleteRecord(id: string): Promise<void> {
+  let count: number;
+  try {
+    count = await prisma.$executeRaw`
+      WITH links AS (DELETE FROM "lit_project_record" WHERE "recordId" = ${id})
+      DELETE FROM "lit_record" WHERE "id" = ${id}`;
+  } catch (e) {
+    if (asForbidden(e)) throw new ForbiddenError();
+    if (JSON.stringify(e, Object.getOwnPropertyNames(e as object)).includes('23503'))
+      throw new RecordInUseError();
+    throw e;
+  }
+  if (count === 0) throw new ForbiddenError();
 }

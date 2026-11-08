@@ -128,4 +128,17 @@ describe('buildRendererProps', () => {
     expect(props.fields.author.value).toBeNull();
     expect(props.fields.author.relation).toBeNull();
   });
+
+  it('masks amounts the viewer cannot see: a "Hidden" label, no raw value, flagged; others untouched', () => {
+    const masked = buildRendererProps(row({ sum: null, amountsMasked: true }), type);
+    expect(masked.fields.amount.masked).toBe(true);
+    expect(masked.fields.amount.value).toBe('Hidden');
+    expect(masked.fields.amount.raw).toBeNull();
+    expect(masked.fields.who.masked).toBeUndefined();
+    expect(masked.fields.who.value).toBe('Acme');
+    // an amount that is merely empty is NOT hidden
+    const empty = buildRendererProps(row({ sum: null }), type);
+    expect(empty.fields.amount.masked).toBeUndefined();
+    expect(empty.fields.amount.value).toBeNull();
+  });
 });

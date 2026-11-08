@@ -12,6 +12,7 @@ import {
   type FormLayout,
 } from '$lib/forms/layout';
 import type { RendererDetailThread } from '$lib/render/props';
+import type { RecordFormAccess } from '$lib/forms/recordOptions';
 
 const letterLayout: FormLayout = {
   fields: [
@@ -274,5 +275,68 @@ describe('RecordDetail', () => {
     await vi.waitFor(() => expect(combos()).toEqual(['Ada Lovelace', 'Cy Newton']));
     expect(texts()).toContain('Second letter');
     expect(texts()).not.toContain('First letter');
+  });
+
+  describe('viewer access (row-level security reflected in the form)', () => {
+    const moneyLayout: FormLayout = {
+      fields: [
+        { id: 'title', label: 'Title', kind: 'text', writeTo: 'title' },
+        { id: 'sum', label: 'Amount', kind: 'number', writeTo: 'sum' },
+      ],
+    };
+    const base = (access: RecordFormAccess, record: Record<string, unknown> = {}) => {
+      const props = build(moneyLayout, null, { title: 'Inv', ...record });
+      return {
+        ...props,
+        options: { users: [], records: [], projects: [], access },
+      };
+    };
+
+    it('shows a masked amount as "Hidden" (not an empty input) and posts no field for it', async () => {
+      render(
+        RecordDetail,
+        base(
+          { readOnly: false, lockCreator: true, maskedColumns: ['sum', 'hours', 'total'] },
+          { amountsMasked: true, canWrite: true },
+        ),
+      );
+      await expect.element(page.getByText('Hidden')).toBeInTheDocument();
+      expect(document.querySelector('[data-masked="sum"]')).not.toBeNull();
+      expect(document.querySelector('input[type=number]')).toBeNull();
+    });
+
+    it('an unmasked empty amount is an editable input, not "Hidden"', async () => {
+      render(
+        RecordDetail,
+        base({ readOnly: false, lockCreator: true, maskedColumns: [] }, { canWrite: true }),
+      );
+      expect(document.querySelector('[data-masked]')).toBeNull();
+      expect(document.querySelector('input[type=number]')).not.toBeNull();
+    });
+
+    it('a reader sees the record read-only: disabled inputs, no Save, no delete', async () => {
+      render(
+        RecordDetail,
+        base({ readOnly: true, lockCreator: true, maskedColumns: [] }, { canWrite: false }),
+      );
+      await expect
+        .element(page.getByText('You can view this record but not change it.'))
+        .toBeInTheDocument();
+      expect(document.querySelector('button[type=submit]')).toBeNull();
+      expect(
+        Array.from(document.querySelectorAll<HTMLInputElement>('input')).every((i) =>
+          i.matches(':disabled'),
+        ),
+      ).toBe(true);
+    });
+
+    it('a writer gets Save and Delete', async () => {
+      render(
+        RecordDetail,
+        base({ readOnly: false, lockCreator: true, maskedColumns: [] }, { canWrite: true }),
+      );
+      await expect.element(page.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+      await expect.element(page.getByRole('button', { name: 'Delete record' })).toBeInTheDocument();
+    });
   });
 });

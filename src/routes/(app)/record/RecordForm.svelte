@@ -28,6 +28,7 @@
   const sf = superForm(form, { dataType: 'json' });
   const { form: formData, message, enhance: saveEnhance, submitting } = sf;
 
+  const failure = $derived(($message as { error?: string } | undefined)?.error);
   const savedId = $derived(($message as { saved?: { id: string } } | undefined)?.saved?.id);
 
   const selectedProjects = $derived(
@@ -45,6 +46,9 @@
     selected={selectedProjects}
     onChange={(ids) => (($formData.projectIds as unknown) = ids)}
   />
+  {#if failure}
+    <p role="alert" class="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{failure}</p>
+  {/if}
   {#if savedId}
     <div
       role="status"

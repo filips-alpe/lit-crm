@@ -1,6 +1,8 @@
 import type { SuperForm } from 'sveltekit-superforms';
 import type { FieldKind, FormLayout } from '$lib/forms/layout';
 import { formatFieldValue, type FormattedFieldValue } from '$lib/forms/format';
+import { isAmountColumn } from '$lib/fields/amounts';
+import * as m from '$lib/paraglide/messages.js';
 
 /** A relation field's resolved target: the linked entity's id + a display label,
  *  plus a person's color/avatar for `user` relations (absent for `record`). */
@@ -24,8 +26,11 @@ export interface RendererFieldValue {
   writeTo: string;
   /** Display-formatted value (see formatFieldValue); null when empty. */
   value: FormattedFieldValue;
-  /** Raw column value, untouched. */
+  /** Raw column value, untouched (null when masked). */
   raw: unknown;
+  /** True when the database hides this amount from the viewer: `value` is then the
+   *  "hidden" label, never empty, so hidden reads differently from "no value". */
+  masked?: boolean;
   /** For `user`/`record` relation fields: the resolved target (or null when the
    *  joined entity is absent, e.g. an unsaved live preview). Omitted otherwise. */
   relation?: RendererRelation | null;
@@ -66,6 +71,8 @@ export interface RendererTypeInput {
 type RendererRow = Record<string, unknown> & {
   createdAt: Date | string;
   status: string;
+  /** sum, hours and total are masked for the viewer (see $lib/server/db/amounts). */
+  amountsMasked?: boolean;
   creator?: RendererCreator | null;
   projects?: { projectId: string; project: RendererProjectChip }[];
 };
@@ -117,6 +124,10 @@ function resolveRelation(
   return null;
 }
 
+function isMasked(row: RendererRow, kind: FieldKind, writeTo: string): boolean {
+  return !!row.amountsMasked && kind === 'number' && isAmountColumn(writeTo);
+}
+
 /** The type's layout fields that have a value in `row`, formatted for display —
  *  the generic card/row body used when a type has no renderer. */
 export function presentFields(
@@ -125,7 +136,9 @@ export function presentFields(
 ): { id: string; label: string; value: NonNullable<FormattedFieldValue> }[] {
   const out: { id: string; label: string; value: NonNullable<FormattedFieldValue> }[] = [];
   for (const f of type.layout?.fields ?? []) {
-    const value = formatFieldValue(f.kind, f.writeTo, row[f.writeTo]);
+    const value = isMasked(row, f.kind, f.writeTo)
+      ? m.this_game_deer_jolt()
+      : formatFieldValue(f.kind, f.writeTo, row[f.writeTo]);
     if (value !== null) out.push({ id: f.id, label: f.label, value });
   }
   return out;
@@ -134,15 +147,21 @@ export function presentFields(
 export function buildRendererProps(row: RendererRow, type: RendererTypeInput): RendererProps {
   const fields: Record<string, RendererFieldValue> = {};
   for (const f of type.layout?.fields ?? []) {
-    const raw = row[f.writeTo];
+    const masked = isMasked(row, f.kind, f.writeTo);
+    const raw = masked ? null : row[f.writeTo];
     const isRelation = f.kind === 'user' || f.kind === 'record';
     const relation = isRelation ? resolveRelation(f.kind, f.writeTo, row) : undefined;
     fields[f.id] = {
       label: f.label,
       kind: f.kind,
       writeTo: f.writeTo,
-      value: isRelation ? (relation?.label ?? null) : formatFieldValue(f.kind, f.writeTo, raw),
+      value: masked
+        ? m.this_game_deer_jolt()
+        : isRelation
+          ? (relation?.label ?? null)
+          : formatFieldValue(f.kind, f.writeTo, raw),
       raw,
+      ...(masked ? { masked: true } : {}),
       ...(isRelation ? { relation: relation ?? null } : {}),
     };
   }
@@ -185,6 +204,10 @@ export interface RendererDetailRecord {
   createdAt: Date | string;
   status: string;
   creator: RendererCreator | null;
+  /** sum, hours and total are hidden from the viewer. */
+  amountsMasked?: boolean;
+  /** The viewer may edit and delete the record (default true, e.g. in a live preview). */
+  canWrite?: boolean;
   /** rendererId lets the generic detail show the type's own card as a live preview. */
   type: { code: string; color: string; iconSeed: string | null; rendererId: string | null };
 }
@@ -228,6 +251,8 @@ export function buildRendererDetailProps(
       createdAt: base.createdAt,
       status: base.status,
       creator: base.creator,
+      amountsMasked: !!row.amountsMasked,
+      canWrite: row.canWrite !== false,
       type: { ...base.type, rendererId: type.rendererId ?? null },
     },
     thread: extra.thread,

@@ -17,7 +17,7 @@ import { saveTypeForm } from '../saveType';
 import * as m from '$lib/paraglide/messages.js';
 
 export const load: PageServerLoad = async (event) => {
-  requireUser(event);
+  const user = requireUser(event);
   const { params } = event;
   const row = await getTypeById(params.id);
   if (!row) throw error(404, m.pink_kind_loris_believe());
@@ -35,32 +35,44 @@ export const load: PageServerLoad = async (event) => {
     zod4(typeSchema),
   );
   // Per-column record counts so the editor can warn before a layout change hides data.
-  const columnCounts = await countRecordsWithData(row.id);
-  return { form, editingDeleted: row.status === 'INACTIVE', columnCounts };
+  const columnCounts = user.isAdmin ? await countRecordsWithData(row.id) : {};
+  return {
+    form,
+    editingDeleted: row.status === 'INACTIVE',
+    columnCounts,
+    // Types are admin-write only (the database refuses anyone else): read-only screen.
+    readOnly: !user.isAdmin,
+  };
 };
+
+/** Type writes are admin-only: a clean 403 instead of the database's refusal. */
+function requireAdminAction(event: Parameters<typeof requireUser>[0]) {
+  const user = requireUser(event);
+  if (!user.isAdmin) throw error(403, m.round_white_turkey_reside());
+}
 
 export const actions: Actions = {
   save: async (event) => {
-    requireUser(event);
+    requireAdminAction(event);
     return saveTypeForm(event.request, event.params.id);
   },
 
   delete: async (event) => {
-    requireUser(event);
+    requireAdminAction(event);
     const row = await softDeleteType(event.params.id);
     if (!row) return fail(404, { error: m.pink_kind_loris_believe() });
     throw redirect(303, '/types');
   },
 
   restore: async (event) => {
-    requireUser(event);
+    requireAdminAction(event);
     const row = await restoreType(event.params.id);
     if (!row) return fail(404, { error: m.pink_kind_loris_believe() });
     throw redirect(303, '/types');
   },
 
   permanentlyDelete: async (event) => {
-    requireUser(event);
+    requireAdminAction(event);
     const result = await permanentlyDeleteType(event.params.id);
     if (result.kind === 'not-found') return fail(404, { error: m.pink_kind_loris_believe() });
     if (result.kind === 'has-records') {
