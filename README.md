@@ -100,9 +100,32 @@ That single command does everything:
 
 Specs import `test`/`expect` from `e2e/fixtures.ts` rather than `@playwright/test`. Besides the normal fixtures it provides worker-scoped `db` (a `PrismaClient` bound to the worker's database, for arranging or asserting data), `workerDbUrl` and `serverUrl`; `baseURL` already points at the worker's server. `e2e/db-isolation.e2e.ts` is a worked example.
 
-## Read-only gateway role (row-level security)
+## Permissions: grants on Postgres row-level security
 
-The `rls_gateway` migration enables Postgres row-level security on `lit_record`, `lit_project` and `lit_project_record` for one NOLOGIN role, `lit_gateway`, which has `SELECT` only. The app connects as the table owner (no `FORCE ROW LEVEL SECURITY`) and is not affected. A gateway sets `SET LOCAL app.user_id` (`set_config('app.user_id', id, true)`) per transaction; unset, empty, unknown or inactive sees nothing. A user sees records they created or are assigned to, plus every record in a project they created or are assigned to; a user with `lit_user.isAdmin` sees everything. A user whose `status` is not `ACTIVE` sees nothing, even an inactive admin (`rls_inactive_users` migration). `lit_user` and `lit_type` stay readable.
+Who may see and change what is data (groups, memberships, grants) enforced by Postgres row-level security, in the migrations `grants_tables` and `grants_rls` (the full rule list is the header comment of `grants_rls`). Two non-owner roles share one rule set: `lit_app` (the app, read and write) and `lit_gateway` (the AI-chat gateway, SELECT only, ACTIVE records and projects only). The acting user is the one named by `app.user_id` (`set_config('app.user_id', id, true)` per transaction); unset, empty, unknown or INACTIVE (admins too) means nobody and every table is empty. The table owner is not subject to the policies (no `FORCE ROW LEVEL SECURITY`), so migrations, seeds and app code that has not switched to `lit_app` behave as before.
+
+- **Admin** (`lit_user.isAdmin`): everything, hidden records included.
+- **Everyone else** never sees a `hidden` record. Without any grant they get WRITE on records they created or are assigned to, and on every record of a project they created or are assigned to.
+- **Grants** go to a user or a group and have a scope (person: records whose creator or assignee is that person; project; type; record) and a level, READ or WRITE (WRITE includes read). All paths are OR-ed. A project grant covers the project's records and makes the project readable; the project row itself (edit, delete) belongs to its creator, assignee and admins.
+- **Delete**: whoever may write a record may hard-delete it. A project is deleted by its creator, assignee or an admin. Links are visible when both ends are, and written when the record is writable and the project readable.
+- **Amounts** (`sum`, `hours`, `total`): shown when any path to the record shows them (admin, implicit, or a grant without `hideAmounts`), else NULL. The restricted roles have no column privilege on them; the door is the view `lit_record_amount`. Every new `lit_record` column needs `GRANT SELECT (col) ON lit_record TO lit_app, lit_gateway`.
+- **Users and types** are readable by active users; types are admin-write only; a user edits their own profile but only an admin changes username, status or `isAdmin`. **Groups, memberships, grants**: a user reads only their own rows, only admins write. Creator and `hidden` cannot be changed by a non-admin (guard triggers).
+
+The app does not run under `lit_app` yet; that is a later step.
+
+### Test it: the exact oracle
+
+`scripts/rls-oracle.ts` migrates a throwaway Postgres, loads data, adds a seeded random overlay (admins, inactive users, groups, memberships, 20-80 grants over all scopes and levels, hidden and inactive records, amounts, extra links), and for every user plus the anonymous and an unknown user compares what `lit_app` and `lit_gateway` can see, update, delete and insert (records, projects, links, users, types, groups, memberships, grants) and which amounts are masked, against an independent oracle in TypeScript that calls no policy or function. It also checks that the anonymous, inactive and gateway roles cannot write, that a non-admin cannot write admin tables, set `isAdmin`, grant itself access, change a creator or read `sum`/`hours`/`total` directly. Every overlay runs in a transaction that is rolled back. Any mismatch exits 1.
+
+```sh
+bun scripts/rls-oracle.ts                          # starts a Docker postgres on 127.0.0.1:5490-5499, generated data (25 seeds) and the Franklin seeds (3 seeds), removes the container
+bun scripts/rls-oracle.ts --data generated --seeds 100
+bun scripts/rls-oracle.ts --db postgresql://postgres:pw@127.0.0.1:5491/lit_rls_x   # your own throwaway server
+```
+
+Needs Docker (or `--db`), bun, and for the Franklin data a checkout of lit-crm-seeds at `../lit-crm-seeds` (`--seeds-dir`). The script only accepts loopback hosts, never port 5433, database names starting `lit_rls_`, and never the databases named in `DATABASE_URL`, `DIRECT_URL` or `TEST_DATABASE_URL`. The delete probes switch off foreign-key triggers inside a savepoint, so the server user must be a superuser (true for the Docker image).
+
+### Deploying the roles
 
 Create a login role for the gateway outside migrations, with your own password and a connection limit that matches the gateway's pool:
 
@@ -111,12 +134,12 @@ CREATE ROLE lit_gateway_login LOGIN PASSWORD '<password>' NOSUPERUSER NOBYPASSRL
 GRANT lit_gateway TO lit_gateway_login;
 ```
 
-The Groundtruth gateway in `groundtruth/delivery/lit-crm-gateway` connects as that login role. Things to know when you deploy it:
+The Groundtruth gateway in `groundtruth/delivery/lit-crm-gateway` connects as that login role. Things to know when you deploy:
 
-- **The migrating role needs `CREATEROLE`** (or be a superuser): the `rls_gateway` migration runs `CREATE ROLE lit_gateway` unless it already exists. Without `CREATEROLE`, create the role once as an admin (`CREATE ROLE lit_gateway NOLOGIN NOINHERIT;`) and run the migration afterwards; it then skips the creation. Roles are cluster-wide, so a second database in the same cluster reuses the role.
-- **Policies exist only for `lit_gateway`.** The app works because it runs as the table owner. If you ever run the app as a different, non-owner role, it would see zero rows from the three protected tables (row security is on and no policy applies to that role). Keep the app on the owner role, or add policies for the new role.
-- **`PUBLIC` holds `TEMP` on the database by default**, so the gateway role can create temporary tables. They are private to its session, hold nothing it could not already read, and cannot reach other roles' data, but they do use disk and the role can run `CREATE TEMP TABLE ... AS SELECT` of what it sees. As a hardening step run `REVOKE TEMP ON DATABASE <db> FROM PUBLIC;` (the migration does not, since it would also remove temp tables from every other non-owner role, for example reporting users). Consequence: roles that relied on `PUBLIC` for `TEMP` need an explicit `GRANT TEMP ON DATABASE <db> TO <role>`.
-- **Table sizes are not hidden from the gateway role.** `pg_stat_user_tables.n_live_tup`, `pg_class.reltuples` and `EXPLAIN` row estimates report totals for the whole table whatever the policies say. Row-level security protects rows, not statistics.
+- **The migrating role needs `CREATEROLE`** (or be a superuser): the migration creates `lit_gateway` and `lit_app` unless they exist and runs `GRANT lit_app TO <migrating role>` so the app can `SET ROLE lit_app`. If a role already exists and the migrating role cannot grant it, the migration prints the `GRANT` an admin must run. Roles are cluster-wide, so a second database in the same cluster reuses them.
+- **Anonymous reads of `lit_user` are gone.** The login picker and the gateway's identity lookup use `lit_login_users()` and `lit_resolve_user(username)`.
+- **`PUBLIC` holds `TEMP` on the database by default**, so the gateway role can create temporary tables. They are private to its session and hold nothing it could not already read. As a hardening step run `REVOKE TEMP ON DATABASE <db> FROM PUBLIC;` (not in the migration, since it would also remove temp tables from every other non-owner role). Roles that relied on `PUBLIC` for `TEMP` then need an explicit `GRANT TEMP ON DATABASE <db> TO <role>`.
+- **Table sizes are not hidden from the restricted roles.** `pg_stat_user_tables.n_live_tup`, `pg_class.reltuples` and `EXPLAIN` row estimates report totals whatever the policies say.
 
 ## Translations
 
