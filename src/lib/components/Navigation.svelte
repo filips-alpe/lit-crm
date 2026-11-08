@@ -24,6 +24,11 @@
     <a href={resolve('/(app)/types')} class="rounded px-1.5 py-1 hover:bg-base-200 sm:px-2"
       >{m.quiet_pink_parrot_clasp()}</a
     >
+    {#if user.isAdmin}
+      <a href={resolve('/(app)/admin')} class="rounded px-1.5 py-1 hover:bg-base-200 sm:px-2"
+        >{m.just_gaudy_penguin_drip()}</a
+      >
+    {/if}
     <div class="ml-1 flex items-center gap-2 text-sm sm:ml-6">
       <a href={resolve('/(app)/record')} class="btn btn-sm btn-neutral">
         {m.dark_gross_pigeon_foster()}
