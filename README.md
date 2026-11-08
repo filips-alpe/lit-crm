@@ -125,7 +125,7 @@ What this model does **not** protect against, so nobody assumes it does:
 Deploy the migrations and the app together, in this order:
 
 1. Back up the database.
-2. `prisma migrate deploy` with a role that has `CREATEROLE` (see "Deploying the roles"). The old app keeps working meanwhile: it is the table owner and the policies do not apply to it.
+2. `prisma migrate deploy` with a role that has `CREATEROLE` (see "Deploying the roles"). The old app keeps working meanwhile: it is the table owner and the policies do not apply to it. The old gateway does not: it reads `lit_user` directly, which the new policies refuse, so it fails from this step until step 5. On Vercel, `vercel-build` runs this step as part of the app deploy, so steps 2 and 4 happen together.
 3. If the migration printed the `GRANT lit_app TO <owner>` notice, run it once as an admin.
 4. Deploy the app. From this version it is a client of `lit_app`: without step 3 every request fails closed.
 5. Deploy the gateway **with** it: the gateway needs the new migration (it uses `lit_resolve_user` and the grant model) and the app and gateway must agree on the same rules.
@@ -151,7 +151,10 @@ Create a login role for the gateway outside migrations, with your own password a
 ```sql
 CREATE ROLE lit_gateway_login LOGIN PASSWORD '<password>' NOSUPERUSER NOBYPASSRLS CONNECTION LIMIT 8;
 GRANT lit_gateway TO lit_gateway_login;
+ALTER ROLE lit_gateway_login SET statement_timeout = '5s';
 ```
+
+The connection limit leaves headroom over the gateway's pool of 5. The statement timeout stops one expensive question (a full amounts read costs seconds on large data) from holding a connection. `groundtruth/delivery/lit-crm-gateway/setup_role.sql` runs the same statements.
 
 The Groundtruth gateway in `groundtruth/delivery/lit-crm-gateway` connects as that login role. Things to know when you deploy:
 
