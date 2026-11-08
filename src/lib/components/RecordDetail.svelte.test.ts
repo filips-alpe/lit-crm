@@ -330,6 +330,38 @@ describe('RecordDetail', () => {
       ).toBe(true);
     });
 
+    it('the letter detail follows the same state: masked amount, read-only raw editor', async () => {
+      const layout: FormLayout = {
+        fields: [
+          { id: 'title', label: 'Subject', kind: 'text', writeTo: 'title' },
+          { id: 'text', label: 'Body', kind: 'text', writeTo: 'text' },
+          { id: 'sum', label: 'Fee', kind: 'number', writeTo: 'sum' },
+        ],
+      };
+      const props = build(layout, 'correspondence', {
+        title: 'Treaty',
+        text: 'Dear friend',
+        amountsMasked: true,
+        canWrite: false,
+      });
+      render(RecordDetail, {
+        ...props,
+        options: {
+          users: [],
+          records: [],
+          projects: [],
+          access: { readOnly: true, lockCreator: true, maskedColumns: ['sum'] },
+        },
+      });
+      expect(document.querySelector('[data-masked="sum"]')).not.toBeNull();
+      expect(document.querySelector('input[type=number]')).toBeNull();
+      const editable = Array.from(
+        document.querySelectorAll<HTMLElement>('input, textarea, button[type=submit]'),
+      ).filter((el) => !el.matches(':disabled'));
+      expect(editable).toEqual([]);
+      expect(document.querySelector('textarea')?.matches(':disabled')).toBe(true);
+    });
+
     it('a writer gets Save and Delete', async () => {
       render(
         RecordDetail,

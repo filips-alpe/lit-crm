@@ -144,6 +144,21 @@ describe('records follow row-level security', () => {
   });
 });
 
+describe('delete with links the user cannot see', () => {
+  it('a writer deletes a record whose link points at a project they cannot read', async () => {
+    const hidden = await prismaOwner.project.create({ data: { code: 'Q', creatorId: w.bob.id } });
+    await prismaOwner.projectRecord.create({ data: { projectId: hidden.id, recordId: w.r1.id } });
+    // alice cannot read Q, so she cannot see or remove that link herself
+    expect(await runAs(w.alice.id, () => prisma.projectRecord.count())).toBe(1);
+    await runAs(w.alice.id, () => deleteRecord(w.r1.id));
+    expect(await prismaOwner.record.count({ where: { id: w.r1.id } })).toBe(0);
+    expect(await prismaOwner.projectRecord.count()).toBe(0);
+    // the project side is unchanged: a project with records is not deletable
+    await prismaOwner.projectRecord.create({ data: { projectId: hidden.id, recordId: w.r2.id } });
+    await expect(prismaOwner.project.delete({ where: { id: hidden.id } })).rejects.toThrow();
+  });
+});
+
 describe('dashboard, types and amounts', () => {
   it("counts and money cover only the signed-in user's readable records", async () => {
     const d = await runAs(w.alice.id, () => loadDashboardData(w.alice));
@@ -195,6 +210,38 @@ describe('admin repos', () => {
     await expect(
       runAs(w.bob.id, () => updateUserAccess(w.bob.id, { isAdmin: false, status: 'ACTIVE' })),
     ).rejects.toBeInstanceOf(LastAdminError);
+  });
+
+  it('the database refuses removing the last admin even around the repo, and serialises concurrent demotions', async () => {
+    await expect(
+      runAs(w.admin.id, () =>
+        prisma.user.update({ where: { id: w.admin.id }, data: { isAdmin: false } }),
+      ),
+    ).rejects.toThrow(/last active admin/);
+    await expect(
+      runAs(w.admin.id, () =>
+        prisma.user.update({ where: { id: w.admin.id }, data: { status: 'INACTIVE' } }),
+      ),
+    ).rejects.toThrow(/last active admin/);
+    // the owner (migrations, fixtures) is not restricted
+    await prismaOwner.user.update({ where: { id: w.admin.id }, data: { isAdmin: true } });
+
+    await prismaOwner.user.update({ where: { id: w.bob.id }, data: { isAdmin: true } });
+    for (let round = 0; round < 8; round++) {
+      await prismaOwner.user.updateMany({
+        where: { id: { in: [w.admin.id, w.bob.id] } },
+        data: { isAdmin: true, status: 'ACTIVE' },
+      });
+      // both pass the early check (the other is still an admin); the trigger lets exactly one through
+      const results = await Promise.allSettled([
+        runAs(w.admin.id, () => updateUserAccess(w.admin.id, { isAdmin: false, status: 'ACTIVE' })),
+        runAs(w.bob.id, () => updateUserAccess(w.bob.id, { isAdmin: false, status: 'ACTIVE' })),
+      ]);
+      expect(results.filter((r) => r.status === 'fulfilled').length).toBe(1);
+      const failed = results.find((r) => r.status === 'rejected') as PromiseRejectedResult;
+      expect(failed.reason).toBeInstanceOf(LastAdminError);
+      expect(await prismaOwner.user.count({ where: { isAdmin: true, status: 'ACTIVE' } })).toBe(1);
+    }
   });
 
   it('groups, memberships and grants work end to end and change what users see', async () => {

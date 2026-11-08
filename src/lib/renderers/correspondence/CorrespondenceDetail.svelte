@@ -9,6 +9,7 @@
   import { textOf } from '$lib/render/select';
   import type { RendererDetailProps } from '$lib/render/props';
   import type { LayoutField } from '$lib/forms/layout';
+  import { getRecordOptions } from '$lib/forms/recordOptions';
   import * as m from '$lib/paraglide/messages.js';
 
   // The letter detail leads with the letter itself: subject and full body are the
@@ -20,6 +21,8 @@
 
   // svelte-ignore state_referenced_locally
   const { form: formData } = sf;
+  // The raw Markdown editor is not a RecordField: it must follow the read-only state too.
+  const readOnly = !!getRecordOptions().access?.readOnly;
 
   // Columns this layout places by hand; anything else is rendered generically below.
   const PLACED = ['title', 'text', 'creatorId', 'from', 'fromGeo', 'assigneeId', 'to', 'toGeo'];
@@ -104,6 +107,7 @@
                 </summary>
                 <textarea
                   {...props}
+                  disabled={readOnly}
                   rows="16"
                   value={typeof $formData.text === 'string' ? $formData.text : ''}
                   oninput={(e) => (($formData.text as unknown) = e.currentTarget.value)}
