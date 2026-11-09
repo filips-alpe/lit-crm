@@ -10,7 +10,14 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { gitCloneArgs, installExtension, listExtensions, uninstallExtension } from './lib';
+import { readFileSync } from 'node:fs';
+import {
+  gitCloneArgs,
+  installExtension,
+  listExtensions,
+  resolveSubdir,
+  uninstallExtension,
+} from './lib';
 
 let work: string;
 let root: string;
@@ -162,5 +169,105 @@ describe('gitCloneArgs', () => {
 
   it('rejects sources that git would parse as options', () => {
     expect(() => gitCloneArgs('--upload-pack=evil.git', '/tmp/d')).toThrow(/Invalid source/);
+  });
+});
+
+describe('resolveSubdir', () => {
+  it('returns the source itself without a subdirectory', () => {
+    expect(resolveSubdir('/a/b', undefined)).toBe('/a/b');
+  });
+
+  it('resolves a subdirectory inside the source', () => {
+    expect(resolveSubdir('/a/b', 'extension')).toBe('/a/b/extension');
+  });
+
+  it('refuses paths that escape the source', () => {
+    expect(() => resolveSubdir('/a/b', '../c')).toThrow(/inside the source/);
+    expect(() => resolveSubdir('/a/b', '/etc')).toThrow(/inside the source/);
+  });
+});
+
+describe('extension messages', () => {
+  let messagesDir: string;
+  const read = (locale: string) =>
+    JSON.parse(readFileSync(join(messagesDir, `${locale}.json`), 'utf8'));
+  const withMessages = (en: object, lv?: object) =>
+    makeSource('m', {
+      'extension.json': '{"id":"m"}',
+      'renderers/index.ts': '',
+      'messages/en.json': JSON.stringify(en),
+      ...(lv ? { 'messages/lv.json': JSON.stringify(lv) } : {}),
+      'messages/de.json': '{"k":"x"}',
+    });
+
+  beforeEach(() => {
+    messagesDir = join(work, 'messages');
+    mkdirSync(messagesDir);
+    writeFileSync(join(messagesDir, 'en.json'), JSON.stringify({ own: 'Own' }));
+    writeFileSync(join(messagesDir, 'lv.json'), JSON.stringify({ own: 'Savs' }));
+  });
+
+  it('merges shipped keys into the locales the app has, and skips the others', () => {
+    installExtension(withMessages({ k: 'K' }, { k: 'Ka' }), root, { messagesDir });
+    expect(read('en')).toEqual({ own: 'Own', k: 'K' });
+    expect(read('lv')).toEqual({ own: 'Savs', k: 'Ka' });
+    expect(existsSync(join(messagesDir, 'de.json'))).toBe(false);
+  });
+
+  it('refuses a key the app already has with different text', () => {
+    expect(() => installExtension(withMessages({ own: 'Other' }), root, { messagesDir })).toThrow(
+      /"own".*different text/,
+    );
+  });
+
+  it('replaces its own keys on --force and removes them on uninstall', () => {
+    installExtension(withMessages({ k: 'K' }), root, { messagesDir });
+    const v2 = withMessages({ k: 'K2' });
+    installExtension(v2, root, { messagesDir, force: true });
+    expect(read('en')).toEqual({ own: 'Own', k: 'K2' });
+    uninstallExtension('m', root, { messagesDir });
+    expect(read('en')).toEqual({ own: 'Own' });
+  });
+
+  it('is atomic: a conflict in a later locale leaves the tree unchanged', () => {
+    const before = { en: read('en'), lv: read('lv') };
+    const bytes = readFileSync(join(messagesDir, 'en.json'), 'utf8');
+    expect(() =>
+      installExtension(withMessages({ k: 'K' }, { own: 'Cits' }), root, { messagesDir }),
+    ).toThrow(/"own" \(lv\)/);
+    expect(readFileSync(join(messagesDir, 'en.json'), 'utf8')).toBe(bytes);
+    expect({ en: read('en'), lv: read('lv') }).toEqual(before);
+    expect(readdirSync(root)).toEqual([]);
+  });
+
+  it('keeps an existing install intact when a --force replace conflicts', () => {
+    installExtension(withMessages({ k: 'K' }), root, { messagesDir });
+    expect(() =>
+      installExtension(withMessages({ own: 'Other' }), root, { messagesDir, force: true }),
+    ).toThrow(/different text/);
+    expect(read('en')).toEqual({ own: 'Own', k: 'K' });
+    expect(existsSync(join(root, 'm/renderers/index.ts'))).toBe(true);
+    uninstallExtension('m', root, { messagesDir });
+    expect(read('en')).toEqual({ own: 'Own' });
+  });
+
+  it('uninstall keeps a key the app already had with identical text', () => {
+    installExtension(withMessages({ own: 'Own', k: 'K' }), root, { messagesDir });
+    expect(read('en')).toEqual({ own: 'Own', k: 'K' });
+    uninstallExtension('m', root, { messagesDir });
+    expect(read('en')).toEqual({ own: 'Own' });
+  });
+
+  it('uninstall leaves the locale files byte-identical to before install', () => {
+    const before = readFileSync(join(messagesDir, 'en.json'), 'utf8');
+    installExtension(withMessages({ own: 'Own', k: 'K' }, { k: 'Ka' }), root, { messagesDir });
+    uninstallExtension('m', root, { messagesDir });
+    const after = JSON.stringify(JSON.parse(before), null, 2) + '\n';
+    expect(readFileSync(join(messagesDir, 'en.json'), 'utf8')).toBe(after);
+  });
+
+  it('leaves messages alone when no messagesDir is given', () => {
+    installExtension(withMessages({ k: 'K' }), root);
+    expect(read('en')).toEqual({ own: 'Own' });
   });
 });

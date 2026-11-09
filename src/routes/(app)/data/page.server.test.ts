@@ -117,6 +117,6 @@ describe('/data load auth', () => {
   it('redirects an anonymous request to /login', async () => {
     await expect(
       load({ url: new URL('http://localhost/data'), locals: {} } as never),
-    ).rejects.toMatchObject({ status: 303, location: '/login' });
+    ).rejects.toMatchObject({ status: 303, location: '/login?redirectTo=%2Fdata' });
   });
 });

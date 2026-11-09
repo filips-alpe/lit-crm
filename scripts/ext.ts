@@ -6,21 +6,37 @@ import {
   gitCloneArgs,
   installExtension,
   listExtensions,
+  resolveSubdir,
   uninstallExtension,
 } from './extensions/lib';
 
 const ROOT = resolve(import.meta.dirname, '../src/extensions');
+const APP = resolve(import.meta.dirname, '..');
+const MESSAGES = resolve(import.meta.dirname, '../messages');
 const USAGE = `Usage: bun run ext <command>
 
-  install <path|git-url> [--force]   copy an extension into src/extensions/<id>
-  uninstall <id>                     remove src/extensions/<id>
+  install <path|git-url> [--path <subdir>] [--force]
+                                     copy an extension into src/extensions/<id> and merge its
+                                     messages/<locale>.json keys into messages/
+                                     (--path: the extension lives in <subdir> of the source)
+  uninstall <id>                     remove src/extensions/<id> and its message keys
   list                               show installed extensions
 
 Extensions are code that runs in the app: only install ones you trust.`;
 
+/** Recompile the paraglide messages (same project/outdir as the vite plugin) so type checks
+ *  and the dev server see the changed message keys straight away. */
+function compileMessages(): void {
+  execFileSync(
+    join(APP, 'node_modules/.bin/paraglide-js'),
+    ['compile', '--project', './project.inlang', '--outdir', './src/lib/paraglide', '--silent'],
+    { cwd: APP, stdio: 'inherit' },
+  );
+}
+
 const isGit = (s: string) => /^(https?:\/\/|git@|ssh:\/\/)/.test(s) || s.endsWith('.git');
 
-function install(source: string, force: boolean): void {
+function install(source: string, force: boolean, sub?: string): void {
   let dir = resolve(source);
   let tmp: string | null = null;
   if (isGit(source)) {
@@ -29,7 +45,11 @@ function install(source: string, force: boolean): void {
     dir = tmp;
   }
   try {
-    const { id, replaced } = installExtension(dir, ROOT, { force });
+    const { id, replaced } = installExtension(resolveSubdir(dir, sub), ROOT, {
+      force,
+      messagesDir: MESSAGES,
+    });
+    compileMessages();
     console.log(`${replaced ? 'Replaced' : 'Installed'} "${id}" in src/extensions/${id}`);
     console.log('Set `rendererId` on any types that should use its renderers, then restart dev.');
   } finally {
@@ -39,9 +59,13 @@ function install(source: string, force: boolean): void {
 
 try {
   const [cmd, arg, ...rest] = process.argv.slice(2);
-  if (cmd === 'install' && arg) install(arg, rest.includes('--force'));
-  else if (cmd === 'uninstall' && arg) {
-    uninstallExtension(arg, ROOT);
+  const pathIdx = rest.indexOf('--path');
+  if (pathIdx >= 0 && !rest[pathIdx + 1]) throw new Error('--path needs a subdirectory');
+  if (cmd === 'install' && arg) {
+    install(arg, rest.includes('--force'), pathIdx >= 0 ? rest[pathIdx + 1] : undefined);
+  } else if (cmd === 'uninstall' && arg) {
+    uninstallExtension(arg, ROOT, { messagesDir: MESSAGES });
+    compileMessages();
     console.log(`Removed "${arg}". Types that named its renderers fall back to the default view.`);
   } else if (cmd === 'list') {
     const found = listExtensions(ROOT);

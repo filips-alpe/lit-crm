@@ -9,7 +9,7 @@ test('worker DB is seeded, writable and served by the app', async ({ page, db })
   expect(before, 'template should be seeded').toBeGreaterThan(0);
 
   await page.goto('/login');
-  await page.locator('button[name="username"][value="bfranklin"]').click();
+  await page.locator('button[name="username"][value="alice"]').click();
   await expect(page).toHaveURL(/\/$/);
 
   await page.goto('/types/new');

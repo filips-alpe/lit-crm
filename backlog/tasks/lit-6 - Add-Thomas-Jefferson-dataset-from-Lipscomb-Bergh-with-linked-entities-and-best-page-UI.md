@@ -15,8 +15,8 @@ references:
   - >-
     https://archive.org/stream/writingsofthomas0000vari_v5r4/writingsofthomas0000vari_v5r4_djvu.txt
   - 'https://archive.org/details/writingsofthomas0000vari_v5r4'
-  - prisma/seed/pipeline/
-  - src/extensions/franklin/
+  - lit-crm-seeds repo, seed/pipeline/
+  - lit-crm-seeds repo, extension/
 priority: medium
 ordinal: 6000
 ---
@@ -30,7 +30,7 @@ Create a new dataset from the Internet Archive OCR of "The Writings of Thomas Je
 
 **OCR quality:** the sampled prose reads well, but the front matter and end pages are noisy. Sampled artefacts include garbled scan text, library stamps, broken letterspacing ("JEF FERSON") and end-of-line hyphenation ("discon-/tinued"). Running heads are likely too, but were not seen in the samples.
 
-**Starting points:** the Franklin pipeline in `prisma/seed/pipeline/` and the extension layout in `src/extensions/franklin/`. Franklin's bespoke renderers and dashboards are not the target pattern for the entity pages, which must stay generic.
+**Starting points:** the Franklin pipeline in `seed/pipeline/` in the lit-crm-seeds repo and the extension layout in `extension/` in the lit-crm-seeds repo. Franklin's bespoke renderers and dashboards are not the target pattern for the entity pages, which must stay generic.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -53,7 +53,7 @@ Create a new dataset from the Internet Archive OCR of "The Writings of Thomas Je
 <!-- SECTION:NOTES:BEGIN -->
 Ready for owner review (status left To Do). Second, independent implementation on current main; pushed as branch autoplay/lit-6-r2 because origin/autoplay/lit-6 already holds an earlier implementation (2026-10-31, based on old main 72a5965, with e2e). Both merge cleanly into current main; pick one.
 
-- Pipeline: prisma/seed/sources/jefferson/ (fetch, pages, clean, contents, split, entities, build, report; README.md has types rationale and rules). Cache: .workflow/scratch/jefferson/ (gitignored). Rebuild: bunx tsx prisma/seed/sources/jefferson/build.ts (no network, byte-identical output).
+- Pipeline: seed/sources/jefferson/ (lit-crm-seeds repo) (fetch, pages, clean, contents, split, entities, build, report; README.md has types rationale and rules). Cache: .workflow/scratch/jefferson/ (gitignored). Rebuild: bunx tsx seed/sources/jefferson/build.ts (in lit-crm-seeds) (no network, byte-identical output).
 - Result: 217 documents (4 memoir, 114 memorandum incl. 110 Anas entries, 7 epistle, 10 paper, 23 query, 54 rule, 5 editorial), 413 entities, 5,129 linked mentions in 207 documents; link rate 64% over gazetteer matches. Counts, OCR issues and unlinked names in REPORT.md; every correction with its raw line in corrections.tsv.
 - Storage/UI: additive RecordMention table (migration 20261106120000_record_mentions); generic best page at /page/[id] for any record (src/lib/bestPage/assemble.ts), linked from /data/[id] as 'Open page'. Jefferson records have no creator, so existing dashboards and Franklin records/types are unchanged.
 - Verified on PGlite (no local Postgres here): migrations apply, full seed runs twice cleanly (26,458 records); server tests 159 passed, 4 failed. The 4 failures are pre-existing auth tests that still expect '/login' without the ?redirectTo= LIT-3 added. Unit+client 963 passed, svelte-check 0 errors, lint clean. SSR and client navigation of /page/[id] checked in Chrome.

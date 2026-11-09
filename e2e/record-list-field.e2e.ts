@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from './fixtures';
 
-const USER = 'bfranklin';
+const USER = 'alice';
 
 test('list field: add, remove, submit, and record appears on /data', async ({ page }) => {
   await page.context().clearCookies();
