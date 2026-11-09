@@ -2,7 +2,7 @@
 
 A CRM built around typed records. A type defines a record's fields and how it is displayed, so one shared record table can hold letters, diary entries, accounts or anything else.
 
-The demo data is Benjamin Franklin's world: 25,827 records from Founders Online and Wikidata, with 17 of the people around him as users, plus 217 documents and 413 linked entities from volumes I–II of Lipscomb & Bergh's _Writings of Thomas Jefferson_ (Jefferson dataset, with record mentions). It lives in its own repository, [lit-crm-seeds](https://github.com/filips-alpe/lit-crm-seeds); see [Franklin demo data](#franklin-demo-data). This repo ships only a tiny fixture.
+The demo data is Benjamin Franklin's world: 25,827 records from Founders Online and Wikidata, with 17 of the people around him as users, plus 217 documents and 413 linked entities from volumes I–II of Lipscomb & Bergh's _Writings of Thomas Jefferson_ (Jefferson dataset, with record mentions). It lives in its own repository, [lit-crm-seeds](https://github.com/filips-alpe/lit-crm-seeds); see [Franklin and Jefferson demo data](#franklin-and-jefferson-demo-data). This repo ships only a tiny fixture.
 
 Built with SvelteKit 2, Svelte 5, TypeScript, Prisma 7 with PostgreSQL, Tailwind and daisyUI, and paraglide (English and Latvian). It deploys to Vercel.
 
@@ -15,7 +15,7 @@ bun install
 cp .env.example .env       # set AUTH_SECRET
 docker compose up -d       # starts Postgres on host port 5433
 bunx prisma migrate dev    # applies migrations and generates the client
-bunx prisma db seed        # loads a small fixture (users alice and bob, one type, one project, three records)
+bunx prisma db seed        # loads a small fixture (users alice and bob, one type, one project, three records, one mention)
 bun run dev
 ```
 
@@ -23,9 +23,9 @@ Log in by picking a user on the login screen.
 
 > `bunx prisma db seed` deletes all users, projects, types and records in the database that `DATABASE_URL` points at before loading the fixture.
 
-## Franklin demo data
+## Franklin and Jefferson demo data
 
-The full dataset, its loader and the Franklin renderers and dashboards are in [lit-crm-seeds](https://github.com/filips-alpe/lit-crm-seeds). With the schema migrated (`bunx prisma migrate deploy`):
+The full datasets (Franklin, and Jefferson with its linked entities and record mentions), their loader and the Franklin renderers and dashboards are in [lit-crm-seeds](https://github.com/filips-alpe/lit-crm-seeds). With the schema migrated (`bunx prisma migrate deploy`):
 
 ```sh
 git clone https://github.com/filips-alpe/lit-crm-seeds ../lit-crm-seeds
@@ -34,7 +34,7 @@ bun run ext install ../lit-crm-seeds --path extension                       # re
 bun run dev
 ```
 
-`bun run seed` there **deletes all users, projects, types and records** in the target database first, and refuses to run without `--db`. The extension is optional but the data's types name its renderers (`rendererId`); without it they fall back to the default view and users get the generic dashboard.
+The loader writes the Jefferson records after the Franklin ones and, when the database has the `lit_record_mention` table, the mentions that the best pages show. `bun run seed` there **deletes all users, projects, types and records** in the target database first, and refuses to run without `--db`. The extension is optional but the data's types name its renderers (`rendererId`); without it they fall back to the default view and users get the generic dashboard.
 
 You can also install straight from git: `bun run ext install https://github.com/filips-alpe/lit-crm-seeds.git --path extension`.
 

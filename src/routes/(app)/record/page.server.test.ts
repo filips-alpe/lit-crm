@@ -225,8 +225,12 @@ describe('/record save action', () => {
 describe('/record auth', () => {
   it('load and save redirect unauthenticated callers to /login', async () => {
     const anon = { url: new URL('http://localhost/record'), locals: {} } as never;
-    await expect(load(anon)).rejects.toMatchObject({ location: '/login' });
-    await expect(actions.save(anon)).rejects.toMatchObject({ location: '/login' });
-    await expect(layoutLoad(anon)).rejects.toMatchObject({ location: '/login' });
+    await expect(load(anon)).rejects.toMatchObject({ location: '/login?redirectTo=%2Frecord' });
+    await expect(actions.save(anon)).rejects.toMatchObject({
+      location: '/login?redirectTo=%2Frecord',
+    });
+    await expect(layoutLoad(anon)).rejects.toMatchObject({
+      location: '/login?redirectTo=%2Frecord',
+    });
   });
 });

@@ -9,6 +9,7 @@ function deleteEvent(id: string | null, user: object | null = { id: 'u1' }) {
   if (id !== null) body.set('id', id);
   return {
     request: new Request('http://localhost/types?/delete', { method: 'POST', body }),
+    url: new URL('http://localhost/types?/delete'),
     locals: user ? { user } : {},
   } as never;
 }
@@ -24,8 +25,13 @@ describe('/types page', () => {
 
   it('load redirects unauthenticated callers to /login', async () => {
     await expect(
-      (load as never as (e: unknown) => Promise<unknown>)({ locals: {} } as never),
-    ).rejects.toSatisfy((e) => (e as { location?: string }).location === '/login');
+      (load as never as (e: unknown) => Promise<unknown>)({
+        url: new URL('http://localhost/types'),
+        locals: {},
+      } as never),
+    ).rejects.toSatisfy(
+      (e) => (e as { location?: string }).location === '/login?redirectTo=%2Ftypes',
+    );
   });
 
   it('load exposes each row createdAt for the list', async () => {
@@ -58,7 +64,7 @@ describe('/types page', () => {
   it('delete redirects unauthenticated callers to /login', async () => {
     const saved = await addType({ code: 'RD3' });
     await expect(actions.delete(deleteEvent(saved.id, null))).rejects.toSatisfy(
-      (e) => (e as { location?: string }).location === '/login',
+      (e) => (e as { location?: string }).location?.startsWith('/login') === true,
     );
     expect((await getTypeById(saved.id))?.status).toBe('ACTIVE');
   });
