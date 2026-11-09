@@ -1,4 +1,4 @@
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
@@ -8,6 +8,7 @@ import {
   getRecordById,
   listCorrespondenceMap,
   updateRecord,
+  deleteRecord,
   validateRecordRelations,
   type UpdateRecordInput,
 } from '$lib/server/repos/records';
@@ -21,6 +22,8 @@ import type { FormLayout } from '$lib/forms/layout';
 import { layoutSchema } from '$lib/schemas/types';
 import { buildRecordFormOptions } from '$lib/server/recordFormOptions';
 import { applyInvalidDateError, applyRecordRelationErrors } from '$lib/server/forms/relationErrors';
+import { AMOUNT_COLUMNS, withoutMaskedAmounts } from '$lib/fields/amounts';
+import { ForbiddenError } from '$lib/server/db/errors';
 import * as m from '$lib/paraglide/messages.js';
 
 function parseLayout(raw: unknown): FormLayout {
@@ -29,17 +32,23 @@ function parseLayout(raw: unknown): FormLayout {
 }
 
 export const load: PageServerLoad = async (event) => {
-  requireUser(event);
+  const user = requireUser(event);
+  // A record the user may not read is indistinguishable from a missing one.
   const record = await getRecordById(event.params.id);
   if (!record) error(404, m.cozy_late_capybara_greet());
 
   const layout = parseLayout(record.type.layout);
+  // Amounts the user cannot see are neither validated nor saved.
+  const formLayout = withoutMaskedAmounts(layout, record.amountsMasked);
   // Per-record form id: flipping the modal between letters mounts the next
   // detail form before the previous one is gone, and same-schema forms would
   // otherwise share superforms' schema-derived id.
   const form = await superValidate(
-    { ...valuesFromRecord(layout, record), projectIds: record.projects.map((p) => p.projectId) },
-    zod4(buildRecordFormSchema(layout)),
+    {
+      ...valuesFromRecord(formLayout, record),
+      projectIds: record.projects.map((p) => p.projectId),
+    },
+    zod4(buildRecordFormSchema(formLayout)),
     { id: recordFormId(record.id) },
   );
 
@@ -59,6 +68,11 @@ export const load: PageServerLoad = async (event) => {
     buildRecordFormOptions(layout, {
       excludeRecordId: record.id,
       values: form.data as Record<string, unknown>,
+      access: {
+        readOnly: !record.canWrite,
+        lockCreator: !user.isAdmin,
+        maskedColumns: record.amountsMasked ? [...AMOUNT_COLUMNS] : [],
+      },
     }),
   ]);
 
@@ -76,17 +90,21 @@ export const load: PageServerLoad = async (event) => {
 
 export const actions: Actions = {
   save: async (event) => {
-    requireUser(event);
+    const user = requireUser(event);
     const record = await getRecordById(event.params.id);
     if (!record) error(404, m.cozy_late_capybara_greet());
 
-    const layout = parseLayout(record.type.layout);
+    const layout = withoutMaskedAmounts(parseLayout(record.type.layout), record.amountsMasked);
     const form = await superValidate(event.request, zod4(buildRecordFormSchema(layout)), {
       id: recordFormId(record.id),
     });
     if (!form.valid) return fail(400, { form });
+    if (!record.canWrite)
+      return message(form, { error: m.best_slimy_barbel_peek() }, { status: 403 });
 
     const saveInput = toSaveInput(layout, form.data) as UpdateRecordInput;
+    // Only an admin changes the creator (the database refuses it for everyone else).
+    if (!user.isAdmin) delete saveInput.creatorId;
 
     const projectIds = (form.data.projectIds as string[] | undefined) ?? [];
     const relationErrors = await validateRecordRelations(
@@ -106,9 +124,22 @@ export const actions: Actions = {
     try {
       await updateRecord(record.id, { ...saveInput, projectIds });
     } catch (err) {
+      if (err instanceof ForbiddenError)
+        return message(form, { error: m.best_slimy_barbel_peek() }, { status: 403 });
       if (!applyInvalidDateError(form, err)) throw err;
       return fail(400, { form });
     }
     return message(form, { saved: true });
+  },
+
+  delete: async (event) => {
+    requireUser(event);
+    try {
+      await deleteRecord(event.params.id);
+    } catch (err) {
+      if (err instanceof ForbiddenError) error(403, m.best_slimy_barbel_peek());
+      throw err;
+    }
+    redirect(303, '/data');
   },
 };

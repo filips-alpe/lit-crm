@@ -83,6 +83,9 @@ export default defineConfig({
           env: {
             DATABASE_URL: TEST_DATABASE_URL,
             DEV_DATABASE_URL,
+            // Legacy repo tests use the owner connection outside any request context; RLS-aware
+            // tests enter a context with runAs() and are scoped as usual (see $lib/prisma).
+            LIT_DB_OWNER_FALLBACK: '1',
           },
           // Tests share one Postgres test DB and truncate between tests —
           // run files serially in a single worker to keep that isolation honest.

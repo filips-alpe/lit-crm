@@ -19,10 +19,19 @@ model User {
   color      String     @default("#000000")
   avatarSeed String?
 
+  // Data, not code: row-level security lets an admin see and change everything,
+  // hidden records included (see the grants_rls migration). Only an admin can set it.
+  isAdmin Boolean @default(false)
+
   createdProjects  Project[] @relation(name: "ProjectCreator")
   assignedProjects Project[] @relation(name: "ProjectAssignee")
   createdRecords   Record[]  @relation(name: "RecordCreator")
   assignedRecords  Record[]  @relation(name: "RecordAssignee")
+
+  memberships GroupMember[]
+  // Grants made to this user, and grants whose scope is "records of this person".
+  grants      Grant[]       @relation("GrantUser")
+  grantsAbout Grant[]       @relation("GrantPerson")
 
   @@map("lit_user")
 }
@@ -44,6 +53,7 @@ model Type {
   rendererId String?
 
   records Record[]
+  grants  Grant[]
 
   @@map("lit_type")
 }
@@ -72,6 +82,9 @@ model Record {
   fromGeo     String?
   toGeo       String?
 
+  // Admin-only visibility: not even a grant shows a hidden record to a non-admin.
+  hidden Boolean @default(false)
+
   type       Type            @relation(fields: [typeId], references: [id])
   typeId     String
   creator    User?           @relation(name: "RecordCreator", fields: [creatorId], references: [id])
@@ -82,6 +95,14 @@ model Record {
   record     Record?         @relation("LinkedRecord", fields: [recordId], references: [id])
   recordId   String?
   records    Record[]        @relation("LinkedRecord")
+  grants     Grant[]
+
+  // The row-level security policies filter by creatorId, assigneeId and typeId. recordId
+  // backs the ON DELETE SET NULL of the self relation (every record delete would scan).
+  @@index([creatorId])
+  @@index([assigneeId])
+  @@index([typeId])
+  @@index([recordId])
 
   // Entity mentions inside this record's text, and the mentions of this
   // record (as an entity) in other records' text.
@@ -123,18 +144,95 @@ model Project {
   assignee   User?           @relation(name: "ProjectAssignee", fields: [assigneeId], references: [id])
   assigneeId String?
   records    ProjectRecord[]
+  grants     Grant[]
 
+  @@index([creatorId])
+  @@index([assigneeId])
   @@map("lit_project")
 }
 
 model ProjectRecord {
   project   Project @relation(fields: [projectId], references: [id])
   projectId String
-  record    Record  @relation(fields: [recordId], references: [id])
+  // Deleting a record removes its links (the cascade runs as the table owner, so a writer can
+  // delete a record even when some of its links point at projects they cannot see).
+  record    Record  @relation(fields: [recordId], references: [id], onDelete: Cascade)
   recordId  String
 
   @@id([projectId, recordId])
+  @@index([recordId])
   @@map("lit_project_record")
+}
+
+// A named set of users. A grant can target a group instead of one user.
+model Group {
+  id          String   @id @default(cuid(2))
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+  name        String   @unique
+  description String?
+
+  members GroupMember[]
+  grants  Grant[]
+
+  @@map("lit_group")
+}
+
+model GroupMember {
+  groupId   String
+  userId    String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, userId])
+  @@index([userId])
+  @@map("lit_group_member")
+}
+
+/// One row gives ONE target (a user or a group) access to ONE scope at a level.
+/// Exactly one of userId/groupId and exactly one of personId/projectId/typeId/recordId
+/// is set. The migration enforces both with CHECK constraints (Prisma does not model
+/// CHECKs and ignores them).
+model Grant {
+  id        String   @id @default(cuid(2))
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  // target
+  userId  String?
+  groupId String?
+  user    User?   @relation("GrantUser", fields: [userId], references: [id], onDelete: Cascade)
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  // scope: records whose creator OR assignee is `person` / every record linked to
+  // `project` / every record of `type` / that one `record`
+  personId  String?
+  projectId String?
+  typeId    String?
+  recordId  String?
+  person    User?    @relation("GrantPerson", fields: [personId], references: [id], onDelete: Cascade)
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type      Type?    @relation(fields: [typeId], references: [id], onDelete: Cascade)
+  record    Record?  @relation(fields: [recordId], references: [id], onDelete: Cascade)
+
+  level       GrantLevel @default(READ)
+  // true: sum, hours and total are NULL for records reached only through hiding grants.
+  hideAmounts Boolean    @default(false)
+
+  @@index([userId])
+  @@index([groupId])
+  @@index([personId])
+  @@index([projectId])
+  @@index([typeId])
+  @@index([recordId])
+  @@map("lit_grant")
+}
+
+enum GrantLevel {
+  READ
+  WRITE
 }
 
 enum UserStatus {

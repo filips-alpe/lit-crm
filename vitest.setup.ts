@@ -1,5 +1,5 @@
 import { afterAll, afterEach } from 'vitest';
-import { prisma } from './src/lib/prisma';
+import { prismaOwner as prisma } from './src/lib/prisma';
 
 // These tests TRUNCATE the database after every case. Refuse to run unless a
 // dedicated TEST_DATABASE_URL (distinct from the dev DATABASE_URL) is set, so a
@@ -20,7 +20,16 @@ if (testUrl === devUrl) {
   );
 }
 
-const TABLES = ['lit_record_mention', 'lit_record', 'lit_project', 'lit_type', 'lit_user'];
+const TABLES = [
+  'lit_record_mention',
+  'lit_record',
+  'lit_project',
+  'lit_type',
+  'lit_user',
+  'lit_group',
+  'lit_group_member',
+  'lit_grant',
+];
 
 afterEach(async () => {
   const list = TABLES.map((t) => `"${t}"`).join(',');

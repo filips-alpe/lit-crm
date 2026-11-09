@@ -34,6 +34,18 @@ export interface RecordFormOptions {
   projects: ProjectOption[];
   /** The record being edited, so its own picker never offers it for self-link. */
   excludeRecordId?: string;
+  /** What the viewer may do with this form (set by the server, enforced by the database). */
+  access?: RecordFormAccess;
+}
+
+/** Viewer limits on a record form. The database enforces them; the form only reflects them. */
+export interface RecordFormAccess {
+  /** The viewer can see the record but not change it. */
+  readOnly: boolean;
+  /** Only an admin changes the creator: the creator field is shown read-only. */
+  lockCreator: boolean;
+  /** Amount columns hidden from the viewer: shown as "hidden", never posted. */
+  maskedColumns: string[];
 }
 
 const KEY = Symbol('record-form-options');

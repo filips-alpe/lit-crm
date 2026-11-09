@@ -28,12 +28,29 @@ export function readSession(cookies: Cookies) {
   return decode(cookies.get(SESSION_COOKIE));
 }
 
-function secret() {
-  const s = env.AUTH_SECRET;
-  if (!s || s.length < 16) {
+/** The value shipped in .env.example and the usual stand-ins: anyone who has read the repo
+ *  can forge a session cookie for any user with them. */
+const PLACEHOLDER =
+  /change[-_ ]?me|placeholder|your[-_ ]?(secret|key)|example|^(secret|password|test|dev)$/i;
+
+/** Throws unless `value` is a usable AUTH_SECRET: set, 16+ characters, not a known placeholder. */
+export function checkAuthSecret(value: string | undefined): string {
+  if (!value || value.length < 16) {
     throw new Error('AUTH_SECRET must be set and at least 16 characters');
   }
-  return s;
+  if (PLACEHOLDER.test(value)) {
+    throw new Error(
+      'AUTH_SECRET is a placeholder (the value from .env.example?): generate a random one, e.g. `openssl rand -base64 32`',
+    );
+  }
+  return value;
+}
+
+/** Fail at startup instead of on the first login. */
+export const assertAuthSecret = () => checkAuthSecret(env.AUTH_SECRET);
+
+function secret() {
+  return checkAuthSecret(env.AUTH_SECRET);
 }
 
 function sign(payload: string) {

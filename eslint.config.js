@@ -39,13 +39,22 @@ export default defineConfig(
   {
     // *.testutil.ts are test fixtures: only tests may import them, so they can never reach a bundle.
     files: ['**/*.ts', '**/*.svelte', '**/*.js'],
-    ignores: ['**/*.test.ts', '**/*.spec.ts', '**/*.testutil.ts'],
+    ignores: ['**/*.test.ts', '**/*.spec.ts', '**/*.testutil.ts', 'vitest.setup.ts'],
     rules: {
       'no-restricted-imports': [
         'error',
         {
           patterns: [
             { group: ['**/*.testutil', '**/*.testutil.ts'], message: 'Test-only module.' },
+          ],
+          // The owner connection bypasses row-level security: app code must use the scoped
+          // `prisma` (every operation runs as lit_app for the request's user).
+          paths: [
+            {
+              name: '$lib/prisma',
+              importNames: ['prismaOwner'],
+              message: 'prismaOwner bypasses row-level security (tests, seeds and scripts only).',
+            },
           ],
         },
       ],

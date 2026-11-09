@@ -32,24 +32,26 @@
   {/if}
 
   <ul id="TypesList" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-    <li class="col-span-full">
-      <a
-        href={resolve('/(app)/types/new')}
-        class="group/add relative flex h-full min-h-[108px] items-center justify-center gap-3 overflow-hidden rounded-xl border border-dashed border-stone-300 bg-white px-6 py-6 text-sm font-medium text-stone-700 transition-colors duration-300 hover:border-solid hover:border-emerald-300 hover:text-emerald-900"
-      >
-        <span
-          aria-hidden="true"
-          class="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-gradient-to-r from-emerald-50 via-emerald-100 to-emerald-50 transition-transform duration-500 ease-out group-hover/add:scale-x-100"
-        ></span>
-        <span
-          aria-hidden="true"
-          class="relative flex size-9 items-center justify-center rounded-full bg-emerald-100 text-base text-emerald-700 ring-1 ring-emerald-200 transition group-hover/add:bg-emerald-600 group-hover/add:text-white"
+    {#if data.user.isAdmin}
+      <li class="col-span-full">
+        <a
+          href={resolve('/(app)/types/new')}
+          class="group/add relative flex h-full min-h-[108px] items-center justify-center gap-3 overflow-hidden rounded-xl border border-dashed border-stone-300 bg-white px-6 py-6 text-sm font-medium text-stone-700 transition-colors duration-300 hover:border-solid hover:border-emerald-300 hover:text-emerald-900"
         >
-          +
-        </span>
-        <span class="relative">{m.sour_gross_jellyfish_stab()}</span>
-      </a>
-    </li>
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-gradient-to-r from-emerald-50 via-emerald-100 to-emerald-50 transition-transform duration-500 ease-out group-hover/add:scale-x-100"
+          ></span>
+          <span
+            aria-hidden="true"
+            class="relative flex size-9 items-center justify-center rounded-full bg-emerald-100 text-base text-emerald-700 ring-1 ring-emerald-200 transition group-hover/add:bg-emerald-600 group-hover/add:text-white"
+          >
+            +
+          </span>
+          <span class="relative">{m.sour_gross_jellyfish_stab()}</span>
+        </a>
+      </li>
+    {/if}
 
     {#each data.rows as row (row.id)}
       {@const deleted = row.status === 'INACTIVE'}

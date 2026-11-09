@@ -3,8 +3,13 @@ import type { Handle } from '@sveltejs/kit';
 import { getTextDirection } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { prisma } from '$lib/prisma';
-import { clearSession, readSession } from '$lib/server/auth/session';
+import { building } from '$app/environment';
+import { assertAuthSecret, clearSession, readSession } from '$lib/server/auth/session';
+import { runAs } from '$lib/server/db/context';
 import { UserStatus } from '../generated/prisma/enums';
+
+// The app refuses to start with a missing, short or placeholder AUTH_SECRET.
+if (!building) assertAuthSecret();
 
 const handleParaglide: Handle = ({ event, resolve }) =>
   paraglideMiddleware(event.request, ({ request, locale }) => {
@@ -20,21 +25,22 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 
 const handleSession: Handle = async ({ event, resolve }) => {
   const session = readSession(event.cookies);
-  if (session) {
-    const user = await prisma.user.findUnique({
-      where: { id: session.uid, status: UserStatus.ACTIVE },
-    });
-    if (user) {
-      event.locals.session = session;
-      event.locals.user = user;
-    }
-  }
-
-  if (session && !event.locals.user) {
+  // The lookup itself runs as the session's user: an inactive or unknown user is invisible
+  // to the policies, so it is simply "no user".
+  const user = session
+    ? await runAs(session.uid, () =>
+        prisma.user.findUnique({ where: { id: session.uid, status: UserStatus.ACTIVE } }),
+      )
+    : null;
+  if (user) {
+    event.locals.session = session!;
+    event.locals.user = user;
+  } else if (session) {
     clearSession(event.cookies);
   }
 
-  return resolve(event);
+  // Every load, action and endpoint under resolve() inherits the context; no user = nobody.
+  return runAs(user?.id ?? null, async () => await resolve(event));
 };
 
 export const handle: Handle = sequence(handleParaglide, handleSession);

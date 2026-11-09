@@ -4,7 +4,10 @@ import { addType } from '$lib/server/repos/types';
 import { prisma } from '$lib/prisma';
 import { typeFormRequest } from '../testEvent';
 
-function postEvent(form: Record<string, unknown>, user: object | null = { id: 'u1' }) {
+function postEvent(
+  form: Record<string, unknown>,
+  user: object | null = { id: 'u1', isAdmin: true },
+) {
   return {
     request: typeFormRequest(form),
     url: new URL('http://localhost/'),

@@ -9,7 +9,7 @@ function event(id: string, form: Record<string, unknown> = {}) {
     request: typeFormRequest(form),
     url: new URL('http://localhost/'),
     params: { id },
-    locals: { user: { id: 'u1' } },
+    locals: { user: { id: 'u1', isAdmin: true } },
   } as never;
 }
 

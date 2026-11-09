@@ -28,7 +28,8 @@ async function makeUser(username: string, name: string): Promise<DashboardUser> 
 async function reference(user: DashboardUser) {
   const rows = await prisma.record.findMany({
     where: { status: 'ACTIVE', OR: [{ creatorId: user.id }, { assigneeId: user.id }] },
-    omit: { text: true },
+    // the owner connection may read the amount columns the app role cannot
+    omit: { text: true, sum: false, hours: false, total: false },
     include: {
       type: recordInclude.type,
       creator: recordInclude.creator,

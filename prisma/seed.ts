@@ -20,6 +20,9 @@ const NOTE_LAYOUT = {
 async function main() {
   // Destructive: wipes every user, project, type and record first.
   await prisma.recordMention.deleteMany({});
+  await prisma.grant.deleteMany({});
+  await prisma.groupMember.deleteMany({});
+  await prisma.group.deleteMany({});
   await prisma.projectRecord.deleteMany({});
   await prisma.record.deleteMany({});
   await prisma.project.deleteMany({});
@@ -27,7 +30,13 @@ async function main() {
   await prisma.user.deleteMany({});
 
   const alice = await prisma.user.create({
-    data: { username: 'alice', name: 'Alice Example', color: '#3b6ea5', bio: 'Fixture user.' },
+    data: {
+      username: 'alice',
+      name: 'Alice Example',
+      color: '#3b6ea5',
+      bio: 'Fixture user.',
+      isAdmin: true, // the fixture admin: sees every row through the RLS gateway
+    },
   });
   const bob = await prisma.user.create({
     data: { username: 'bob', name: 'Bob Example', color: '#8a2f3e', bio: 'Fixture user.' },
@@ -81,6 +90,43 @@ async function main() {
       start,
       end: start + mention.length,
     },
+  });
+
+  // Permission fixtures for the e2e suite (alice is the admin, bob is not). Bob is the
+  // assignee of project "demo", so he writes its three notes. Beyond that:
+  //   - "Alice private invoice": nobody else (bob gets a 404)
+  //   - "Shared invoice": bob reads it through the group "Auditors" and its amounts are hidden
+  //   - "Open invoice": bob may write it and sees the amounts (a direct grant)
+  //   - "Hidden note": hidden, admin-only
+  const invoice = await prisma.type.create({
+    data: {
+      code: 'invoice',
+      description: 'An invoice with an amount',
+      color: '#8a2f3e',
+      iconSeed: 'envelope',
+      layout: {
+        fields: [
+          { id: 'title', label: 'Title', kind: 'text', writeTo: 'title' },
+          { id: 'sum', label: 'Amount', kind: 'number', writeTo: 'sum' },
+        ],
+      },
+    },
+  });
+  const inv = (title: string, sum: number) =>
+    prisma.record.create({ data: { typeId: invoice.id, creatorId: alice.id, title, sum } });
+  await inv('Alice private invoice', 250);
+  const shared = await inv('Shared invoice', 99.5);
+  const open = await inv('Open invoice', 10);
+  await prisma.record.create({
+    data: { typeId: note.id, creatorId: alice.id, title: 'Hidden note', hidden: true },
+  });
+  const auditors = await prisma.group.create({ data: { name: 'Auditors' } });
+  await prisma.groupMember.create({ data: { groupId: auditors.id, userId: bob.id } });
+  await prisma.grant.create({
+    data: { groupId: auditors.id, recordId: shared.id, level: 'READ', hideAmounts: true },
+  });
+  await prisma.grant.create({
+    data: { userId: bob.id, recordId: open.id, level: 'WRITE', hideAmounts: false },
   });
 
   console.log('\nSeed complete (fixture data).');

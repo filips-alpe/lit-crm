@@ -1,5 +1,5 @@
 import type { FormLayout } from '$lib/forms/layout';
-import type { RecordFormOptions } from '$lib/forms/recordOptions';
+import type { RecordFormAccess, RecordFormOptions } from '$lib/forms/recordOptions';
 import { resolveRecordOptions } from '$lib/server/repos/records';
 import { resolveUserOptions } from '$lib/server/repos/users';
 import { listProjectOptions } from '$lib/server/repos/projects';
@@ -27,7 +27,11 @@ function selectedIds(
  */
 export async function buildRecordFormOptions(
   layout: FormLayout,
-  opts: { excludeRecordId?: string; values?: Record<string, unknown> } = {},
+  opts: {
+    excludeRecordId?: string;
+    values?: Record<string, unknown>;
+    access?: RecordFormAccess;
+  } = {},
 ): Promise<RecordFormOptions> {
   const values = opts.values ?? {};
   const [users, records, projects] = await Promise.all([
@@ -35,5 +39,5 @@ export async function buildRecordFormOptions(
     resolveRecordOptions(selectedIds(layout, 'record', values)),
     listProjectOptions(),
   ]);
-  return { users, records, projects, excludeRecordId: opts.excludeRecordId };
+  return { users, records, projects, excludeRecordId: opts.excludeRecordId, access: opts.access };
 }

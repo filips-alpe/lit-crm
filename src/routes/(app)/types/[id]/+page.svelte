@@ -13,4 +13,5 @@
   mode="edit"
   editingDeleted={data.editingDeleted}
   columnCounts={data.columnCounts}
+  readOnly={data.readOnly}
 />

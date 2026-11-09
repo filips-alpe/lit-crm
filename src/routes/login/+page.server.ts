@@ -7,14 +7,15 @@ import { prisma } from '$lib/prisma';
 import { loginSchema } from '$lib/schemas/login';
 import { safeRedirectTo } from '$lib/server/auth/redirectTo';
 import { setSession } from '$lib/server/auth/session';
-import { UserStatus } from '../../../generated/prisma/enums';
 
-export const load: PageServerLoad = async () => {
-  const users = await prisma.user.findMany({
-    where: { status: UserStatus.ACTIVE },
-    select: { id: true, username: true, name: true, color: true, avatarSeed: true },
-    orderBy: [{ name: 'asc' }],
-  });
+export const load: PageServerLoad = async ({ locals }) => {
+  if (locals.user) redirect(303, '/');
+
+  // Nobody is logged in yet, so the tables are closed; this definer function lists the
+  // active users for the picker and nothing else.
+  const users = await prisma.$queryRaw<
+    { id: string; username: string; name: string; color: string; avatarSeed: string | null }[]
+  >`SELECT id, username, name, color, "avatarSeed" FROM lit_login_users()`;
   const form = await superValidate(zod4(loginSchema));
 
   return { users, form };
@@ -25,9 +26,8 @@ export const actions: Actions = {
     const form = await superValidate(event, zod4(loginSchema));
     if (!form.valid) return fail(400, { form });
 
-    const user = await prisma.user.findUnique({
-      where: { username: form.data.username, status: UserStatus.ACTIVE },
-    });
+    const [user] = await prisma.$queryRaw<{ id: string }[]>`
+      SELECT id FROM lit_resolve_user(${form.data.username})`;
 
     if (!user) {
       setError(form, 'username', m.just_soft_rabbit_dream());

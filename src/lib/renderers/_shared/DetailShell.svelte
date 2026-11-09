@@ -5,6 +5,7 @@
   import AvatarImage from '$lib/components/AvatarImage.svelte';
   import ProjectMultiselect from '$lib/components/ProjectMultiselect.svelte';
   import { formatDate } from '$lib/utils/formatDate';
+  import { getRecordOptions } from '$lib/forms/recordOptions';
   import type { RendererDetailProps } from '$lib/render/props';
   import * as m from '$lib/paraglide/messages.js';
 
@@ -24,8 +25,11 @@
 
   // enhance is a stable action from the parent-created superForm.
   // svelte-ignore state_referenced_locally
-  const { form: formData, enhance } = sf;
+  const { form: formData, enhance, message } = sf;
+  const failure = $derived(($message as { error?: string } | undefined)?.error);
   const date = $derived(formatDate(record.createdAt));
+  const readOnly = !!getRecordOptions().access?.readOnly;
+  const canDelete = $derived(record.canWrite !== false && getRecordOptions().access !== undefined);
 
   const selectedProjects = $derived(
     Array.isArray($formData.projectIds) ? ($formData.projectIds as string[]) : [],
@@ -61,18 +65,45 @@
     {/if}
   </header>
 
-  <ProjectMultiselect
-    selected={selectedProjects}
-    onChange={(ids) => (($formData.projectIds as unknown) = ids)}
-  />
+  {#if failure}
+    <p role="alert" class="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{failure}</p>
+  {/if}
+  {#if readOnly}
+    <p role="status" class="rounded bg-stone-100 px-3 py-2 text-sm text-stone-600">
+      {m.topical_minor_hawk_hack()}
+    </p>
+  {/if}
+
+  <fieldset disabled={readOnly} class="m-0 min-w-0 border-0 p-0">
+    <ProjectMultiselect
+      selected={selectedProjects}
+      onChange={(ids) => (($formData.projectIds as unknown) = ids)}
+    />
+  </fieldset>
 
   {@render children()}
 
-  <footer class="flex items-center justify-end gap-3 border-t border-stone-200 pt-3">
-    <button
-      type="submit"
-      class="rounded bg-stone-700 px-4 py-1.5 text-sm text-white hover:bg-stone-800"
-      >{m.lime_gross_mole_radiate()}</button
-    >
-  </footer>
+  {#if !readOnly}
+    <footer class="flex items-center justify-end gap-3 border-t border-stone-200 pt-3">
+      <button
+        type="submit"
+        class="rounded bg-stone-700 px-4 py-1.5 text-sm text-white hover:bg-stone-800"
+        >{m.lime_gross_mole_radiate()}</button
+      >
+    </footer>
+  {/if}
 </form>
+{#if canDelete}
+  <form
+    method="POST"
+    action={`${resolve('/(app)/data/[id]', { id: record.id })}?/delete`}
+    class="mt-2 flex justify-start"
+    onsubmit={(e) => {
+      if (!confirm(m.zippy_same_lobster_attend())) e.preventDefault();
+    }}
+  >
+    <button type="submit" class="text-sm text-red-700 underline hover:text-red-900"
+      >{m.civil_inclusive_mole_treat()}</button
+    >
+  </form>
+{/if}

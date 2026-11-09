@@ -9,5 +9,9 @@ export default defineConfig({
   },
   datasource: {
     url: env('DIRECT_URL'),
+    // Only the drift check needs it (prisma migrate diff --from-migrations ... --exit-code,
+    // see README). Point it at an empty, disposable database. Unset, Prisma creates its own
+    // shadow database for `migrate dev`.
+    shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL,
   },
 });

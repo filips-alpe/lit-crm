@@ -20,12 +20,15 @@
     mode,
     editingDeleted = false,
     columnCounts = {},
+    readOnly = false,
   }: {
     form: SuperValidated<z.infer<typeof typeSchema>>;
     mode: 'create' | 'edit';
     editingDeleted?: boolean;
     /** Edit mode: records of this type holding data, per column. */
     columnCounts?: Record<string, number>;
+    /** Non-admins see the type but cannot change it. */
+    readOnly?: boolean;
   } = $props();
 
   let iconDialog = $state<{ show: () => void } | null>(null);
@@ -81,7 +84,19 @@
 </nav>
 
 <div class="mx-auto w-full max-w-[820px] px-3 py-4 sm:px-4 sm:py-6">
-  <form id="TypeForm" method="POST" action="?/save" class="flex flex-col gap-5" use:saveEnhance>
+  {#if readOnly}
+    <p role="status" class="mb-4 rounded bg-stone-100 px-3 py-2 text-sm text-stone-600">
+      {m.round_white_turkey_reside()}
+    </p>
+  {/if}
+  <form
+    id="TypeForm"
+    method="POST"
+    action="?/save"
+    class="flex flex-col gap-5"
+    use:saveEnhance
+    inert={readOnly}
+  >
     <!-- IDENTITY + FIELDS unified card -->
     <section
       class="identity-widget group/identity rounded-box border transition-colors duration-300"
@@ -180,22 +195,22 @@
       <p role="alert" class="mr-auto text-sm text-error">{m.fluffy_elegant_rook_attend()}</p>
     {/if}
     <a href={resolve('/(app)/types')} class="btn btn-ghost">{m.minor_basic_vulture_renew()}</a>
-    <button
-      type="submit"
-      form="TypeForm"
-      disabled={$submitting || hasBadDefault}
-      class="btn btn-primary"
-    >
-      {#if $submitting}
-        <span class="loading loading-xs loading-spinner"></span>
-        <span>{m.neat_plane_bumblebee_accept()}</span>
-      {:else}
-        <span>{m.lime_gross_mole_radiate()}</span>
-      {/if}
-    </button>
+    {#if !readOnly}<button
+        type="submit"
+        form="TypeForm"
+        disabled={$submitting || hasBadDefault}
+        class="btn btn-primary"
+      >
+        {#if $submitting}
+          <span class="loading loading-xs loading-spinner"></span>
+          <span>{m.neat_plane_bumblebee_accept()}</span>
+        {:else}
+          <span>{m.lime_gross_mole_radiate()}</span>
+        {/if}
+      </button>{/if}
   </div>
 
-  {#if mode === 'edit'}
+  {#if mode === 'edit' && !readOnly}
     <TypeDeleteZone typeId={$formData.id} {savedCode} {editingDeleted} />
   {/if}
 </div>

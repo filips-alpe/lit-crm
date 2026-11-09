@@ -1,6 +1,7 @@
 import { Prisma } from '../../../../generated/prisma/client';
 import { prisma } from '$lib/prisma';
 import { FIELD_TYPES } from '$lib/fields/registry';
+import { amountRelation, isAmountColumn } from '$lib/server/db/amounts';
 
 export class DuplicateCodeError extends Error {
   constructor(code: string) {
@@ -190,7 +191,8 @@ export async function countRecordsWithData(typeId: string): Promise<Record<strin
   // fixed FIELD_TYPES registry (identifiers can't be bound parameters); the
   // type id is a bound parameter.
   const filled = (col: string) => {
-    const id = Prisma.raw(`"${col}"`);
+    // amounts come from the amounts relation (the table columns are closed to the app role)
+    const id = Prisma.raw(isAmountColumn(col) ? `a."${col}"` : `r."${col}"`);
     if (col === 'references') return Prisma.sql`COALESCE(cardinality(${id}), 0) > 0`;
     if (TEXT_COLUMNS.has(col)) return Prisma.sql`${id} IS NOT NULL AND ${id} <> ''`;
     return Prisma.sql`${id} IS NOT NULL`;
@@ -199,6 +201,8 @@ export async function countRecordsWithData(typeId: string): Promise<Record<strin
     (col, i) => Prisma.sql`COUNT(*) FILTER (WHERE ${filled(col)}) AS ${Prisma.raw(`c${i}`)}`,
   );
   const [row] = await prisma.$queryRaw<Record<string, bigint>[]>`
-    SELECT ${Prisma.join(selects)} FROM "lit_record" WHERE "typeId" = ${typeId}`;
+    SELECT ${Prisma.join(selects)} FROM "lit_record" r
+    JOIN ${amountRelation()} a ON a."recordId" = r."id"
+    WHERE r."typeId" = ${typeId}`;
   return Object.fromEntries(LAYOUT_COLUMNS.map((col, i) => [col, Number(row[`c${i}`])]));
 }

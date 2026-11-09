@@ -1,6 +1,7 @@
 import { Prisma } from '../../../../generated/prisma/client';
 import { prisma } from '$lib/prisma';
 import { recordInclude } from '$lib/server/repos/records';
+import { amountRelation, recordAccess } from '$lib/server/db/amounts';
 import { parseLatLng } from '$lib/fields/registry';
 import type { FormLayout } from '$lib/forms/layout';
 import { fillYears, foldCorrespondents, roleOf, type PartyPair } from '$lib/dashboards/aggregate';
@@ -22,11 +23,13 @@ import type {
 } from '$lib/dashboards/types';
 
 // All aggregates run in Postgres over the user's ACTIVE records (created or
-// assigned). User data only ever reaches SQL as bound parameters.
+// assigned), as the signed-in user, so row-level security applies. sum/total are read
+// through the amounts relation (the table columns are closed to the app role). User data
+// only ever reaches SQL as bound parameters.
 const EVENT = Prisma.sql`COALESCE(r."date", r."start")`;
 const SORT_KEY = Prisma.sql`COALESCE(r."date", r."start", r."createdAt")`;
-const FROM_RECORDS = (userId: string) => Prisma.sql`
-  FROM "lit_record" r
+const FROM_RECORDS = (userId: string, join: Prisma.Sql = Prisma.empty) => Prisma.sql`
+  FROM "lit_record" r ${join}
   WHERE r."status" = 'ACTIVE' AND (r."creatorId" = ${userId} OR r."assigneeId" = ${userId})`;
 // "C" collation = byte order, matching the JS `<` comparison of ids.
 const NEWEST_FIRST = Prisma.sql`ORDER BY ${SORT_KEY} DESC, r."id" COLLATE "C" DESC`;
@@ -123,8 +126,9 @@ export async function loadDashboardData(
         total: Prisma.Decimal;
       }[]
     >`SELECT r."typeId", max(r."unit") AS unit, count(*) AS count,
-        COALESCE(sum(r."sum"), 0) AS sum, COALESCE(sum(r."total"), 0) AS total
-      ${FROM_RECORDS(userId)} AND (r."sum" IS NOT NULL OR r."total" IS NOT NULL)
+        COALESCE(sum(a."sum"), 0) AS sum, COALESCE(sum(a."total"), 0) AS total
+      ${FROM_RECORDS(userId, Prisma.sql`JOIN ${amountRelation()} a ON a."recordId" = r."id"`)}
+      AND (a."sum" IS NOT NULL OR a."total" IS NOT NULL)
       GROUP BY r."typeId", COALESCE(r."unit", '')`,
     ids(userId, Prisma.empty, NEWEST_FIRST, DASHBOARD_RECORDS_LIMIT),
     ids(
@@ -173,6 +177,7 @@ export async function loadDashboardData(
     }),
   ]);
 
+  const access = await recordAccess(rows.map((r) => r.id));
   const typeById = new Map(types.map((t) => [t.id, t]));
   const byCode = (a: { code: string }, b: { code: string }) => a.code.localeCompare(b.code);
 
@@ -190,9 +195,9 @@ export async function loadDashboardData(
         date: r.date,
         start: r.start,
         end: r.end,
-        sum: r.sum == null ? null : Number(r.sum),
-        hours: r.hours,
-        total: r.total == null ? null : Number(r.total),
+        sum: access.get(r.id)?.sum ?? null,
+        hours: access.get(r.id)?.hours ?? null,
+        total: access.get(r.id)?.total ?? null,
         unit: r.unit,
         from: r.from,
         to: r.to,

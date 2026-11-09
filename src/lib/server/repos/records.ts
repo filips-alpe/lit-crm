@@ -1,22 +1,10 @@
-import { prisma } from '$lib/prisma';
+import { ownerFallback, prisma } from '$lib/prisma';
 import { Prisma } from '../../../../generated/prisma/client';
 import { layoutSchema, recipientColumn } from '$lib/schemas/types';
 import { FIELD_TYPES } from '$lib/fields/registry';
 import type { RecordOption } from '$lib/forms/recordOptions';
-
-// Prisma returns `sum` / `total` as Decimal instances, which SvelteKit cannot
-// serialize across the load boundary. Coerce them to plain numbers so every
-// consumer gets a POJO.
-const DECIMAL_COLUMNS = ['sum', 'total'] as const;
-
-function plainRecord<T extends Record<string, unknown>>(row: T): T {
-  const out: Record<string, unknown> = { ...row };
-  for (const col of DECIMAL_COLUMNS) {
-    const value = out[col];
-    out[col] = value == null ? null : Number(value);
-  }
-  return out as T;
-}
+import { AMOUNT_COLUMNS, recordAccess, withAccess } from '$lib/server/db/amounts';
+import { asForbidden, ForbiddenError } from '$lib/server/db/errors';
 
 const person = {
   select: { id: true, username: true, name: true, color: true, avatarSeed: true },
@@ -187,7 +175,7 @@ export async function listRecords(options: ListRecordsOptions = {}) {
     }),
     prisma.record.count({ where }),
   ]);
-  return { rows: rows.map(plainRecord), total, page, pageSize };
+  return { rows: await withAccess(rows), total, page, pageSize };
 }
 
 const OPTION_LABEL_MAX = 120;
@@ -269,7 +257,7 @@ export async function resolveRecordOptions(ids: string[]): Promise<RecordOption[
 
 export async function getRecordById(id: string) {
   const row = await prisma.record.findUnique({ where: { id }, include: recordInclude });
-  return row ? plainRecord(row) : null;
+  return row ? (await withAccess([row]))[0] : null;
 }
 
 export interface CorrespondenceThread {
@@ -439,44 +427,96 @@ export async function createRecord(input: CreateRecordInput) {
   const { typeId, creatorId, assigneeId, recordId, projectIds } = input;
   // `type: { connect }` forces Prisma's checked create input, so every relation
   // FK must use the connect form (scalar `assigneeId`/`recordId` are rejected there).
-  const created = await prisma.record.create({
-    data: {
-      type: { connect: { id: typeId } },
-      ...(creatorId ? { creator: { connect: { id: creatorId } } } : {}),
-      ...(assigneeId ? { assignee: { connect: { id: assigneeId } } } : {}),
-      ...(recordId ? { record: { connect: { id: recordId } } } : {}),
-      ...(projectIds?.length ? { projects: { create: projectLinks(projectIds) } } : {}),
-      ...writableColumns(input),
-    },
-  });
-  return plainRecord(created);
+  const data = {
+    type: { connect: { id: typeId } },
+    ...(creatorId ? { creator: { connect: { id: creatorId } } } : {}),
+    ...(assigneeId ? { assignee: { connect: { id: assigneeId } } } : {}),
+    ...(recordId ? { record: { connect: { id: recordId } } } : {}),
+    ...(projectIds?.length ? { projects: { create: projectLinks(projectIds) } } : {}),
+    ...writableColumns(input),
+  };
+  let created;
+  try {
+    created = await prisma.record.create({ data });
+  } catch (e) {
+    if (asForbidden(e)) throw new ForbiddenError();
+    throw e;
+  }
+  return (await withAccess([created]))[0];
 }
 
+/**
+ * Edit a record the acting user may write. Throws {@link ForbiddenError} when the record
+ * is not visible or not writable for them (the database says so too; checking first gives
+ * a clean answer instead of a bare "not found"). When the amounts are masked for them
+ * (sum, hours, total read as NULL) they are dropped from the input: writing the masked
+ * NULL back would be refused, and an editor must not overwrite what they cannot see.
+ */
 export async function updateRecord(id: string, input: UpdateRecordInput) {
-  const { projectIds, creatorId, assigneeId, recordId } = input;
-  const updated = await prisma.$transaction(async (tx) => {
-    // Mentions are character offsets into `text`: once the text changes they
-    // would point at the wrong words, so a text edit drops them.
-    let textChanged = false;
-    if (input.text !== undefined) {
-      const current = await tx.record.findUnique({ where: { id }, select: { text: true } });
-      textChanged = (current?.text ?? null) !== (input.text ?? null);
+  const access = (await recordAccess([id])).get(id);
+  if (!access?.canWrite) throw new ForbiddenError();
+  const rest: UpdateRecordInput = { ...input };
+  if (access.amountsMasked) for (const col of AMOUNT_COLUMNS) delete rest[col];
+
+  const { projectIds, creatorId, assigneeId, recordId } = rest;
+  // A provided list sets the membership, by difference: only links that are added or
+  // removed are written. Linking and unlinking need write on the project too (see the
+  // link policies), so a writer who leaves the project list as it is must not touch it.
+  let projects: object | undefined;
+  if (projectIds !== undefined) {
+    const want = new Set(projectIds);
+    const have = new Set(
+      (await prisma.projectRecord.findMany({ where: { recordId: id } })).map((l) => l.projectId),
+    );
+    const add = [...want].filter((p) => !have.has(p));
+    const drop = [...have].filter((p) => !want.has(p));
+    if (add.length + drop.length && !ownerFallback()) {
+      // The database would silently skip a link it may not delete; say so instead.
+      const ok = new Set(
+        (await prisma.$queryRaw<{ id: string }[]>`SELECT lit_project_ids('link') AS id`).map(
+          (r) => r.id,
+        ),
+      );
+      if ([...add, ...drop].some((p) => !ok.has(p))) throw new ForbiddenError();
     }
-    return tx.record.update({
-      where: { id },
-      data: {
-        // A provided list replaces the membership wholesale (clear, then re-link).
-        ...(projectIds !== undefined
-          ? { projects: { deleteMany: {}, create: projectLinks(projectIds) } }
-          : {}),
-        // Relation FKs are written as scalars on update (null clears the link).
-        ...(creatorId !== undefined ? { creatorId } : {}),
-        ...(assigneeId !== undefined ? { assigneeId } : {}),
-        ...(recordId !== undefined ? { recordId } : {}),
-        ...(textChanged ? { mentions: { deleteMany: {} } } : {}),
-        ...writableColumns(input),
-      },
-    });
-  });
-  return plainRecord(updated);
+    projects = {
+      ...(drop.length ? { deleteMany: { projectId: { in: drop } } } : {}),
+      ...(add.length ? { create: projectLinks(add) } : {}),
+    };
+  }
+  // Mentions are character offsets into `text`: once the text changes they would point at
+  // the wrong words, so a text edit drops them (the delete needs write on the record).
+  let textChanged = false;
+  if (rest.text !== undefined) {
+    const current = await prisma.record.findUnique({ where: { id }, select: { text: true } });
+    textChanged = (current?.text ?? null) !== (rest.text ?? null);
+  }
+  const data = {
+    ...(projects ? { projects } : {}),
+    ...(textChanged ? { mentions: { deleteMany: {} } } : {}),
+    // Relation FKs are written as scalars on update (null clears the link).
+    ...(creatorId !== undefined ? { creatorId } : {}),
+    ...(assigneeId !== undefined ? { assigneeId } : {}),
+    ...(recordId !== undefined ? { recordId } : {}),
+    ...writableColumns(rest),
+  };
+  let updated;
+  try {
+    updated = await prisma.record.update({ where: { id }, data });
+  } catch (e) {
+    if (asForbidden(e)) throw new ForbiddenError();
+    throw e;
+  }
+  return (await withAccess([updated]))[0];
+}
+
+/** Hard-delete a record; its project links cascade. Whoever may write the record may delete
+ *  it (the delete policy is the write set); anyone else gets {@link ForbiddenError}. */
+export async function deleteRecord(id: string): Promise<void> {
+  try {
+    await prisma.record.delete({ where: { id } });
+  } catch (e) {
+    if (asForbidden(e)) throw new ForbiddenError();
+    throw e;
+  }
 }
