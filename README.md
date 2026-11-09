@@ -81,8 +81,27 @@ bunx playwright test
 The `server` and e2e suites write to their database, so they refuse to run against your dev data:
 
 - **Server tests** truncate tables between cases and need a `TEST_DATABASE_URL` that differs from `DATABASE_URL`. `.env.example` has the setup steps.
-- **e2e tests** only run when `DATABASE_URL` points at a local Postgres. `playwright.config.ts` has the setup steps. They log in as the fixture users `alice` (admin) and `bob` (not an admin), so seed with `bunx prisma db seed` (not the Franklin data) first. The seed also creates the permission fixtures (a private record, a record shared with hidden amounts through a group, one shared for writing, a hidden record) that `e2e/permissions.e2e.ts` exercises, including the admin screen.
+- **e2e tests** (`bun run test:e2e`) need a local Postgres - `docker compose up -d postgres` is enough. See [End-to-end tests](#end-to-end-tests).
 - `AUTH_SECRET` (16+ characters) must be set for the e2e server.
+
+### End-to-end tests
+
+```sh
+docker compose up -d postgres   # or set E2E_DATABASE_URL to any local Postgres
+bun run test:e2e
+```
+
+That single command does everything:
+
+1. `e2e/global-setup.ts` creates a template database (`lit_crm_e2e_template`), runs `prisma migrate deploy` and the seed on it, and builds the app.
+2. Each Playwright worker clones the template (`CREATE DATABASE … TEMPLATE`) into `lit_crm_e2e_w<N>` and starts its own `vite preview` server on port `4180+N` bound to that clone.
+3. After the run the worker databases and the template are dropped.
+
+`E2E_DATABASE_URL` (default: the docker-compose Postgres on `:5433`) selects the server; it must be `localhost`/`127.0.0.1`, and the dev database is never used.
+
+Specs import `test`/`expect` from `e2e/fixtures.ts` rather than `@playwright/test`. Besides the normal fixtures it provides worker-scoped `db` (a `PrismaClient` bound to the worker's database, for arranging or asserting data), `workerDbUrl` and `serverUrl`; `baseURL` already points at the worker's server. `e2e/db-isolation.e2e.ts` is a worked example.
+
+The e2e suite logs in as the fixture users `alice` (admin) and `bob` (not an admin); the fixture seed (`bunx prisma db seed`, not the Franklin data) also creates the permission fixtures (a private record, a record shared with hidden amounts through a group, one shared for writing, a hidden record) that `e2e/permissions.e2e.ts` exercises, including the admin screen.
 
 ## Permissions: grants on Postgres row-level security
 
@@ -92,6 +111,7 @@ Who may see and change what is data (groups, memberships, grants) enforced by Po
 - **Everyone else** never sees a `hidden` record. Without any grant they get WRITE on records they created or are assigned to, and on every record of a project they created or are assigned to.
 - **Grants** go to a user or a group and have a scope (person: records whose creator or assignee is that person; project; type; record) and a level, READ or WRITE (WRITE includes read). All paths are OR-ed. A project grant covers the project's records and makes the project readable; the project row itself (edit, delete) belongs to its creator, assignee and admins.
 - **Delete**: whoever may write a record may hard-delete it. A project is deleted by its creator, assignee or an admin. Links are visible when both ends are. Adding or removing a link needs WRITE on the record **and** the right to put records into the project: admin, the project's creator or assignee, or a WRITE grant on the project (a READ grant is not enough; the app refuses such a change with a 403 instead of ignoring it, and saving a record with an unchanged project list never touches the links).
+- **Mentions** (`lit_record_mention`, the spans of a record's text that name another record, migration `mentions_rls`): visible only when both records they join are visible (the gateway: both ACTIVE). Insert and delete need WRITE on the source record and READ on the target, so a mention of a record you cannot see cannot be planted. Never updated. Editing a record's text drops all its mentions (a definer function, so mentions of records the editor cannot see go too). The best page (`/page/[id]`) runs on the scoped client: a name whose record you cannot see is plain text, not a link.
 - **Amounts** (`sum`, `hours`, `total`): shown when any path to the record shows them (admin, implicit, or a grant without `hideAmounts`), else NULL. The restricted roles have no column privilege on them; the door is the view `lit_record_amount`. Every new `lit_record` column needs `GRANT SELECT (col) ON lit_record TO lit_app, lit_gateway`.
 - **Users and types** are readable by active users; types are admin-write only; a user edits their own profile but only an admin changes username, status or `isAdmin`. **Groups, memberships, grants**: a user reads only their own rows, only admins write. Creator and `hidden` cannot be changed by a non-admin (guard triggers). **No amount oracle**: any UPDATE that names `sum`, `hours` or `total` (`BEFORE UPDATE OF` trigger) is refused for a non-admin without amounts access to that record, whatever the value, so a writer with masked amounts cannot learn them by guessing; the app does not send amount columns for such a writer.
 
@@ -137,12 +157,12 @@ Rollback: redeploy the previous app (it connects as the owner, unaffected by the
 `scripts/rls-oracle.ts` migrates a throwaway Postgres, loads data, adds a seeded random overlay (admins, inactive users, groups, memberships, 20-80 grants over all scopes and levels, hidden and inactive records, amounts, extra links), and for every user plus the anonymous and an unknown user compares what `lit_app` and `lit_gateway` can see, update, delete and insert (records, projects, links, users, types, groups, memberships, grants) and which amounts are masked, against an independent oracle in TypeScript that calls no policy or function. It also checks that the anonymous, inactive and gateway roles cannot write, that a non-admin cannot write admin tables, set `isAdmin`, grant itself access, change a creator or read `sum`/`hours`/`total` directly. Every overlay runs in a transaction that is rolled back. Any mismatch exits 1.
 
 ```sh
-bun scripts/rls-oracle.ts                          # starts a Docker postgres on 127.0.0.1:5490-5499, generated data (25 seeds) and the Franklin seeds (3 seeds), removes the container
+bun scripts/rls-oracle.ts                          # starts a Docker postgres on 127.0.0.1:5490-5499, generated data (25 seeds) and the Franklin and Jefferson seeds (3 seeds), removes the container
 bun scripts/rls-oracle.ts --data generated --seeds 100
 bun scripts/rls-oracle.ts --db postgresql://postgres:pw@127.0.0.1:5491/lit_rls_x   # your own throwaway server
 ```
 
-Needs Docker (or `--db`), bun, and for the Franklin data a checkout of lit-crm-seeds at `../lit-crm-seeds` (`--seeds-dir`). The script only accepts loopback hosts, never port 5433, database names starting `lit_rls_`, and never the databases named in `DATABASE_URL`, `DIRECT_URL` or `TEST_DATABASE_URL`. The delete probes switch off foreign-key triggers inside a savepoint, so the server user must be a superuser (true for the Docker image).
+Needs Docker (or `--db`), bun, and for the Franklin and Jefferson data a checkout of lit-crm-seeds at `../lit-crm-seeds` (`--seeds-dir`). The script only accepts loopback hosts, never port 5433, database names starting `lit_rls_`, and never the databases named in `DATABASE_URL`, `DIRECT_URL` or `TEST_DATABASE_URL`. The delete probes switch off foreign-key triggers inside a savepoint, so the server user must be a superuser (true for the Docker image).
 
 ### Deploying the roles
 

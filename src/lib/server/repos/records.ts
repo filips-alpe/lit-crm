@@ -484,8 +484,16 @@ export async function updateRecord(id: string, input: UpdateRecordInput) {
       ...(add.length ? { create: projectLinks(add) } : {}),
     };
   }
+  // Mentions are character offsets into `text`: once the text changes they would point at
+  // the wrong words, so a text edit drops them (the delete needs write on the record).
+  let textChanged = false;
+  if (rest.text !== undefined) {
+    const current = await prisma.record.findUnique({ where: { id }, select: { text: true } });
+    textChanged = (current?.text ?? null) !== (rest.text ?? null);
+  }
   const data = {
     ...(projects ? { projects } : {}),
+    ...(textChanged ? { mentions: { deleteMany: {} } } : {}),
     // Relation FKs are written as scalars on update (null clears the link).
     ...(creatorId !== undefined ? { creatorId } : {}),
     ...(assigneeId !== undefined ? { assigneeId } : {}),

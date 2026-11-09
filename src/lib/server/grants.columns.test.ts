@@ -26,3 +26,27 @@ describe('lit_record column privileges', () => {
     }
   });
 });
+
+describe('lit_record_mention privileges', () => {
+  it('gives the app SELECT, INSERT and DELETE, the gateway SELECT, and nobody UPDATE', async () => {
+    const [p] = await prisma.$queryRaw<Record<string, boolean>[]>`select
+      has_table_privilege('lit_app', 'lit_record_mention', 'SELECT') as app_select,
+      has_table_privilege('lit_app', 'lit_record_mention', 'INSERT') as app_insert,
+      has_table_privilege('lit_app', 'lit_record_mention', 'DELETE') as app_delete,
+      has_table_privilege('lit_app', 'lit_record_mention', 'UPDATE') as app_update,
+      has_table_privilege('lit_gateway', 'lit_record_mention', 'SELECT') as gw_select,
+      has_table_privilege('lit_gateway', 'lit_record_mention', 'INSERT') as gw_insert,
+      has_table_privilege('lit_gateway', 'lit_record_mention', 'UPDATE') as gw_update,
+      has_table_privilege('lit_gateway', 'lit_record_mention', 'DELETE') as gw_delete`;
+    expect(p).toEqual({
+      app_select: true,
+      app_insert: true,
+      app_delete: true,
+      app_update: false,
+      gw_select: true,
+      gw_insert: false,
+      gw_update: false,
+      gw_delete: false,
+    });
+  });
+});

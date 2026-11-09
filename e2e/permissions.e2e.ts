@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 
 // Fixture (prisma/seed.ts): alice is the admin, bob is not. Bob writes project "demo", reads
 // "Shared invoice" through the group Auditors (amounts hidden), writes "Open invoice" through

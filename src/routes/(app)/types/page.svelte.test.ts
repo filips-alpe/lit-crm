@@ -17,7 +17,8 @@ function row(over: Record<string, unknown> = {}) {
 }
 
 function renderRows(rows: unknown[]) {
-  render(TypesPage, { data: { rows } } as never);
+  // Types are admin-write only: the page shows its editing controls to an admin.
+  render(TypesPage, { data: { rows, user: { isAdmin: true } } } as never);
 }
 
 describe('/types list', () => {

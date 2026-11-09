@@ -140,6 +140,7 @@ type World = {
   projects: P[];
   records: R[];
   links: { projectId: string; recordId: string }[];
+  mentions: { id: string; sourceId: string; entityId: string }[];
 };
 
 async function loadWorld(c: pg.Client): Promise<World> {
@@ -157,6 +158,7 @@ async function loadWorld(c: pg.Client): Promise<World> {
       `select id, status::text, hidden, "typeId","creatorId","assigneeId", sum::text, hours::text, total::text from lit_record`,
     ),
     links: await q(`select "projectId","recordId" from lit_project_record`),
+    mentions: await q(`select id, "sourceId", "entityId" from lit_record_mention`),
   };
 }
 
@@ -173,6 +175,8 @@ type Expected = {
   projWritable: Set<string>;
   linkVisible: Set<string>; // "projectId|recordId"
   linkWritable: Set<string>;
+  mentionVisible: Set<string>; // mention ids: both records visible
+  mentionWritable: Set<string>; // write on the source, read on the entity
   linkable: (projectId: string) => boolean;
   groupsVisible: Set<string>;
   membersVisible: Set<string>;
@@ -252,6 +256,8 @@ function buildOracle(w: World) {
       projWritable: new Set(),
       linkVisible: new Set(),
       linkWritable: new Set(),
+      mentionVisible: new Set(),
+      mentionWritable: new Set(),
       linkable: () => false,
       groupsVisible: new Set(),
       membersVisible: new Set(),
@@ -289,6 +295,14 @@ function buildOracle(w: World) {
       const k = `${l.projectId}|${l.recordId}`;
       if (e.recVisible.has(l.recordId) && e.projVisible.has(l.projectId)) e.linkVisible.add(k);
       if (e.recWritable.has(l.recordId) && linkable(l.projectId)) e.linkWritable.add(k);
+    }
+    // a mention is visible when BOTH records it joins are visible; it is written (inserted,
+    // deleted) with WRITE on its source and READ on its entity (planting a mention of a
+    // record you cannot see is refused)
+    for (const m of w.mentions) {
+      if (e.recVisible.has(m.sourceId) && e.recVisible.has(m.entityId)) e.mentionVisible.add(m.id);
+      if (e.recWritable.has(m.sourceId) && e.recVisible.has(m.entityId))
+        e.mentionWritable.add(m.id);
     }
     for (const g of w.groupIds) if (admin || myGroups.has(g)) e.groupsVisible.add(g);
     for (const m of w.members)
@@ -364,6 +378,12 @@ async function applyOverlay(c: pg.Client, w: World, seed: number) {
     await c.query(
       `update lit_project x set "assigneeId" = v.u from unnest($1::text[], $2::text[]) as v(id, u) where x.id = v.id`,
       [pa, pa.map(() => (r() < 0.2 ? null : pick(r, users)))],
+    );
+  // mentions: the data's own plus a random set (any two records, visible or not)
+  for (let i = 0; i < Math.min(400, n) && n; i++)
+    await c.query(
+      `insert into lit_record_mention (id,"sourceId","entityId","start","end") values ($1,$2,$3,0,1)`,
+      [`mn${seed}_${i}`, pick(r, ids), pick(r, ids)],
     );
   // extra links
   const extra = Math.min(300, Math.floor(n / 2));
@@ -475,6 +495,11 @@ async function probeUser(
     await rowsKey(c, 'select "projectId","recordId" from lit_project_record'),
     e.linkVisible,
   );
+  compare(
+    L('mentions visible', 'lit_app'),
+    await ids(c, 'select id from lit_record_mention'),
+    e.mentionVisible,
+  );
   compare(L('users visible', 'lit_app'), await ids(c, 'select id from lit_user'), e.usersVisible);
   compare(L('types visible', 'lit_app'), await ids(c, 'select id from lit_type'), e.typesVisible);
   compare(
@@ -585,6 +610,11 @@ async function probeUser(
     e.linkWritable,
   );
   compare(
+    L('mentions deletable (write source, read entity)', 'lit_app'),
+    await del('delete from lit_record_mention returning id'),
+    e.mentionWritable,
+  );
+  compare(
     L('users deletable', 'lit_app'),
     await del('delete from lit_user returning id'),
     e.admin ? e.usersVisible : [],
@@ -639,6 +669,60 @@ async function probeUser(
       );
     }
   }
+  // mention inserts: random pairs (denials, among them planted mentions of invisible records)
+  // plus pairs built from what the oracle says is allowed (writable source, visible entity)
+  if (recIds.length) {
+    const wr = [...e.recWritable];
+    const vis = [...e.recVisible];
+    const pairs: [string, string][] = [];
+    for (let i = 0; i < 12; i++) pairs.push([pick(rng, recIds), pick(rng, recIds)]);
+    if (wr.length && vis.length)
+      for (let i = 0; i < 12; i++) pairs.push([pick(rng, wr), pick(rng, vis)]);
+    let k = 0;
+    for (const [src, ent] of pairs) {
+      const res = await tryRun(
+        c,
+        `insert into lit_record_mention (id,"sourceId","entityId","start","end") values ($1,$2,$3,0,1)`,
+        [`probe_m${k++}`, src, ent],
+      );
+      expect(
+        L(`mention insert ${src}->${ent}`, 'lit_app'),
+        res.ok === (e.admin || (e.recWritable.has(src) && e.recVisible.has(ent))),
+        JSON.stringify(res),
+      );
+    }
+  }
+  // a mention is never updated (no grant), whatever the user may write
+  {
+    const res = await tryRun(c, `update lit_record_mention set "start" = "start"`);
+    expect(
+      L('mention update refused', 'lit_app'),
+      !res.ok && res.code === '42501',
+      JSON.stringify(res),
+    );
+  }
+  // editing a record's text drops ALL its mentions, those of entities the editor cannot see too
+  {
+    const mentioned = new Set(w.mentions.map((m) => m.sourceId));
+    const src = [...e.recWritable].find((id) => mentioned.has(id));
+    if (src) {
+      const left = await savepoint(c, async () => {
+        await c.query(`update lit_record set text = coalesce(text, '') || 'x' where id = $1`, [
+          src,
+        ]);
+        await c.query('reset role');
+        return Number(
+          (
+            await c.query(`select count(*)::int n from lit_record_mention where "sourceId" = $1`, [
+              src,
+            ])
+          ).rows[0].n,
+        );
+      });
+      expect(L(`text edit drops mentions of ${src}`, 'lit_app'), left === 0, `${left} left`);
+      await setActor(c, 'lit_app', uid);
+    }
+  }
   // creating rows: an active user may create own records/projects (with RETURNING, as Prisma does)
   if (w.typeIds.length) {
     const res = await tryRun(
@@ -683,6 +767,16 @@ async function probeUser(
       const [p, r] = k.split('|');
       return activeProj.has(p) && activeOnly.has(r);
     }),
+  );
+  compare(
+    L('mentions visible', 'lit_gateway'),
+    await ids(c, 'select id from lit_record_mention'),
+    w.mentions
+      .filter(
+        (m) =>
+          e.mentionVisible.has(m.id) && activeOnly.has(m.sourceId) && activeOnly.has(m.entityId),
+      )
+      .map((m) => m.id),
   );
   compare(
     L('users visible', 'lit_gateway'),
@@ -732,6 +826,7 @@ async function negativeChecks(c: pg.Client, w: World, oracle: (u: string) => Exp
       'lit_project',
       'lit_record',
       'lit_project_record',
+      'lit_record_mention',
       'lit_group',
       'lit_group_member',
       'lit_grant',
@@ -767,7 +862,7 @@ async function negativeChecks(c: pg.Client, w: World, oracle: (u: string) => Exp
   // inactive users (admins included): empty and cannot write
   for (const u of inactive) {
     await setActor(c, 'lit_app', u.id);
-    for (const t of ['lit_user', 'lit_record', 'lit_project', 'lit_grant']) {
+    for (const t of ['lit_user', 'lit_record', 'lit_project', 'lit_grant', 'lit_record_mention']) {
       const n = Number((await c.query(`select count(*)::int n from ${t}`)).rows[0].n);
       expect(`inactive ${u.id}${u.isAdmin ? ' (admin)' : ''} sees nothing in ${t}`, n === 0);
     }
@@ -789,6 +884,7 @@ async function negativeChecks(c: pg.Client, w: World, oracle: (u: string) => Exp
     'lit_project',
     'lit_record',
     'lit_project_record',
+    'lit_record_mention',
     'lit_group',
     'lit_group_member',
     'lit_grant',
@@ -1116,7 +1212,7 @@ async function runMode(
   if (mode === 'generated') await loadGenerated(c);
   const base = await loadWorld(c);
   log(
-    `[${mode}] data: ${base.users.length} users, ${base.records.length} records, ${base.projects.length} projects, ${base.links.length} links`,
+    `[${mode}] data: ${base.users.length} users, ${base.records.length} records, ${base.projects.length} projects, ${base.links.length} links, ${base.mentions.length} mentions`,
   );
 
   const counters = { users: 0 };
