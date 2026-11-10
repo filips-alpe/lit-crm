@@ -198,6 +198,6 @@ bun run build
 bun run preview
 ```
 
-Vercel runs `vercel-build`, which applies migrations with `prisma migrate deploy`, installs the `franklin` extension from lit-crm-seeds (`main`) so production has the demo renderers and per-user dashboards, and then builds.
+Vercel runs `vercel-build`, which applies migrations with `prisma migrate deploy` and builds. Before that it runs `scripts/install-franklin-extension.sh`, which installs the `franklin` extension from lit-crm-seeds at the commit pinned in `SEEDS_REF`, so production has the demo renderers and per-user dashboards. Bump `SEEDS_REF` to ship a newer extension.
 
 The login picker shows an **Admin** badge on admins (`lit_login_users()` returns `isAdmin`).
