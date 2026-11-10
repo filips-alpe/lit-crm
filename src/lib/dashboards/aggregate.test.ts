@@ -42,6 +42,13 @@ describe('isSelf', () => {
     expect(isSelf('   ', user)).toBe(false);
   });
 
+  it('ignores punctuation around words, such as a nickname in parentheses', () => {
+    const polly = { name: 'Polly Hewson' };
+    expect(isSelf('Mary (Polly) Stevenson Hewson', polly)).toBe(true);
+    expect(isSelf('Hewson, Polly', polly)).toBe(true);
+    expect(isSelf('William Hewson', polly)).toBe(false);
+  });
+
   it('requires whole words, not substrings or very short names', () => {
     expect(isSelf('Frank', user)).toBe(false);
     expect(isSelf('Ben', user)).toBe(false);
@@ -88,6 +95,23 @@ describe('foldCorrespondents', () => {
     expect(out).toEqual([
       { name: 'Ann Lee', sent: 0, received: 0, total: 4, first: null, last: null },
     ]);
+  });
+
+  it('splits parties joined by semicolons: each one is its own correspondent', () => {
+    const polly = { name: 'Polly Hewson' };
+    const out = foldCorrespondents(
+      [
+        pair('William Hewson; Mary (Polly) Stevenson Hewson', 'Benjamin Franklin', 1),
+        pair('Benjamin Franklin', 'Mary (Polly) Stevenson Hewson; Dorothea Blunt', 2),
+      ],
+      polly,
+    );
+    const by = Object.fromEntries(out.map((c) => [c.name, [c.sent, c.received, c.total]]));
+    expect(by).toEqual({
+      'Benjamin Franklin': [1, 2, 3],
+      'Dorothea Blunt': [0, 0, 2],
+      'William Hewson': [0, 0, 1],
+    });
   });
 
   it('is empty-safe', () => {
