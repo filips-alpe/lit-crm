@@ -2,10 +2,19 @@ import type { Correspondent, DashboardRecord, DashboardUser, YearCount } from '.
 
 const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
 
+// Punctuation is not part of a name word: "Mary (Polly) Stevenson Hewson", "Hewson, Polly",
+// "B. Smith". Letters, digits, apostrophes and hyphens are.
 const tokens = (s: string) =>
   s
-    .split(' ')
-    .map((t) => t.replace(/\./g, ''))
+    .replace(/[^\p{L}\p{N}'\s-]/gu, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
+
+/** A from/to field may name several people: "John Viny; Mary Hewson". */
+const parties = (field: string | null) =>
+  (field ?? '')
+    .split(';')
+    .map((s) => s.trim())
     .filter(Boolean);
 
 /** Shortest name word that may identify someone on its own ("Li" is too short). */
@@ -51,7 +60,8 @@ export interface PartyPair {
 }
 
 /**
- * Fold SQL-grouped (from, to) pairs into the user's correspondents. Pairs must
+ * Fold SQL-grouped (from, to) pairs into the user's correspondents. A field naming several
+ * parties ("A; B") counts for each of them. Pairs must
  * arrive newest-first: the first spelling seen of a name is the one displayed.
  */
 export function foldCorrespondents(pairs: PartyPair[], user: Pick<DashboardUser, 'name'>) {
@@ -69,10 +79,12 @@ export function foldCorrespondents(pairs: PartyPair[], user: Pick<DashboardUser,
     if (p.last && (!c.last || p.last > c.last)) c.last = p.last;
   };
   for (const p of pairs) {
-    const fromMe = isSelf(p.from, user);
-    const toMe = isSelf(p.to, user);
-    if (p.to?.trim() && !toMe) touch(p.to, fromMe ? 'sent' : null, p);
-    if (p.from?.trim() && !fromMe) touch(p.from, toMe ? 'received' : null, p);
+    const from = parties(p.from);
+    const to = parties(p.to);
+    const fromMe = from.some((n) => isSelf(n, user));
+    const toMe = to.some((n) => isSelf(n, user));
+    for (const n of to) if (!isSelf(n, user)) touch(n, fromMe ? 'sent' : null, p);
+    for (const n of from) if (!isSelf(n, user)) touch(n, toMe ? 'received' : null, p);
   }
   return [...map.values()].sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
 }
