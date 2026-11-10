@@ -12,10 +12,17 @@ export const load: PageServerLoad = async ({ locals }) => {
   if (locals.user) redirect(303, '/');
 
   // Nobody is logged in yet, so the tables are closed; this definer function lists the
-  // active users for the picker and nothing else.
+  // active users for the picker (with the admin flag for its badge) and nothing else.
   const users = await prisma.$queryRaw<
-    { id: string; username: string; name: string; color: string; avatarSeed: string | null }[]
-  >`SELECT id, username, name, color, "avatarSeed" FROM lit_login_users()`;
+    {
+      id: string;
+      username: string;
+      name: string;
+      color: string;
+      avatarSeed: string | null;
+      isAdmin: boolean;
+    }[]
+  >`SELECT id, username, name, color, "avatarSeed", "isAdmin" FROM lit_login_users()`;
   const form = await superValidate(zod4(loginSchema));
 
   return { users, form };

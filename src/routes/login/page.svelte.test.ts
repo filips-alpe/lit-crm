@@ -11,7 +11,14 @@ describe('login page', () => {
     render(LoginPage, {
       data: {
         users: [
-          { id: 'u1', username: 'ada', name: 'Ada Lovelace', color: '#336699', avatarSeed: null },
+          {
+            id: 'u1',
+            username: 'ada',
+            name: 'Ada Lovelace',
+            color: '#336699',
+            avatarSeed: null,
+            isAdmin: false,
+          },
         ],
         form: defaults(zod4(loginSchema)),
       },
@@ -21,6 +28,38 @@ describe('login page', () => {
     await expect.element(button).toHaveAttribute('name', 'username');
     await expect.element(button).toHaveAttribute('value', 'ada');
     expect(document.querySelector('button[name=username] img')?.getAttribute('alt')).toBe('');
+  });
+
+  it('marks admins with a badge and nobody else', async () => {
+    render(LoginPage, {
+      data: {
+        users: [
+          {
+            id: 'u1',
+            username: 'ada',
+            name: 'Ada Lovelace',
+            color: '#336699',
+            avatarSeed: null,
+            isAdmin: true,
+          },
+          {
+            id: 'u2',
+            username: 'bob',
+            name: 'Bob Builder',
+            color: '#996633',
+            avatarSeed: null,
+            isAdmin: false,
+          },
+        ],
+        form: defaults(zod4(loginSchema)),
+      },
+    } as never);
+    await expect
+      .element(page.getByRole('button', { name: 'Log in as Ada Lovelace' }).getByText('Admin'))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByRole('button', { name: 'Log in as Bob Builder' }).getByText('Admin'))
+      .not.toBeInTheDocument();
   });
 
   it('shows an empty state when there are no users', async () => {

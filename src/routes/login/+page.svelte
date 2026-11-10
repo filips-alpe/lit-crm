@@ -70,6 +70,11 @@
             <span class="mt-4 text-center">
               <span class="block text-base font-semibold text-base-content">{user.name}</span>
               <span class="mt-0.5 block text-xs text-base-content/60">@{user.username}</span>
+              {#if user.isAdmin}
+                <span class="mt-2 badge badge-soft badge-sm badge-primary"
+                  >{m.kind_vexed_koala_exhale()}</span
+                >
+              {/if}
             </span>
           </button>
         {/each}
