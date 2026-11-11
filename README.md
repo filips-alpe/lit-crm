@@ -50,10 +50,15 @@ The extension's own tests import app code, so they run here once it is installed
 
 ## Extensions
 
-An extension adds renderers and dashboards from `src/extensions/<id>/`. Anything that exports from these paths is discovered automatically:
+An extension lives in `src/extensions/<id>/`. Anything that exports from these paths is discovered automatically (types in `src/lib/extensions/types.ts`):
 
 - `renderers/index.ts` exports `renderers: RecordRenderer[]`
 - `dashboards/index.ts` exports `dashboards`, keyed by username
+- `nav.ts` exports `navItems: NavItem[]` (links in the app navigation)
+- `recordActions.ts` exports `recordActions: RecordAction[]` (`placement: 'detail'` shows on the record view)
+- `shell/index.ts` exports `shell: ExtensionShell` (replace the layout or login screen, or set the home page)
+
+Pages and endpoints are plain SvelteKit routes. An extension ships them in a `routes/` folder, and `install` puts that folder at `src/routes/(app)/x/<id>/`, so `routes/items/[id]/+page.svelte` is served at `/x/<id>/items/<id>`. Loads, form actions, `+server.ts` endpoints, layouts and `./$types` all work as in any other route. Because the folder moves, its files import the rest of the extension through `$extensions/<id>/...` (or `$lib/...`), never by relative path out of `routes/`. Every request under `/x/` needs a signed-in user (`src/hooks.server.ts`), and data access goes through row-level security like the rest of the app.
 
 ```sh
 bun run ext list
@@ -63,7 +68,7 @@ bun run ext uninstall <id>
 
 `--path` names the folder inside the source that holds the extension (its `extension.json`). If the extension has `messages/<locale>.json` files, `install` merges those keys into `messages/` and recompiles the paraglide messages (so `bun run check` is clean straight away); `uninstall` removes only the keys the install added and recompiles. A key the app already has with different text makes `install` fail without changing anything.
 
-Extensions run as code in the app, so only install ones you trust.
+`uninstall` removes the routes folder too. Extensions run as code in the app, so only install ones you trust.
 
 The `franklin` extension (in lit-crm-seeds) provides the renderers for the demo types and a dashboard for each demo user.
 

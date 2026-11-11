@@ -3,9 +3,10 @@
   import AvatarImage from '$lib/components/AvatarImage.svelte';
   import * as m from '$lib/paraglide/messages.js';
   import { getLocale, locales, setLocale, type Locale } from '$lib/paraglide/runtime';
+  import type { NavItem } from '$lib/extensions/types';
   import type { User } from '../../../generated/prisma/client';
 
-  let { user }: { user: User } = $props();
+  let { user, nav }: { user: User; nav: NavItem[] } = $props();
 
   const localeDisplay: Record<Locale, { flag: string; code: string }> = {
     en: { flag: '🇬🇧', code: 'EN' },
@@ -18,17 +19,10 @@
     <a href={resolve('/')} class="text-lg font-semibold tracking-tight whitespace-nowrap">LIT CRM</a
     >
 
-    <a href={resolve('/(app)/data')} class="rounded px-1.5 py-1 hover:bg-base-200 sm:px-2"
-      >{m.tame_short_weasel_compose()}</a
-    >
-    <a href={resolve('/(app)/types')} class="rounded px-1.5 py-1 hover:bg-base-200 sm:px-2"
-      >{m.quiet_pink_parrot_clasp()}</a
-    >
-    {#if user.isAdmin}
-      <a href={resolve('/(app)/admin')} class="rounded px-1.5 py-1 hover:bg-base-200 sm:px-2"
-        >{m.just_gaudy_penguin_drip()}</a
-      >
-    {/if}
+    {#each nav as item (item.id)}
+      <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- hrefs are resolved where they are built -->
+      <a href={item.href} class="rounded px-1.5 py-1 hover:bg-base-200 sm:px-2">{item.label()}</a>
+    {/each}
     <div class="ml-1 flex items-center gap-2 text-sm sm:ml-6">
       <a href={resolve('/(app)/record')} class="btn btn-sm btn-neutral">
         {m.dark_gross_pigeon_foster()}

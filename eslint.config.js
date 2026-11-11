@@ -46,6 +46,12 @@ export default defineConfig(
         {
           patterns: [
             { group: ['**/*.testutil', '**/*.testutil.ts'], message: 'Test-only module.' },
+            // The same, spelled as a relative path (src/extensions/** included).
+            {
+              group: ['**/prisma', '**/prisma.ts'],
+              importNames: ['prismaOwner'],
+              message: 'prismaOwner bypasses row-level security (tests, seeds and scripts only).',
+            },
           ],
           // The owner connection bypasses row-level security: app code must use the scoped
           // `prisma` (every operation runs as lit_app for the request's user).
@@ -54,6 +60,40 @@ export default defineConfig(
               name: '$lib/prisma',
               importNames: ['prismaOwner'],
               message: 'prismaOwner bypasses row-level security (tests, seeds and scripts only).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // Extension code is bundled for the browser unless it is server-side: SvelteKit refuses
+    // $lib/server and *.server modules there, but nothing else in an extension folder. So only
+    // *.server.ts and seeds may import server code; type imports are fine. (An extension's
+    // routes/ are installed into src/routes, where SvelteKit's own rules apply.)
+    files: ['src/extensions/**/*.ts', 'src/extensions/**/*.svelte'],
+    ignores: [
+      '**/*.test.ts',
+      'src/extensions/**/*.server.ts',
+      'src/extensions/*/seed.ts',
+      'src/extensions/*/seed/**',
+    ],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                '**/server',
+                '**/server.ts',
+                '**/*.server',
+                '**/*.server.ts',
+                '$lib/server/**',
+              ],
+              allowTypeImports: true,
+              message:
+                'Server-only code: import it from a *.server.ts file, never from a component or page.',
             },
           ],
         },
