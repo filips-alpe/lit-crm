@@ -6,6 +6,7 @@ import { prisma } from '$lib/prisma';
 import { building } from '$app/environment';
 import { assertAuthSecret, clearSession, readSession } from '$lib/server/auth/session';
 import { runAs } from '$lib/server/db/context';
+import { requireUser } from '$lib/server/auth/requireUser';
 import { UserStatus } from '../generated/prisma/enums';
 
 // The app refuses to start with a missing, short or placeholder AUTH_SECRET.
@@ -43,4 +44,13 @@ const handleSession: Handle = async ({ event, resolve }) => {
   return runAs(user?.id ?? null, async () => await resolve(event));
 };
 
-export const handle: Handle = sequence(handleParaglide, handleSession);
+// Extension routes (installed into src/routes/(app)/x/<id>) are for signed-in users only. The
+// (app) layout's load already redirects pages, but form actions and +server endpoints never run
+// it, so the guard sits here for every route under /x/. It matches the route id, not the URL:
+// SvelteKit routes on the decoded path, so /%78/... would slip past a pathname check.
+const handleExtensionRoutes: Handle = ({ event, resolve }) => {
+  if (event.route.id?.startsWith('/(app)/x/')) requireUser(event);
+  return resolve(event);
+};
+
+export const handle: Handle = sequence(handleParaglide, handleSession, handleExtensionRoutes);

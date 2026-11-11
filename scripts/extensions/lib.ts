@@ -13,25 +13,36 @@ import {
 import { basename, isAbsolute, join, relative, resolve } from 'node:path';
 
 const ID = /^[a-z][a-z0-9-]*$/;
-const ENTRY_POINTS = { renderers: 'renderers/index.ts', dashboards: 'dashboards/index.ts' };
+/** Files (or, for `routes`, a folder) whose presence makes a folder an extension. */
+const ENTRY_POINTS = {
+  renderers: 'renderers/index.ts',
+  dashboards: 'dashboards/index.ts',
+  routes: 'routes',
+  nav: 'nav.ts',
+  recordActions: 'recordActions.ts',
+  shell: 'shell/index.ts',
+} as const;
+type Contribution = keyof typeof ENTRY_POINTS;
 
-export interface ExtensionInfo {
-  id: string;
-  renderers: boolean;
-  dashboards: boolean;
-}
+export type ExtensionInfo = { id: string } & Record<Contribution, boolean>;
+
+/** An extension's `routes/` folder is installed as `<routesDir>/<id>`: plain SvelteKit routes,
+ *  served under `/x/<id>/...` when `routesDir` is `src/routes/(app)/x`. */
+const ROUTES = ENTRY_POINTS.routes;
 
 function assertId(id: string): void {
   if (!ID.test(id))
     throw new Error(`Invalid extension id "${id}" (use lowercase letters, digits, -)`);
 }
 
-function contributions(dir: string): Pick<ExtensionInfo, 'renderers' | 'dashboards'> {
-  return {
-    renderers: existsSync(join(dir, ENTRY_POINTS.renderers)),
-    dashboards: existsSync(join(dir, ENTRY_POINTS.dashboards)),
-  };
+function contributions(dir: string): Record<Contribution, boolean> {
+  return Object.fromEntries(
+    Object.entries(ENTRY_POINTS).map(([k, file]) => [k, existsSync(join(dir, file))]),
+  ) as Record<Contribution, boolean>;
 }
+
+const contributesAnything = (found: Record<Contribution, boolean>) =>
+  Object.values(found).some(Boolean);
 
 /** Argv for a shallow `git clone` of `source` into `dest` (never via git's
  *  `ext::` transport, which runs commands). Rejects sources that
@@ -138,15 +149,15 @@ export function resolveSubdir(source: string, sub: string | undefined): string {
 export function installExtension(
   source: string,
   root: string,
-  opts: { force?: boolean; messagesDir?: string } = {},
+  opts: { force?: boolean; messagesDir?: string; routesDir?: string } = {},
 ): { id: string; replaced: boolean } {
   if (!existsSync(source)) throw new Error(`Source not found: ${source}`);
   const id = idOf(source);
   assertId(id);
   const found = contributions(source);
-  if (!found.renderers && !found.dashboards) {
+  if (!contributesAnything(found)) {
     throw new Error(
-      `Not an extension: expected ${ENTRY_POINTS.renderers} or ${ENTRY_POINTS.dashboards} in ${source}`,
+      `Not an extension: expected one of ${Object.values(ENTRY_POINTS).join(', ')} in ${source}`,
     );
   }
   const target = join(root, id);
@@ -154,12 +165,19 @@ export function installExtension(
   if (replaced && !opts.force) {
     throw new Error(`Extension "${id}" is already installed (use --force to replace it)`);
   }
+  const routesTarget = opts.routesDir ? join(opts.routesDir, id) : null;
+  if (found.routes && !routesTarget)
+    throw new Error(`Extension "${id}" ships routes: set routesDir`);
+  if (routesTarget && existsSync(routesTarget) && !replaced) {
+    throw new Error(`${routesTarget} already exists and is not an installed extension's`);
+  }
   // Validate and merge every locale in memory first, so a conflict leaves the tree untouched.
   const plan = opts.messagesDir
     ? planMessages(shippedMessages(source), replaced ? readAdded(target) : {}, opts.messagesDir)
     : null;
   mkdirSync(root, { recursive: true });
   const staging = mkdtempSync(join(root, `.install-${id}-`));
+  let routesStaging: string | null = null;
   try {
     cpSync(source, staging, {
       recursive: true,
@@ -172,10 +190,27 @@ export function installExtension(
     if (plan && Object.keys(plan.added).length) {
       writeFileSync(join(staging, ADDED_FILE), JSON.stringify(plan.added, null, 2) + '\n');
     }
+    // The routes leave the extension folder for the app's routes tree, so SvelteKit serves them
+    // natively (loads, actions, endpoints, layouts, `./$types`). They are moved, not copied:
+    // there is one place to edit them.
+    const stagedRoutes = join(staging, ROUTES);
+    if (routesTarget && existsSync(stagedRoutes)) {
+      // Staged beside the extension (same filesystem), outside the routes tree SvelteKit watches.
+      routesStaging = `${staging}.routes`;
+      renameSync(stagedRoutes, routesStaging);
+    }
     rmSync(target, { recursive: true, force: true });
     renameSync(staging, target);
+    if (routesTarget) {
+      rmSync(routesTarget, { recursive: true, force: true });
+      if (routesStaging) {
+        mkdirSync(opts.routesDir!, { recursive: true });
+        renameSync(routesStaging, routesTarget);
+      }
+    }
   } catch (e) {
     rmSync(staging, { recursive: true, force: true });
+    if (routesStaging) rmSync(routesStaging, { recursive: true, force: true });
     throw e;
   }
   if (plan) for (const [file, messages] of plan.writes) writeMessages(file, messages);
@@ -186,11 +221,12 @@ export function installExtension(
 export function uninstallExtension(
   id: string,
   root: string,
-  opts: { messagesDir?: string } = {},
+  opts: { messagesDir?: string; routesDir?: string } = {},
 ): void {
   assertId(id);
   const target = join(root, id);
   if (!existsSync(target)) throw new Error(`Extension "${id}" is not installed`);
+  if (opts.routesDir) rmSync(join(opts.routesDir, id), { recursive: true, force: true });
   if (opts.messagesDir) {
     const { writes } = planMessages(new Map(), readAdded(target), opts.messagesDir);
     for (const [file, messages] of writes) writeMessages(file, messages);
@@ -198,12 +234,15 @@ export function uninstallExtension(
   rmSync(target, { recursive: true, force: true });
 }
 
-/** Installed extensions: folders in `root` that expose a renderers or dashboards entry point. */
-export function listExtensions(root: string): ExtensionInfo[] {
+/** Installed extensions: folders in `root` that expose an entry point (routes: `routesDir/<id>`). */
+export function listExtensions(root: string, opts: { routesDir?: string } = {}): ExtensionInfo[] {
   if (!existsSync(root)) return [];
   return readdirSync(root, { withFileTypes: true })
     .filter((e) => e.isDirectory() && ID.test(e.name))
-    .map((e) => ({ id: e.name, ...contributions(join(root, e.name)) }))
-    .filter((e) => e.renderers || e.dashboards)
+    .flatMap((e) => {
+      const found = contributions(join(root, e.name));
+      found.routes = !!opts.routesDir && existsSync(join(opts.routesDir, e.name));
+      return contributesAnything(found) ? [{ id: e.name, ...found }] : [];
+    })
     .sort((a, b) => a.id.localeCompare(b.id));
 }

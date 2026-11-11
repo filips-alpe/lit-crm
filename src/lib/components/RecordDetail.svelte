@@ -11,6 +11,7 @@
   } from '$lib/render/props';
   import type { FormLayout } from '$lib/forms/layout';
   import { setRecordOptions, type RecordFormOptions } from '$lib/forms/recordOptions';
+  import { actionsFor } from '$extensions/recordActions';
 
   const EMPTY_OPTIONS: RecordFormOptions = { users: [], records: [], projects: [] };
 
@@ -66,6 +67,13 @@
   );
 
   const Detail = $derived(getRenderer(type.rendererId)?.detail ?? GenericDetail);
+
+  // Actions that extensions add to a record's detail view (none unless one is installed).
+  const actions = actionsFor('detail');
 </script>
 
 <Detail {...detailProps} />
+
+{#each actions as action (action.id)}
+  <action.component placement="detail" {record} {type} />
+{/each}

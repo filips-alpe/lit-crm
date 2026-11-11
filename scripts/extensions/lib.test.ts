@@ -64,9 +64,17 @@ describe('installExtension', () => {
     expect(readdirSync(join(root, 'y')).sort()).toEqual(['extension.json', 'renderers']);
   });
 
-  it('refuses a folder with no renderers or dashboards entry point', () => {
+  it('refuses a folder with no entry point', () => {
     const src = makeSource('z', { 'extension.json': '{"id":"z"}', 'readme.md': '' });
-    expect(() => installExtension(src, root)).toThrow(/renderers\/index\.ts|dashboards\/index\.ts/);
+    expect(() => installExtension(src, root)).toThrow(/Not an extension/);
+  });
+
+  it('accepts an extension with only nav, record actions or a shell', () => {
+    for (const file of ['nav.ts', 'recordActions.ts', 'shell/index.ts']) {
+      const id = file.replace(/\W/g, '').toLowerCase();
+      const src = makeSource(id, { 'extension.json': `{"id":"${id}"}`, [file]: '' });
+      expect(installExtension(src, root).id).toBe(id);
+    }
   });
 
   it('refuses an invalid id', () => {
@@ -118,10 +126,74 @@ describe('listExtensions', () => {
       root,
     );
     mkdirSync(join(root, 'not-an-extension'));
+    const none = {
+      renderers: false,
+      dashboards: false,
+      routes: false,
+      nav: false,
+      recordActions: false,
+      shell: false,
+    };
     expect(listExtensions(root)).toEqual([
-      { id: 'a', renderers: true, dashboards: false },
-      { id: 'b', renderers: true, dashboards: true },
+      { ...none, id: 'a', renderers: true },
+      { ...none, id: 'b', renderers: true, dashboards: true },
     ]);
+  });
+});
+
+describe('extension routes', () => {
+  let routesDir: string;
+  beforeEach(() => {
+    routesDir = join(work, 'routes-x');
+  });
+  const withRoutes = (page = '<h1>Hi</h1>') =>
+    makeSource('r', {
+      'extension.json': '{"id":"r"}',
+      'routes/+page.svelte': page,
+      'routes/items/[id]/+page.server.ts': 'export const load = () => ({});',
+      'routes/api/ping/+server.ts': 'export const GET = () => new Response("ok");',
+    });
+
+  it('moves routes/ into <routesDir>/<id>, out of the extension folder', () => {
+    installExtension(withRoutes(), root, { routesDir });
+    expect(existsSync(join(routesDir, 'r/+page.svelte'))).toBe(true);
+    expect(existsSync(join(routesDir, 'r/items/[id]/+page.server.ts'))).toBe(true);
+    expect(existsSync(join(routesDir, 'r/api/ping/+server.ts'))).toBe(true);
+    expect(existsSync(join(root, 'r/routes'))).toBe(false);
+    expect(readdirSync(work).filter((f) => f.includes('.install-'))).toEqual([]);
+    expect(listExtensions(root, { routesDir })[0]).toMatchObject({ id: 'r', routes: true });
+  });
+
+  it('replaces the routes on a forced reinstall, dropping removed files', () => {
+    installExtension(withRoutes(), root, { routesDir });
+    const v2 = makeSource('r2', { 'extension.json': '{"id":"r"}', 'routes/+page.svelte': 'v2' });
+    installExtension(v2, root, { routesDir, force: true });
+    expect(readFileSync(join(routesDir, 'r/+page.svelte'), 'utf8')).toBe('v2');
+    expect(existsSync(join(routesDir, 'r/items'))).toBe(false);
+  });
+
+  it('removes the routes when an update ships none', () => {
+    installExtension(withRoutes(), root, { routesDir });
+    const v2 = makeSource('r3', { 'extension.json': '{"id":"r"}', 'nav.ts': '' });
+    installExtension(v2, root, { routesDir, force: true });
+    expect(existsSync(join(routesDir, 'r'))).toBe(false);
+  });
+
+  it('refuses to overwrite a routes folder no installed extension owns', () => {
+    mkdirSync(join(routesDir, 'r'), { recursive: true });
+    expect(() => installExtension(withRoutes(), root, { routesDir })).toThrow(/already exists/);
+    expect(existsSync(join(root, 'r'))).toBe(false);
+  });
+
+  it('refuses an extension with routes when no routesDir is given', () => {
+    expect(() => installExtension(withRoutes(), root)).toThrow(/routesDir/);
+  });
+
+  it('uninstall removes the routes too', () => {
+    installExtension(withRoutes(), root, { routesDir });
+    uninstallExtension('r', root, { routesDir });
+    expect(existsSync(join(routesDir, 'r'))).toBe(false);
+    expect(existsSync(join(root, 'r'))).toBe(false);
   });
 });
 

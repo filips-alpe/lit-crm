@@ -13,13 +13,15 @@ import {
 const ROOT = resolve(import.meta.dirname, '../src/extensions');
 const APP = resolve(import.meta.dirname, '..');
 const MESSAGES = resolve(import.meta.dirname, '../messages');
+const ROUTES = resolve(import.meta.dirname, '../src/routes/(app)/x');
 const USAGE = `Usage: bun run ext <command>
 
   install <path|git-url> [--path <subdir>] [--force]
-                                     copy an extension into src/extensions/<id> and merge its
-                                     messages/<locale>.json keys into messages/
+                                     copy an extension into src/extensions/<id>, its routes/
+                                     folder into src/routes/(app)/x/<id> (served at /x/<id>/...),
+                                     and merge its messages/<locale>.json keys into messages/
                                      (--path: the extension lives in <subdir> of the source)
-  uninstall <id>                     remove src/extensions/<id> and its message keys
+  uninstall <id>                     remove src/extensions/<id>, its routes and message keys
   list                               show installed extensions
 
 Extensions are code that runs in the app: only install ones you trust.`;
@@ -48,6 +50,7 @@ function install(source: string, force: boolean, sub?: string): void {
     const { id, replaced } = installExtension(resolveSubdir(dir, sub), ROOT, {
       force,
       messagesDir: MESSAGES,
+      routesDir: ROUTES,
     });
     compileMessages();
     console.log(`${replaced ? 'Replaced' : 'Installed'} "${id}" in src/extensions/${id}`);
@@ -64,15 +67,15 @@ try {
   if (cmd === 'install' && arg) {
     install(arg, rest.includes('--force'), pathIdx >= 0 ? rest[pathIdx + 1] : undefined);
   } else if (cmd === 'uninstall' && arg) {
-    uninstallExtension(arg, ROOT, { messagesDir: MESSAGES });
+    uninstallExtension(arg, ROOT, { messagesDir: MESSAGES, routesDir: ROUTES });
     compileMessages();
     console.log(`Removed "${arg}". Types that named its renderers fall back to the default view.`);
   } else if (cmd === 'list') {
-    const found = listExtensions(ROOT);
+    const found = listExtensions(ROOT, { routesDir: ROUTES });
     if (!found.length) console.log('No extensions installed.');
-    for (const e of found) {
-      const parts = [e.renderers && 'renderers', e.dashboards && 'dashboards'].filter(Boolean);
-      console.log(`${e.id.padEnd(20)} ${parts.join(', ')}`);
+    for (const { id, ...parts } of found) {
+      const names = Object.entries(parts).flatMap(([k, v]) => (v ? [k] : []));
+      console.log(`${id.padEnd(20)} ${names.join(', ')}`);
     }
   } else {
     console.log(USAGE);
