@@ -284,3 +284,15 @@ model History {
   @@index([actorId])
   @@map("lit_history")
 }
+
+/// Values redacted from a record's history, as SHA-256 digests of their JSON text. The capture
+/// trigger nulls a field whose new value matches, so a later save that copies the live row
+/// cannot bring a redacted value back. Owner-only, like lit_history.
+model HistoryRedaction {
+  entityId String
+  field    String
+  digest   Bytes
+
+  @@id([entityId, field, digest])
+  @@map("lit_history_redaction")
+}

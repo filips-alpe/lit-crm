@@ -603,6 +603,43 @@ describe('redact', () => {
     expect(asAlice.map((r) => r.data?.title)).toEqual([null, null]);
   });
 
+  it('keeps a redacted value out of history when a later save copies the live row', async () => {
+    // the live record still holds 'second secret' and 'keep me'; the next save of another field
+    // snapshots the whole row and must not bring them back
+    await redact(w.admin.id, w.r1.id, ['note', 'title']);
+    await edit(w.alice.id, w.r1.id, { description: 'unrelated edit' });
+    const after = (await captured(w.r1.id)).at(-1)!;
+    expect(after).toMatchObject({ action: 'UPDATE', changed: ['description'] });
+    expect(after.data).toMatchObject({ title: null, note: null, description: 'unrelated edit' });
+    // a value that was redacted from an earlier snapshot only stays out too
+    await edit(w.alice.id, w.r1.id, { title: 'secret title' });
+    const back = (await captured(w.r1.id)).at(-1)!;
+    expect(back).toMatchObject({ action: 'UPDATE', changed: ['title'] });
+    expect(back.data).toHaveProperty('title', null);
+    // and a delete's final snapshot as well
+    await runAs(w.alice.id, () => prisma.record.delete({ where: { id: w.r1.id } }));
+    const del = (await captured(w.r1.id)).find((r) => r.action === 'DELETE')!;
+    expect(del.data).toMatchObject({ title: null, note: null });
+  });
+
+  it('records a new value of a redacted field: only the redacted values stay out', async () => {
+    await redact(w.admin.id, w.r1.id, ['title']);
+    await edit(w.alice.id, w.r1.id, { title: 'a fresh title' });
+    const after = (await captured(w.r1.id)).at(-1)!;
+    expect(after).toMatchObject({ action: 'UPDATE', changed: ['title'] });
+    expect(after.data).toHaveProperty('title', 'a fresh title');
+    // the redaction applies per record: the same text on another record is history as usual
+    await edit(w.bob.id, w.r2.id, { title: 'second secret' });
+    expect((await captured(w.r2.id)).at(-1)!.data).toHaveProperty('title', 'second secret');
+  });
+
+  it('keeps out a live value written by an owner write, which history never held', async () => {
+    await prismaOwner.record.update({ where: { id: w.r1.id }, data: { note: 'owner pasted' } });
+    await redact(w.admin.id, w.r1.id, ['note']);
+    await edit(w.alice.id, w.r1.id, { description: 'touch' });
+    expect((await captured(w.r1.id)).at(-1)!.data).toHaveProperty('note', null);
+  });
+
   it('a second redaction does not write the field into the REDACT rows', async () => {
     await redact(w.admin.id, w.r1.id, ['title']);
     await redact(w.admin.id, w.r1.id, ['note']);
