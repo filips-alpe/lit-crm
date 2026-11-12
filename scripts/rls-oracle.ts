@@ -1123,7 +1123,12 @@ type HEntry = {
   changed: string[] | null;
   actor: string;
   hiddenAtWrite?: boolean; // links: was the record hidden when the link was written
+  stamp?: Stamp; // lit_record rows: where data.updatedAt came from
 };
+// Timestamps are canonical in the model, but a redaction matches values exactly. All of a
+// seed's writes run in one transaction, so every save writes the same now(): an updatedAt is
+// either the loaded one ('orig') or that now() ('now').
+type Stamp = 'orig' | 'now';
 type HState = {
   recCols: string[];
   rows: Map<string, Rec>; // the live records, as the model believes them to be
@@ -1134,6 +1139,9 @@ type HState = {
   forced: Set<string>; // records of the forced scenarios: always read
   deleted: Set<string>; // deleted by an app write (history has a DELETE row)
   ownerDeleted: Set<string>; // deleted by the owner (only link history, if any)
+  // values redacted per record and field: a later snapshot holding one of them shows null
+  redacted: Map<string, Map<string, Json[]>>;
+  stamp: Map<string, Stamp>; // live records' updatedAt source (absent = 'orig')
   applied: number;
   refused: number;
 };
@@ -1184,6 +1192,8 @@ async function loadHistoryState(c: pg.Client): Promise<HState> {
     forced: new Set(),
     deleted: new Set(),
     ownerDeleted: new Set(),
+    redacted: new Map(),
+    stamp: new Map(),
     applied: 0,
     refused: 0,
   };
@@ -1256,6 +1266,16 @@ async function historyWorkload(
     return false;
   };
 
+  // what the capture trigger stores for a lit_record row: redacted values come out as null
+  const snap = (rid: string, row: Rec): Rec => {
+    const d = clone(row);
+    const st = S.stamp.get(rid) ?? 'orig';
+    for (const [f, vals] of S.redacted.get(rid) ?? []) {
+      const v = f === 'updatedAt' ? st : d[f];
+      if (d[f] !== null && vals.some((x) => eqJson(x, v))) d[f] = null;
+    }
+    return d;
+  };
   const upd = async (uid: string, rid: string, set: Rec) => {
     const g = ++S.group;
     const keys = Object.keys(set);
@@ -1267,13 +1287,15 @@ async function historyWorkload(
     const row = S.rows.get(rid)!;
     const ch = keys.filter((k) => !eqJson(row[k], set[k]));
     for (const k of keys) row[k] = set[k];
+    S.stamp.set(rid, 'now');
     if (ch.length)
       S.log.push({
         group: g,
         table: 'lit_record',
         entity: rid,
         action: 'UPDATE',
-        data: clone(row),
+        data: snap(rid, row),
+        stamp: 'now',
         changed: ch.sort(),
         actor: uid,
       });
@@ -1357,6 +1379,7 @@ async function historyWorkload(
       updatedAt: TS,
     });
     S.rows.set(id, row);
+    S.stamp.set(id, 'now');
     wset.add(id);
     S.log.push({
       group: g,
@@ -1364,6 +1387,7 @@ async function historyWorkload(
       entity: id,
       action: 'INSERT',
       data: clone(row),
+      stamp: 'now',
       changed: null,
       actor: uid,
     });
@@ -1399,7 +1423,8 @@ async function historyWorkload(
           table: 'lit_record',
           entity: cid,
           action: 'UPDATE',
-          data: clone(crow),
+          data: snap(cid, crow),
+          stamp: S.stamp.get(cid) ?? 'orig',
           changed: ['recordId'],
           actor: uid,
         });
@@ -1409,7 +1434,8 @@ async function historyWorkload(
       table: 'lit_record',
       entity: rid,
       action: 'DELETE',
-      data: clone(row),
+      data: snap(rid, row),
+      stamp: S.stamp.get(rid) ?? 'orig',
       changed: null,
       actor: uid,
     });
@@ -1447,7 +1473,20 @@ async function historyWorkload(
     );
     if (!res.ok) return refuse();
     S.applied++;
-    const fs = [...fields].sort();
+    const fs = [...new Set(fields)].sort();
+    // remember the values being redacted (snapshots and the live row), then null them
+    const live = S.rows.get(rid);
+    const mine = S.redacted.get(rid) ?? new Map<string, Json[]>();
+    S.redacted.set(rid, mine);
+    for (const f of fs) {
+      const vals = mine.get(f) ?? [];
+      mine.set(f, vals);
+      const val = (d: Rec, st: Stamp | undefined) => (f === 'updatedAt' ? (st ?? 'orig') : d[f]);
+      for (const x of S.log)
+        if (x.table === 'lit_record' && x.entity === rid && x.action !== 'REDACT')
+          if (x.data[f] !== null && x.data[f] !== undefined) vals.push(val(x.data, x.stamp));
+      if (live && live[f] !== null && live[f] !== undefined) vals.push(val(live, S.stamp.get(rid)));
+    }
     for (const x of S.log)
       if (x.table === 'lit_record' && x.entity === rid && x.action !== 'REDACT')
         for (const f of fs) x.data[f] = null;
@@ -1584,7 +1623,14 @@ async function historyWorkload(
     must('save with the same values', await upd(a, ra, { title: row.title, sum: 100.5 }));
     must('mixed edit', await upd(a, ra, { title: val(), total: 7 }));
     must('second amounts-only edit', await upd(a, ra, { hours: 3.5 }));
-    must('redaction', await redact(a, ra, ['note', 'sum', 'title']));
+    // an owner write puts a value in the live row that no snapshot holds; the redaction must
+    // still keep it out of the next snapshot
+    const pasted = `owner_${val()}`;
+    await c.query('reset role');
+    await c.query(`select set_config('app.user_id', '', true)`);
+    await c.query(`update lit_record set description = $1 where id = $2`, [pasted, ra]);
+    row.description = pasted;
+    must('redaction', await redact(a, ra, ['description', 'note', 'sum', 'title']));
     must('edit after the redaction', await upd(a, ra, { title: val(), sum: 5.5 }));
   }
 
@@ -2162,6 +2208,17 @@ const MUTATIONS: Record<string, Mutation> = {
     fn: redactFn,
     from: `IF NOT EXISTS (SELECT 1 FROM public.lit_history h`,
     to: 'IF false AND NOT EXISTS (SELECT 1 FROM public.lit_history h',
+  },
+  // a redaction sticks: later snapshots keep redacted values out, the live one included
+  'redact-sticks': {
+    fn: capture,
+    from: `IF TG_TABLE_NAME = 'lit_record' THEN`,
+    to: 'IF false THEN',
+  },
+  'redact-live': {
+    fn: redactFn,
+    from: `WHERE r.id = record_id`,
+    to: 'WHERE false',
   },
 };
 async function plantMutation(c: pg.Client, name: string) {
