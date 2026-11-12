@@ -27,6 +27,7 @@ model User {
   assignedProjects Project[] @relation(name: "ProjectAssignee")
   createdRecords   Record[]  @relation(name: "RecordCreator")
   assignedRecords  Record[]  @relation(name: "RecordAssignee")
+  history          History[]
 
   memberships GroupMember[]
   // Grants made to this user, and grants whose scope is "records of this person".
@@ -253,4 +254,33 @@ enum RecordStatus {
 enum ProjectStatus {
   ACTIVE
   INACTIVE
+}
+
+enum HistoryAction {
+  INSERT
+  UPDATE
+  DELETE
+  REDACT
+}
+
+/// What changed in a record, and who did it. Written only by database triggers (never by
+/// the app) and read only through lit_record_history(): the table is closed to the app and
+/// gateway roles. `data` is the row after an INSERT or UPDATE, the row as it was for a
+/// DELETE, `{"fields": [...]}` for a REDACT. `changed` lists the columns an UPDATE changed
+/// (`updatedAt` excluded) and the fields of a REDACT; NULL otherwise. `entityId` has no
+/// foreign key: the history of a deleted record stays.
+model History {
+  id        BigInt        @id @default(autoincrement())
+  createdAt DateTime      @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  tableName String
+  entityId  String
+  action    HistoryAction
+  data      Json?         @db.JsonB
+  changed   String[]
+  actor     User?         @relation(fields: [actorId], references: [id])
+  actorId   String?
+
+  @@index([tableName, entityId, id])
+  @@index([actorId])
+  @@map("lit_history")
 }

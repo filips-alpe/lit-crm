@@ -21,6 +21,7 @@ if (testUrl === devUrl) {
 }
 
 const TABLES = [
+  'lit_history',
   'lit_record_mention',
   'lit_record',
   'lit_project',
