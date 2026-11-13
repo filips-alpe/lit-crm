@@ -1681,6 +1681,19 @@ async function historyWorkload(
     await ownerHide(re, true);
     must('link while hidden (e)', await linkAdd(adm(), re, projPair(re)[0]));
   }
+
+  // (f) the owner hid a record; the app linked and edited it while hidden, the owner un-hid it
+  // and the app hid it again. The nearest later row (the edit) says hidden; the first change of
+  // hidden (the re-hide) would wrongly say the link was written while visible.
+  const rf = fresh(() => 0);
+  if (rf) {
+    const a = adm();
+    await ownerHide(rf, true);
+    must('link while hidden (f)', await linkAdd(a, rf, projPair(rf)[0]));
+    must('edit while hidden (f)', await upd(a, rf, { title: val() }));
+    await ownerHide(rf, false);
+    must('hide again (f)', await upd(a, rf, { hidden: true }));
+  }
 }
 
 // The owner deletes a record whose only history is project links (made by an app user): no
@@ -2174,15 +2187,20 @@ const MUTATIONS: Record<string, Mutation> = {
   },
   'hidden-at-infer': {
     fn: hiddenAt,
-    from: `'hidden' = ANY(h.changed) AND h.id > row_id`,
-    to: `'hidden' = ANY(h.changed) AND h.id < 0`,
+    from: `AND h.action IN ('UPDATE', 'DELETE') AND h.id > row_id`,
+    to: `AND h.action IN ('UPDATE', 'DELETE') AND h.id < 0`,
+  },
+  // the later row must be the nearest one, not the first that changed hidden
+  'hidden-at-nearest': {
+    fn: hiddenAt,
+    from: `AND h.action IN ('UPDATE', 'DELETE') AND h.id > row_id`,
+    to: `AND h.action = 'UPDATE' AND 'hidden' = ANY(h.changed) AND h.id > row_id`,
   },
   'hidden-at-current': {
     fn: hiddenAt,
     from: `(SELECT r.hidden FROM public.lit_record r WHERE r.id = record_id)`,
     to: 'NULL::boolean',
   },
-  'hidden-at-delete': { fn: hiddenAt, from: `AND h.action = 'DELETE'`, to: 'AND false' },
   // redaction
   'redact-body': {
     fn: redactFn,

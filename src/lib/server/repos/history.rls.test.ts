@@ -416,6 +416,22 @@ describe('project links in the hidden period', () => {
       (await door(w.admin.id, r.id)).filter((x) => x.tableName === 'lit_project_record'),
     ).toHaveLength(1);
   });
+
+  it('reads the hidden state from the nearest later record row, not the first change of hidden', async () => {
+    const b = await proj('LB3');
+    const r = await prismaOwner.record.create({
+      data: { typeId: w.type.id, creatorId: w.alice.id, title: 'owner made', hidden: true },
+    });
+    await link(b.id, r.id); // hidden period, no lit_record row before it
+    await edit(w.admin.id, r.id, { title: 'edited while hidden' }); // row: hidden = true
+    await prismaOwner.record.update({ where: { id: r.id }, data: { hidden: false } }); // no trace
+    await edit(w.admin.id, r.id, { hidden: true }); // first change of hidden: to true
+    await edit(w.admin.id, r.id, { hidden: false });
+    const links = (await door(w.alice.id, r.id)).filter(
+      (x) => x.tableName === 'lit_project_record',
+    );
+    expect(links).toEqual([]);
+  });
 });
 
 describe('rows without a changed list', () => {
