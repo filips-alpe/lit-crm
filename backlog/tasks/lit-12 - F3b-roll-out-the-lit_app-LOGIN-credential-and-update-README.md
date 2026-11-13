@@ -4,8 +4,10 @@ title: 'F3b: roll out the lit_app LOGIN credential and update README'
 status: To Do
 assignee: []
 created_date: '2026-11-13 13:20'
+updated_date: '2026-11-13 15:04'
 labels:
   - est-2
+  - launch-lit-app-login-role
 dependencies:
   - LIT-9
 ordinal: 12000

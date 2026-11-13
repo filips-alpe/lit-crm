@@ -4,8 +4,10 @@ title: 'Record history: paging (before_id), admin REDACT rows, e2e'
 status: To Do
 assignee: []
 created_date: '2026-11-13 13:20'
+updated_date: '2026-11-13 15:04'
 labels:
   - est-3
+  - launch-record-history-ui
 dependencies:
   - LIT-8
 ordinal: 11000
