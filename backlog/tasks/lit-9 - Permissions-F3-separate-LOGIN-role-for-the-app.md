@@ -1,11 +1,13 @@
 ---
 id: LIT-9
-title: 'Permissions F3: separate LOGIN role for the app'
+title: 'F3a: LOGIN role limited to lit_app (migration + RESET ROLE test)'
 status: To Do
 assignee: []
 created_date: '2026-11-11 18:10'
+updated_date: '2026-11-13 13:20'
 labels:
   - permissions
+  - est-3
 dependencies: []
 ordinal: 9000
 ---
@@ -19,4 +21,11 @@ App connects as table owner and SET ROLEs to lit_app; raw SQL could RESET ROLE. 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
 - [ ] #1 App connects as non-owner login role,RESET ROLE cannot reach the owner,README F3 updated,Rollout steps documented
+- [ ] #2 Migration creates a LOGIN role that is a member of lit_app only and cannot SET ROLE to the owner,Server test proves RESET ROLE cannot reach the owner,App connects via the new role locally
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+poker: 3,3,5 — role grants + test are well-bounded; credential/deploy split to its own ticket
+<!-- SECTION:NOTES:END -->

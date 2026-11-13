@@ -4,7 +4,7 @@ title: 'Permissions F4: real authentication before real data'
 status: To Do
 assignee: []
 created_date: '2026-11-11 18:10'
-updated_date: '2026-11-11 20:56'
+updated_date: '2026-11-13 13:20'
 labels:
   - permissions
 dependencies: []
@@ -26,4 +26,6 @@ Login is username-only, so history actors and every policy are only as trustwort
 
 <!-- SECTION:NOTES:BEGIN -->
 Owner decision 2026-11-11: keep free username-only login for now; do not start.
+
+Groomed 2026-11-13: not estimated; blocked on owner decision (password vs SSO), owner said do not start.
 <!-- SECTION:NOTES:END -->
