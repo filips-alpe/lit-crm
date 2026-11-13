@@ -4,11 +4,10 @@ title: Add user picker screen (/login)
 status: Done
 assignee: []
 created_date: '2026-05-17 15:04'
-updated_date: '2026-11-03 04:03'
+updated_date: '2026-11-13 20:37'
 labels:
   - feature
-dependencies:
-  - LIT-1
+dependencies: []
 ordinal: 3000
 ---
 

@@ -4,11 +4,10 @@ title: Types CRUD
 status: Done
 assignee: []
 created_date: '2026-05-17 15:10'
-updated_date: '2026-11-03 04:09'
+updated_date: '2026-11-13 20:37'
 labels:
   - feature
-dependencies:
-  - LIT-1
+dependencies: []
 ordinal: 4000
 ---
 

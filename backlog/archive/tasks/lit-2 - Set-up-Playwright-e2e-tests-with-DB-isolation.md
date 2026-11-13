@@ -4,11 +4,10 @@ title: Set up Playwright e2e tests with DB isolation
 status: Done
 assignee: []
 created_date: '2026-05-17 14:38'
-updated_date: '2026-11-03 02:41'
+updated_date: '2026-11-13 20:37'
 labels:
   - chore
-dependencies:
-  - LIT-1
+dependencies: []
 ordinal: 2000
 ---
 
