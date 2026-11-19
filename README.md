@@ -81,6 +81,8 @@ bunx vitest run --project unit
 bunx vitest run --project client
 bunx vitest run --project server
 bunx playwright test
+bun run storybook            # component stories on :6006
+bunx vitest run --project storybook   # stories as tests
 ```
 
 The `server` and e2e suites write to their database, so they refuse to run against your dev data:
