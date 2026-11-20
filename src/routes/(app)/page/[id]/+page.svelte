@@ -1,5 +1,6 @@
 <script lang="ts">
   import BestPage from '$lib/components/bestPage/BestPage.svelte';
+  import RecordHistory from '$lib/components/RecordHistory.svelte';
   import type { PageData } from './$types';
   import * as m from '$lib/paraglide/messages.js';
 
@@ -13,5 +14,6 @@
 <div class="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6">
   {#key data.page.record.id}
     <BestPage page={data.page} />
+    <RecordHistory recordId={data.page.record.id} history={data.history} layout={data.layout} />
   {/key}
 </div>

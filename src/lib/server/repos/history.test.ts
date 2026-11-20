@@ -108,4 +108,30 @@ describe('listRecordHistory', () => {
     const page = await history(w.admin.id, w.r1.id);
     expect(page.entries).toMatchObject([{ actorName: null, values: { title: 'temp edit' } }]);
   });
+
+  it('reports no cursor when the last page is exactly full', async () => {
+    for (const t of ['a', 'b', 'c', 'd']) await edit(w.alice.id, w.r1.id, { title: t });
+    const first = await history(w.alice.id, w.r1.id, { limit: 2 });
+    expect(first.nextBefore).not.toBeNull();
+    const second = await history(w.alice.id, w.r1.id, { limit: 2, beforeId: first.nextBefore! });
+    expect(second.entries.map((e) => e.values.title)).toEqual(['b', 'a']);
+    expect(second.nextBefore).toBeNull();
+    // Even when the door filters rows out before it limits, a cursor always leads to rows.
+    const all = await history(w.alice.id, w.r1.id, { limit: 4 });
+    expect(all.nextBefore).toBeNull();
+  });
+
+  it('resolves relation ids to names and titles through row-level security', async () => {
+    await edit(w.alice.id, w.r1.id, { assigneeId: w.bob.id, recordId: w.rh.id });
+    await edit(w.alice.id, w.r1.id, { recordId: w.r1.id });
+    const page = await history(w.alice.id, w.r1.id);
+    // Newest first: the self link is readable, so it resolves to the title ...
+    expect(page.entries[0].refs).toEqual({ recordId: { label: 'R1' } });
+    // ... Rh is hidden from alice, so it is unresolved (never its title).
+    expect(page.entries[1].refs).toMatchObject({
+      assigneeId: { label: 'BOB' },
+      recordId: { label: null },
+    });
+    expect(JSON.stringify(page)).not.toContain('"Rh"');
+  });
 });

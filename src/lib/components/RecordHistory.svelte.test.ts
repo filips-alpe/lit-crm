@@ -12,6 +12,7 @@ const entry = (over: Partial<HistoryEntry>): HistoryEntry => ({
   actorName: 'Alice',
   changed: [],
   values: {},
+  refs: {},
   projectCode: null,
   ...over,
 });
@@ -99,5 +100,29 @@ describe('RecordHistory', () => {
       expect(items()).toHaveLength(1);
       expect(more()).not.toBeNull();
     });
+  });
+
+  it('shows dates in the locale format and relations as titles, hidden ones neutrally', () => {
+    render(RecordHistory, {
+      recordId: 'r1',
+      layout: { fields: [] },
+      history: {
+        nextBefore: null,
+        entries: [
+          entry({
+            changed: ['date', 'recordId', 'assigneeId'],
+            values: { date: '2026-01-05T00:00:00.000Z', recordId: 'x1', assigneeId: 'u1' },
+            refs: { recordId: { label: null }, assigneeId: { label: 'Bob' } },
+          }),
+        ],
+      },
+    });
+    const text = items()[0].textContent ?? '';
+    expect(text).toContain('Jan 5, 2026');
+    expect(text).not.toContain('2026-01-05T');
+    expect(text).toContain('hidden record');
+    expect(text).toContain('Bob');
+    expect(text).not.toContain('x1');
+    expect(text).not.toContain('u1');
   });
 });

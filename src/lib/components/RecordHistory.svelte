@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { HistoryEntry, HistoryPage } from '$lib/history/types';
-  import { historyColumnLabel, historyValue } from '$lib/history/format';
+  import { historyColumnLabel, historyDisplay } from '$lib/history/format';
   import * as m from '$lib/paraglide/messages.js';
 
   let {
@@ -40,7 +40,11 @@
     }
   }
 
-  const empty = $derived(m.legal_tired_pelican_love());
+  const text = $derived({
+    empty: m.legal_tired_pelican_love(),
+    hidden: m.dry_candid_lion_enrich(),
+    untitled: m.large_brief_cobra_laugh(),
+  });
   const labels = (cols: string[]) => cols.map((c) => historyColumnLabel(c, layout)).join(', ');
 
   function summary(e: HistoryEntry): string {
@@ -85,7 +89,9 @@
               {#each Object.entries(e.values) as [col, value] (col)}
                 <div class="flex gap-2">
                   <dt class="font-medium">{historyColumnLabel(col, layout)}</dt>
-                  <dd class="min-w-0 break-words">{historyValue(value, empty)}</dd>
+                  <dd class="min-w-0 break-words">
+                    {historyDisplay(col, value, e.refs[col], text)}
+                  </dd>
                 </div>
               {/each}
             </dl>

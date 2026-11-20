@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { prisma } from '$lib/prisma';
 import { addType } from '$lib/server/repos/types';
 import { createRecord } from '$lib/server/repos/records';
+import { runAs } from '$lib/server/db/context';
 import { load } from './+page.server';
 
 async function makeUser() {
@@ -23,7 +24,9 @@ describe('/page/[id] load', () => {
   });
 
   it('returns a plain, serializable best page for any record', async () => {
-    const user = await makeUser();
+    const user = await prisma.user.create({
+      data: { username: `a-${Date.now()}-${Math.random()}`, name: 'Admin', isAdmin: true },
+    });
     const type = await addType({
       code: 'L1',
       layout: {
@@ -33,16 +36,25 @@ describe('/page/[id] load', () => {
         ],
       },
     });
-    const rec = await createRecord({ typeId: type.id });
-    await prisma.record.update({
-      where: { id: rec.id },
-      data: { title: 'A letter', text: 'Dear Sir' },
-    });
-    const data = (await load(event(rec.id, user))) as {
+    const rec = await runAs(user.id, () => createRecord({ typeId: type.id }));
+    await runAs(user.id, () =>
+      prisma.record.update({
+        where: { id: rec.id },
+        data: { title: 'A letter', text: 'Dear Sir' },
+      }),
+    );
+    const data = (await runAs(user.id, async () => await load(event(rec.id, user)))) as {
       page: { record: { title: string }; sections: { kind: string }[] };
     };
     expect(data.page.record.title).toBe('A letter');
     expect(data.page.sections.map((s) => s.kind)).toEqual(['text']);
+    const withHistory = data as unknown as {
+      history: { entries: { action: string }[]; nextBefore: string | null };
+      layout: { fields: unknown[] };
+    };
+    expect(withHistory.history.entries.map((e) => e.action)).toEqual(['UPDATE', 'INSERT']);
+    expect(withHistory.history.nextBefore).toBeNull();
+    expect(withHistory.layout.fields).toHaveLength(2);
     expect(JSON.parse(JSON.stringify(data.page))).toEqual(data.page);
   });
 });

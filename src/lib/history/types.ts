@@ -13,6 +13,11 @@ export type HistoryEntry = {
   changed: string[];
   /** The new value of each changed column the viewer may see (update rows only). */
   values: Record<string, unknown>;
+  /**
+   * For a changed relation column (creatorId, assigneeId, recordId): what its id points at.
+   * `label` is null when the viewer cannot read it, '' when it has no title.
+   */
+  refs: Record<string, { label: string | null }>;
   /** The project of a link row (its code, else its id). */
   projectCode: string | null;
 };
