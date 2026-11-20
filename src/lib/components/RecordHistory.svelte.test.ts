@@ -110,9 +110,13 @@ describe('RecordHistory', () => {
         nextBefore: null,
         entries: [
           entry({
-            changed: ['date', 'recordId', 'assigneeId'],
-            values: { date: '2026-01-05T00:00:00.000Z', recordId: 'x1', assigneeId: 'u1' },
-            refs: { recordId: { label: null }, assigneeId: { label: 'Bob' } },
+            changed: ['date', 'recordId', 'assigneeId', 'creatorId'],
+            values: { date: '2026-01-05T00:00:00.000Z' },
+            refs: {
+              recordId: { kind: 'record', label: null },
+              assigneeId: { kind: 'user', label: 'Bob' },
+              creatorId: { kind: 'user', label: null },
+            },
           }),
         ],
       },
@@ -122,6 +126,7 @@ describe('RecordHistory', () => {
     expect(text).not.toContain('2026-01-05T');
     expect(text).toContain('hidden record');
     expect(text).toContain('Bob');
+    expect(text).toContain('Unknown user');
     expect(text).not.toContain('x1');
     expect(text).not.toContain('u1');
   });

@@ -44,6 +44,7 @@
     empty: m.legal_tired_pelican_love(),
     hidden: m.dry_candid_lion_enrich(),
     untitled: m.large_brief_cobra_laugh(),
+    unknownUser: m.home_keen_blackbird_strive(),
   });
   const labels = (cols: string[]) => cols.map((c) => historyColumnLabel(c, layout)).join(', ');
 
@@ -86,11 +87,11 @@
           </div>
           {#if e.action === 'UPDATE' && e.kind === 'record'}
             <dl class="mt-1 text-xs text-stone-600">
-              {#each Object.entries(e.values) as [col, value] (col)}
+              {#each e.changed.filter((c) => c in e.values || c in e.refs) as col (col)}
                 <div class="flex gap-2">
                   <dt class="font-medium">{historyColumnLabel(col, layout)}</dt>
                   <dd class="min-w-0 break-words">
-                    {historyDisplay(col, value, e.refs[col], text)}
+                    {historyDisplay(col, e.values[col], e.refs[col], text)}
                   </dd>
                 </div>
               {/each}

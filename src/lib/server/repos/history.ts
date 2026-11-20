@@ -31,7 +31,8 @@ type DoorRow = {
  *
  * Relation ids in updated values (creator, assignee, linked record) are resolved to names
  * and titles with the same row-level-security-bound client; one the viewer cannot read
- * resolves to null (shown as a neutral "hidden record").
+ * resolves to a null label (shown as "hidden record" or "unknown user"). Where `refs`
+ * covers a column its raw id is dropped from `values`.
  */
 export async function listRecordHistory(
   recordId: string,
@@ -113,7 +114,9 @@ export async function listRecordHistory(
         if (typeof v !== 'string') continue;
         const map = refLabel[kind];
         // Unreadable (or gone): null. A readable record without a title has an empty label.
-        refs[col] = map.has(v) ? { label: map.get(v) ?? '' } : { label: null };
+        refs[col] = map.has(v) ? { kind, label: map.get(v) ?? '' } : { kind, label: null };
+        // The raw id never leaves the server: the label (or null) is all the viewer gets.
+        delete values[col];
       }
     const projectId = link && typeof r.data?.projectId === 'string' ? r.data.projectId : null;
     return {

@@ -57,4 +57,31 @@ describe('/page/[id] load', () => {
     expect(withHistory.layout.fields).toHaveLength(2);
     expect(JSON.parse(JSON.stringify(data.page))).toEqual(data.page);
   });
+
+  it('gives a non-reader a 404 or an empty panel, never titles', async () => {
+    const owner = await prisma.user.create({
+      data: { username: `o-${Date.now()}-${Math.random()}`, name: 'Owner', isAdmin: true },
+    });
+    const other = await makeUser();
+    const type = await addType({
+      code: 'L2',
+      layout: { fields: [{ id: 't', label: 'Title', kind: 'text', writeTo: 'title' }] },
+    });
+    const rec = await runAs(owner.id, () => createRecord({ typeId: type.id }));
+    await runAs(owner.id, () =>
+      prisma.record.update({ where: { id: rec.id }, data: { title: 'Secret title' } }),
+    );
+    const res: unknown = await runAs(other.id, async () => {
+      try {
+        return await load(event(rec.id, other));
+      } catch (e) {
+        return e;
+      }
+    });
+    const json = JSON.stringify(res);
+    expect(json).not.toContain('Secret title');
+    if ('history' in (res as object))
+      expect((res as { history: { entries: unknown[] } }).history.entries).toEqual([]);
+    else expect(res).toMatchObject({ status: 404 });
+  });
 });

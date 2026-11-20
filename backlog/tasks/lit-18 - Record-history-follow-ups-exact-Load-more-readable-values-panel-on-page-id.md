@@ -6,7 +6,7 @@ title: >-
 status: Done
 assignee: []
 created_date: '2026-11-20 05:22'
-updated_date: '2026-11-20 05:28'
+updated_date: '2026-11-20 05:35'
 labels:
   - history
 dependencies: []
@@ -23,6 +23,12 @@ Follow-ups to LIT-8/LIT-11. 1) nextBefore is set whenever a page is full, so the
 <!-- AC:BEGIN -->
 - [x] #1 Load more hides when nothing older exists (tested); update values show locale dates and resolved relation titles, hidden shows neutral label (tested); panel renders on /page/[id] (tested)
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Hardening: history refs now carry kind (user|record); raw ids of relation columns (recordId, assigneeId, creatorId) are dropped from values server-side whenever refs covers them (covers /data/[id], /page/[id], GET /data/[id]/history). Panel iterates changed cols and reads refs. Unreadable/deleted user shows existing 'Unknown user' key (home_keen_blackbird_strive), no new i18n key needed. Tests: repo test asserts no raw ids for unreadable record/deleted user; /page/[id] non-reader gets 404 or empty panel without titles.
+<!-- SECTION:NOTES:END -->
 
 ## Final Summary
 

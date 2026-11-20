@@ -30,11 +30,13 @@ const DATE_TIME = new Set(['start', 'end']);
 export function historyDisplay(
   column: string,
   value: unknown,
-  ref: { label: string | null } | undefined,
-  text: { empty: string; hidden: string; untitled: string },
+  ref: { kind?: 'user' | 'record'; label: string | null } | undefined,
+  text: { empty: string; hidden: string; untitled: string; unknownUser?: string },
 ): string {
-  if (ref && typeof value === 'string')
-    return historyValue(ref.label === null ? text.hidden : ref.label || text.untitled, text.empty);
+  if (ref) {
+    const gone = ref.kind === 'user' ? (text.unknownUser ?? text.hidden) : text.hidden;
+    return historyValue(ref.label === null ? gone : ref.label || text.untitled, text.empty);
+  }
   if ((DATE_ONLY.has(column) || DATE_TIME.has(column)) && typeof value === 'string') {
     const day = formatDate(value);
     if (!day) return historyValue(value, text.empty);

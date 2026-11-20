@@ -35,9 +35,20 @@ describe('historyDisplay', () => {
     expect(historyDisplay('date', 'garbage', undefined, text)).toBe('garbage');
   });
   it('shows a resolved relation, a neutral label when hidden, and untitled when blank', () => {
-    expect(historyDisplay('recordId', 'id1', { label: 'Letter' }, text)).toBe('Letter');
-    expect(historyDisplay('recordId', 'id1', { label: null }, text)).toBe('hidden record');
-    expect(historyDisplay('recordId', 'id1', { label: '' }, text)).toBe('Untitled');
+    expect(historyDisplay('recordId', 'id1', { kind: 'record', label: 'Letter' }, text)).toBe(
+      'Letter',
+    );
+    expect(historyDisplay('recordId', 'id1', { kind: 'record', label: null }, text)).toBe(
+      'hidden record',
+    );
+    expect(historyDisplay('recordId', 'id1', { kind: 'record', label: '' }, text)).toBe('Untitled');
+  });
+  it('shows an unreadable user as unknown user, with no raw id needed', () => {
+    const t = { ...text, unknownUser: 'Unknown user' };
+    expect(historyDisplay('assigneeId', undefined, { kind: 'user', label: null }, t)).toBe(
+      'Unknown user',
+    );
+    expect(historyDisplay('assigneeId', undefined, { kind: 'user', label: 'Bob' }, t)).toBe('Bob');
   });
   it('leaves other values to historyValue', () => {
     expect(historyDisplay('title', null, undefined, text)).toBe('empty');

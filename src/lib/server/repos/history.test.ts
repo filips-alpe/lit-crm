@@ -126,12 +126,34 @@ describe('listRecordHistory', () => {
     await edit(w.alice.id, w.r1.id, { recordId: w.r1.id });
     const page = await history(w.alice.id, w.r1.id);
     // Newest first: the self link is readable, so it resolves to the title ...
-    expect(page.entries[0].refs).toEqual({ recordId: { label: 'R1' } });
+    expect(page.entries[0].refs).toEqual({ recordId: { kind: 'record', label: 'R1' } });
     // ... Rh is hidden from alice, so it is unresolved (never its title).
     expect(page.entries[1].refs).toMatchObject({
-      assigneeId: { label: 'BOB' },
-      recordId: { label: null },
+      assigneeId: { kind: 'user', label: 'BOB' },
+      recordId: { kind: 'record', label: null },
     });
     expect(JSON.stringify(page)).not.toContain('"Rh"');
+  });
+
+  it('never sends a raw id for a relation column, readable or not', async () => {
+    await edit(w.alice.id, w.r1.id, { assigneeId: w.bob.id, recordId: w.rh.id });
+    await edit(w.alice.id, w.r1.id, { recordId: w.r1.id, title: 'kept' });
+    const page = await history(w.alice.id, w.r1.id);
+    for (const e of page.entries) {
+      expect(e.values).not.toHaveProperty('recordId');
+      expect(e.values).not.toHaveProperty('assigneeId');
+    }
+    expect(page.entries[0].values).toEqual({ title: 'kept' });
+    const json = JSON.stringify(page);
+    for (const id of [w.rh.id, w.bob.id]) expect(json).not.toContain(id);
+  });
+
+  it('marks a deleted user reference as an unresolved user', async () => {
+    const temp = await prismaOwner.user.create({ data: { username: 'temp2', name: 'TEMP2' } });
+    await edit(w.alice.id, w.r1.id, { assigneeId: temp.id });
+    await prismaOwner.user.delete({ where: { id: temp.id } });
+    const page = await history(w.alice.id, w.r1.id);
+    expect(page.entries[0].refs).toEqual({ assigneeId: { kind: 'user', label: null } });
+    expect(JSON.stringify(page)).not.toContain(temp.id);
   });
 });

@@ -15,9 +15,9 @@ export type HistoryEntry = {
   values: Record<string, unknown>;
   /**
    * For a changed relation column (creatorId, assigneeId, recordId): what its id points at.
-   * `label` is null when the viewer cannot read it, '' when it has no title.
+   * The raw id is not in `values` for these columns. `label` is null when the viewer cannot read it, '' when it has no title.
    */
-  refs: Record<string, { label: string | null }>;
+  refs: Record<string, { kind: 'user' | 'record'; label: string | null }>;
   /** The project of a link row (its code, else its id). */
   projectCode: string | null;
 };
