@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import RecordHistory from './RecordHistory.svelte';
 import type { HistoryEntry } from '$lib/history/types';
@@ -20,6 +20,7 @@ const items = () => Array.from(document.querySelectorAll('[data-testid="record-h
 describe('RecordHistory', () => {
   it('lists the entries in the order given, with labelled changed values', () => {
     render(RecordHistory, {
+      recordId: 'r1',
       layout,
       history: {
         nextBefore: null,
@@ -40,6 +41,7 @@ describe('RecordHistory', () => {
 
   it('names an unknown actor and shows a redaction row', () => {
     render(RecordHistory, {
+      recordId: 'r1',
       layout,
       history: {
         nextBefore: null,
@@ -50,8 +52,52 @@ describe('RecordHistory', () => {
   });
 
   it('says so when there is no history', () => {
-    render(RecordHistory, { layout, history: { entries: [], nextBefore: null } });
+    render(RecordHistory, { recordId: 'r1', layout, history: { entries: [], nextBefore: null } });
     expect(items()).toHaveLength(0);
     expect(document.body.textContent).toContain('No history yet.');
+  });
+
+  describe('load more', () => {
+    afterEach(() => vi.unstubAllGlobals());
+    const more = () => document.querySelector<HTMLButtonElement>('[data-testid="history-more"]');
+
+    it('appends the older page, keeps the order and drops the button on the last page', async () => {
+      const fetchMock = vi.fn(async () =>
+        Response.json({ entries: [entry({ id: '1', action: 'INSERT' })], nextBefore: null }),
+      );
+      vi.stubGlobal('fetch', fetchMock);
+      render(RecordHistory, {
+        recordId: 'r1',
+        layout,
+        history: {
+          entries: [entry({ id: '2', changed: ['title'], values: { title: 'B' } })],
+          nextBefore: '2',
+        },
+      });
+      expect(items()).toHaveLength(1);
+      more()!.click();
+      await vi.waitFor(() => expect(items()).toHaveLength(2));
+      expect(fetchMock).toHaveBeenCalledWith('/data/r1/history?before=2');
+      expect(items()[1].textContent).toContain('created the record');
+      expect(more()).toBeNull();
+    });
+
+    it('shows an error and keeps the button when loading fails', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => new Response('no', { status: 500 })),
+      );
+      render(RecordHistory, {
+        recordId: 'r1',
+        layout,
+        history: { entries: [entry({ id: '2' })], nextBefore: '2' },
+      });
+      more()!.click();
+      await vi.waitFor(() =>
+        expect(document.body.textContent).toContain('Could not load more history.'),
+      );
+      expect(items()).toHaveLength(1);
+      expect(more()).not.toBeNull();
+    });
   });
 });

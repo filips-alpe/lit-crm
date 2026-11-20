@@ -27,6 +27,6 @@
     {/key}
   </div>
   {#key data.record.id}
-    <RecordHistory history={data.history} layout={data.layout} />
+    <RecordHistory recordId={data.record.id} history={data.history} layout={data.layout} />
   {/key}
 </div>
