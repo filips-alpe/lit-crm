@@ -23,7 +23,15 @@ describe('/data/[id]/history', () => {
 
   it('rejects a cursor that is not a number', async () => {
     const w = await makeWorld();
-    for (const bad of ['abc', '1;DROP', '-1', '1.5', '']) {
+    for (const bad of [
+      'abc',
+      '1;DROP',
+      '-1',
+      '1.5',
+      '',
+      '9223372036854775808',
+      '9999999999999999999',
+    ]) {
       expect((await call(w.r1.id, `?before=${encodeURIComponent(bad)}`, w.alice)).status).toBe(400);
     }
   });
