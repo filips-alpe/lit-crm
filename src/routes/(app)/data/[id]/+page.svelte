@@ -1,6 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import RecordDetail from '$lib/components/RecordDetail.svelte';
+  import RecordHistory from '$lib/components/RecordHistory.svelte';
   import type { PageData } from './$types';
   import * as m from '$lib/paraglide/messages.js';
 
@@ -25,4 +26,7 @@
       <RecordDetail {...data} />
     {/key}
   </div>
+  {#key data.record.id}
+    <RecordHistory history={data.history} layout={data.layout} />
+  {/key}
 </div>

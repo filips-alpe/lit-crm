@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { prisma } from '$lib/prisma';
+import { prisma, prismaOwner } from '$lib/prisma';
+import { runAs } from '$lib/server/db/context';
 import { addType } from '$lib/server/repos/types';
 import { createRecord, getRecordById } from '$lib/server/repos/records';
 import { actions, load } from './+page.server';
@@ -45,6 +46,25 @@ describe('/data/[id] load', () => {
     const user = await makeUser();
     await expect(load(loadEvent('/data/nope', 'nope', user))).rejects.toMatchObject({
       status: 404,
+    });
+  });
+
+  it('ships the record history, newest first, for the signed-in user', async () => {
+    const admin = await prismaOwner.user.create({
+      data: { username: `h-${Date.now()}`, name: 'Hist', isAdmin: true },
+    });
+    const type = await addType({ code: 'HIST', layout: textLayout });
+    const rec = await createRecord({ typeId: type.id, note: 'n' });
+    await runAs(admin.id, async () => {
+      await prisma.record.update({ where: { id: rec.id }, data: { title: 'one' } });
+      await prisma.record.update({ where: { id: rec.id }, data: { title: 'two' } });
+      const data = (await load(loadEvent(`/data/${rec.id}`, rec.id, admin))) as {
+        history: { entries: { action: string; actorName: string; values: unknown }[] };
+      };
+      expect(data.history.entries.map((e) => [e.action, e.actorName, e.values])).toEqual([
+        ['UPDATE', 'Hist', { title: 'two' }],
+        ['UPDATE', 'Hist', { title: 'one' }],
+      ]);
     });
   });
 

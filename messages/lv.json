@@ -285,5 +285,15 @@
   "away_smart_lark_drop": "Rediģēt ierakstu",
   "moving_noble_vulture_thrive": "Atvērt lapu",
   "sharp_lost_cuckoo_commend": "Teksts",
-  "kind_vexed_koala_exhale": "Administrators"
+  "kind_vexed_koala_exhale": "Administrators",
+  "alert_many_koala_promise": "Vēsture",
+  "proud_gray_tern_pet": "Vēstures vēl nav.",
+  "ago_trite_pelican_pull": "{actor} izveidoja ierakstu",
+  "nice_cuddly_seal_jolt": "{actor} mainīja {fields}",
+  "even_brave_vole_startle": "{actor} dzēsa ierakstu",
+  "cuddly_dirty_opossum_boost": "{actor} izdzēsa vērtības: {fields}",
+  "novel_many_mole_adapt": "{actor} pievienoja ierakstu projektam {project}",
+  "arable_same_penguin_wave": "{actor} izņēma ierakstu no projekta {project}",
+  "home_keen_blackbird_strive": "Nezināms lietotājs",
+  "legal_tired_pelican_love": "tukšs"
 }

@@ -20,6 +20,8 @@ import {
 } from '$lib/forms/layout';
 import type { FormLayout } from '$lib/forms/layout';
 import { layoutSchema } from '$lib/schemas/types';
+import { listRecordHistory } from '$lib/server/repos/history';
+import type { HistoryPage } from '$lib/history/types';
 import { buildRecordFormOptions } from '$lib/server/recordFormOptions';
 import { applyInvalidDateError, applyRecordRelationErrors } from '$lib/server/forms/relationErrors';
 import { AMOUNT_COLUMNS, withoutMaskedAmounts } from '$lib/fields/amounts';
@@ -57,7 +59,7 @@ export const load: PageServerLoad = async (event) => {
   // every letter of the type that carries coordinates; only fetched for types that
   // map a location field, other detail views ignore it.
   const hasLocation = layout.fields.some((f) => f.kind === 'location');
-  const [thread, letters, options] = await Promise.all([
+  const [thread, letters, options, history] = await Promise.all([
     getCorrespondenceNeighbors({
       id: record.id,
       from: record.from ?? '',
@@ -74,6 +76,11 @@ export const load: PageServerLoad = async (event) => {
         maskedColumns: record.amountsMasked ? [...AMOUNT_COLUMNS] : [],
       },
     }),
+    // The history is a side panel: the record page still opens when the door fails.
+    listRecordHistory(record.id).catch((err): HistoryPage => {
+      console.error('record history failed', err);
+      return { entries: [], nextBefore: null };
+    }),
   ]);
 
   const type = {
@@ -85,7 +92,7 @@ export const load: PageServerLoad = async (event) => {
     layout,
   };
 
-  return { record, type, form, layout, thread, letters, options };
+  return { record, type, form, layout, thread, letters, options, history };
 };
 
 export const actions: Actions = {
